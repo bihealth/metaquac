@@ -1,0 +1,14 @@
+## Evironment info
+```{r, results='asis'}
+# Package version
+cat(paste("[MeTaQuaC](https://github.com/bihealth/MeTAQuaC) package version:",
+          packageVersion("metaquac"), "\n\n"))
+
+# R session info, including R version and packages + version
+pander::pander(sessionInfo())
+```
+
+## Parameters
+```{r}
+pander::pander(params)
+```

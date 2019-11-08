@@ -1,0 +1,409 @@
+Compound,Name,Class,Method
+Ala,Alanine,Amino Acids,LC
+Lys,Lysine,Amino Acids,LC
+Arg,Arginine,Amino Acids,LC
+Met,Methionine,Amino Acids,LC
+Asn,Asparagine,Amino Acids,LC
+Orn,Ornithine,Amino Acids,LC
+Asp,Aspartate,Amino Acids,LC
+Phe,Phenylalanine,Amino Acids,LC
+Cit,Citrulline,Amino Acids,LC
+Pro,Proline,Amino Acids,LC
+Glu,Glutamate,Amino Acids,LC
+Ser,Serine,Amino Acids,LC
+Gln,Glutamine,Amino Acids,LC
+Thr,Threonine,Amino Acids,LC
+Gly,Glycine,Amino Acids,LC
+Trp,Tryptophan,Amino Acids,LC
+His,Histidine,Amino Acids,LC
+Tyr,Tyrosine,Amino Acids,LC
+Ile,Isoleucine*,Amino Acids,LC
+Val,Valine,Amino Acids,LC
+xLeu,Leucine + Isoleucine,Amino Acids,LC
+Ac-Orn,Acetylornithine,Biogenic Amines,LC
+Nitro-Tyr,Nitrotyrosine,Biogenic Amines,LC
+ADMA,Asymmetric dimethylarginine,Biogenic Amines,LC
+PEA,Phenylethylamine,Biogenic Amines,LC
+alpha-AAA,alpha-Aminoadipic acid,Biogenic Amines,LC
+Putrescine,Putrescine,Biogenic Amines,LC
+Carnosine,Carnosine,Biogenic Amines,LC
+Sarcosine,Sarcosine,Biogenic Amines,LC
+c4-OH-Pro,cis-4-Hydroxyproline,Biogenic Amines,LC
+SDMA,Symmetric dimethylarginine,Biogenic Amines,LC
+Creatinine,Creatinine,Biogenic Amines,LC
+Serotonin,Serotonin,Biogenic Amines,LC
+DOPA,Dihydroxyphenylalanine,Biogenic Amines,LC
+Spermidine,Spermidine,Biogenic Amines,LC
+Dopamine,Dopamine,Biogenic Amines,LC
+Spermine,Spermine,Biogenic Amines,LC
+Histamine,Histamine,Biogenic Amines,LC
+Taurine,Taurine,Biogenic Amines,LC
+Kynurenine,Kynurenine,Biogenic Amines,LC
+t4-OH-Pro,trans-Hydroxyproline,Biogenic Amines,LC
+Met-SO,Methionine sulfoxide,Biogenic Amines,LC
+H1,Hexoses (including glucose),Monosaccharides,FIA
+AC(0:0),Carnitine,Acylcarnitines,FIA
+AC(4:1-DC),Fumarylcarnitine,Acylcarnitines,FIA
+AC(2:0),Acetylcarnitine,Acylcarnitines,FIA
+AC(5:0),Valerylcarnitine,Acylcarnitines,FIA
+AC(3:0),Propionylcarnitine,Acylcarnitines,FIA
+AC(5:0-DC),Glutarylcarnitine,Acylcarnitines,FIA
+AC(3:0-DC),Malonylcarnitine,Acylcarnitines,FIA
+AC(5:0-OH),Hydroxyvalerylcarnitine,Acylcarnitines,FIA
+AC(3:0-OH),Hydroxypropionylcarnitine,Acylcarnitines,FIA
+AC(5:1),Tiglylcarnitine,Acylcarnitines,FIA
+AC(3:1),Propenoylcarnitine,Acylcarnitines,FIA
+AC(5:1-DC),Glutaconylcarnitine,Acylcarnitines,FIA
+AC(4:0),Butyrylcarnitine,Acylcarnitines,FIA
+AC(6:0),Hexanoylcarnitine,Acylcarnitines,FIA
+AC(4:0-DC),Methylmalonylcarnitine,Acylcarnitines,FIA
+AC(6:0-DC),Adipoylcarnitine,Acylcarnitines,FIA
+AC(4:0-OH),Hydroxybutyrylcarnitine,Acylcarnitines,FIA
+AC(6:0-OH),Hydroxyhexanoylcarnitine,Acylcarnitines,FIA
+AC(4:1),Butenylcarnitine,Acylcarnitines,FIA
+AC(6:1),Hexenoylcarnitine,Acylcarnitines,FIA
+AC(7:0),Heptanoylcarnitine,Acylcarnitines,FIA
+AC(14:1-DC),Carboxytridecenoylcarnitine,Acylcarnitines,FIA
+AC(7:0-DC),Pimeloylcarnitine,Acylcarnitines,FIA
+AC(14:1-OH),Hydroxytetradecenoylcarnitine,Acylcarnitines,FIA
+AC(8:0),Octanoylcarnitine,Acylcarnitines,FIA
+AC(14:2),Tetradecadienoylcarnitine,Acylcarnitines,FIA
+AC(8:1),Octenoylcarnitine,Acylcarnitines,FIA
+AC(14:2-OH),Hydroxytetradecadienoylcarnitine,Acylcarnitines,FIA
+AC(8:1-OH),Hydroxyoctenoylcarnitine,Acylcarnitines,FIA
+AC(15:0),Pentadecanoylcarnitine,Acylcarnitines,FIA
+AC(9:0),Nonaylcarnitine,Acylcarnitines,FIA
+AC(16:0),Hexadecanoylcarnitine,Acylcarnitines,FIA
+AC(10:0),Decanoylcarnitine,Acylcarnitines,FIA
+AC(16:0-OH),Hydroxyhexadecanoylcarnitine,Acylcarnitines,FIA
+AC(10:1),Decenoylcarnitine,Acylcarnitines,FIA
+AC(16:1),Hexadecenoylcarnitine,Acylcarnitines,FIA
+AC(10:2),Decadienoylcarnitine,Acylcarnitines,FIA
+AC(16:1-OH),Hydroxyhexadecenoylcarnitine,Acylcarnitines,FIA
+AC(10:3),Decatrienoylcarnitine,Acylcarnitines,FIA
+AC(16:2),Hexadecadienoylcarnitine,Acylcarnitines,FIA
+AC(11:0),Dimethylnonanoylcarnitine,Acylcarnitines,FIA
+AC(16:2-OH),Hydroxyhexadecadienoylcarnitine,Acylcarnitines,FIA
+AC(12:0),Dodecanoylcarnitine,Acylcarnitines,FIA
+AC(17:0),Heptadecanoylcarnitine,Acylcarnitines,FIA
+AC(12:0-DC),Dodecanedioylcarnitine,Acylcarnitines,FIA
+AC(18:0),Octadecanoylcarnitine,Acylcarnitines,FIA
+AC(12:1),Dodecenoylcarnitine,Acylcarnitines,FIA
+AC(18:1),Octadecenoylcarnitine,Acylcarnitines,FIA
+AC(13:0),Tridecanoylcarnitine,Acylcarnitines,FIA
+AC(18:1-OH),Hydroxyoctadecenoylcarnitine,Acylcarnitines,FIA
+AC(14:0),Tetradecanoylcarnitine,Acylcarnitines,FIA
+AC(18:2),Octadecadienylcarnitine,Acylcarnitines,FIA
+AC(14:0-OH),Hydroxymyristoylcarnitine,Acylcarnitines,FIA
+AC(19:0),Nonadecanoylcarnitine,Acylcarnitines,FIA
+AC(14:1),Tetradecenoylcarnitine,Acylcarnitines,FIA
+DG(32:1),,Diglycerides,FIA
+DG(36:3),,Diglycerides,FIA
+DG(41:1),,Diglycerides,FIA
+DG-O(32:2),,Diglycerides,FIA
+DG(32:2),,Diglycerides,FIA
+DG(36:4),,Diglycerides,FIA
+DG(42:0),,Diglycerides,FIA
+DG-O(34:1),,Diglycerides,FIA
+DG(34:1),,Diglycerides,FIA
+DG(38:0),,Diglycerides,FIA
+DG(42:1),,Diglycerides,FIA
+DG-O(36:4),,Diglycerides,FIA
+DG(34:3),,Diglycerides,FIA
+DG(38:5),,Diglycerides,FIA
+DG(42:2),,Diglycerides,FIA
+DG(36:2),,Diglycerides,FIA
+DG(39:0),,Diglycerides,FIA
+DG(44:3),,Diglycerides,FIA
+TG(44:1),,Triglycerides,FIA
+TG(50:3),,Triglycerides,FIA
+TG(52:6),,Triglycerides,FIA
+TG(54:7),,Triglycerides,FIA
+TG(44:2),,Triglycerides,FIA
+TG(50:4),,Triglycerides,FIA
+TG(52:7),,Triglycerides,FIA
+TG(55:6),,Triglycerides,FIA
+TG(44:4),,Triglycerides,FIA
+TG(51:1),,Triglycerides,FIA
+TG(53:3),,Triglycerides,FIA
+TG(55:7),,Triglycerides,FIA
+TG(46:2),,Triglycerides,FIA
+TG(51:2),,Triglycerides,FIA
+TG(53:4),,Triglycerides,FIA
+TG(55:8),,Triglycerides,FIA
+TG(48:1),,Triglycerides,FIA
+TG(51:3),,Triglycerides,FIA
+TG(53:5),,Triglycerides,FIA
+TG(55:9),,Triglycerides,FIA
+TG(48:2),,Triglycerides,FIA
+TG(51:4),,Triglycerides,FIA
+TG(53:6),,Triglycerides,FIA
+TG(56:6),,Triglycerides,FIA
+TG(48:3),,Triglycerides,FIA
+TG(51:5),,Triglycerides,FIA
+TG(54:2),,Triglycerides,FIA
+TG(56:7),,Triglycerides,FIA
+TG(49:1),,Triglycerides,FIA
+TG(52:2),,Triglycerides,FIA
+TG(54:3),,Triglycerides,FIA
+TG(56:8),,Triglycerides,FIA
+TG(49:2),,Triglycerides,FIA
+TG(52:3),,Triglycerides,FIA
+TG(54:4),,Triglycerides,FIA
+TG(56:9),,Triglycerides,FIA
+TG(50:1),,Triglycerides,FIA
+TG(52:4),,Triglycerides,FIA
+TG(54:5),,Triglycerides,FIA
+TG(50:2),,Triglycerides,FIA
+TG(52:5),,Triglycerides,FIA
+TG(54:6),,Triglycerides,FIA
+LPC(12:0),,Lysophosphatidylcholines,FIA
+LPC(17:1),,Lysophosphatidylcholines,FIA
+LPC(20:2),,Lysophosphatidylcholines,FIA
+LPC(24:1),,Lysophosphatidylcholines,FIA
+LPC(14:0),,Lysophosphatidylcholines,FIA
+LPC(18:0),,Lysophosphatidylcholines,FIA
+LPC(20:3),,Lysophosphatidylcholines,FIA
+LPC-O(16:1),,Lysophosphatidylcholines,FIA
+LPC(15:0),,Lysophosphatidylcholines,FIA
+LPC(18:1),,Lysophosphatidylcholines,FIA
+LPC(20:4),,Lysophosphatidylcholines,FIA
+LPC-O(17:1),,Lysophosphatidylcholines,FIA
+LPC(16:0),,Lysophosphatidylcholines,FIA
+LPC(18:2),,Lysophosphatidylcholines,FIA
+LPC(22:5),,Lysophosphatidylcholines,FIA
+LPC-O(18:0),,Lysophosphatidylcholines,FIA
+LPC(16:1),,Lysophosphatidylcholines,FIA
+LPC(20:0),,Lysophosphatidylcholines,FIA
+LPC(22:6),,Lysophosphatidylcholines,FIA
+LPC-O(18:1),,Lysophosphatidylcholines,FIA
+LPC(17:0),,Lysophosphatidylcholines,FIA
+LPC(20:1),,Lysophosphatidylcholines,FIA
+LPC(24:0),,Lysophosphatidylcholines,FIA
+LPC-O(18:2),,Lysophosphatidylcholines,FIA
+PC(24:0),,Phosphatidylcholines,FIA
+PC(32:6),,Phosphatidylcholines,FIA
+PC(36:4),,Phosphatidylcholines,FIA
+PC(39:4),,Phosphatidylcholines,FIA
+PC(25:0),,Phosphatidylcholines,FIA
+PC(33:0),,Phosphatidylcholines,FIA
+PC(36:5),,Phosphatidylcholines,FIA
+PC(39:5),,Phosphatidylcholines,FIA
+PC(26:0),,Phosphatidylcholines,FIA
+PC(33:1),,Phosphatidylcholines,FIA
+PC(36:6),,Phosphatidylcholines,FIA
+PC(39:6),,Phosphatidylcholines,FIA
+PC(27:0),,Phosphatidylcholines,FIA
+PC(33:2),,Phosphatidylcholines,FIA
+PC(37:0),,Phosphatidylcholines,FIA
+PC(39:7),,Phosphatidylcholines,FIA
+PC(27:1),,Phosphatidylcholines,FIA
+PC(33:3),,Phosphatidylcholines,FIA
+PC(37:1),,Phosphatidylcholines,FIA
+PC(40:1),,Phosphatidylcholines,FIA
+PC(28:1),,Phosphatidylcholines,FIA
+PC(33:4),,Phosphatidylcholines,FIA
+PC(37:2),,Phosphatidylcholines,FIA
+PC(40:2),,Phosphatidylcholines,FIA
+PC(29:0),,Phosphatidylcholines,FIA
+PC(33:5),,Phosphatidylcholines,FIA
+PC(37:3),,Phosphatidylcholines,FIA
+PC(40:3),,Phosphatidylcholines,FIA
+PC(29:1),,Phosphatidylcholines,FIA
+PC(34:0),,Phosphatidylcholines,FIA
+PC(37:4),,Phosphatidylcholines,FIA
+PC(40:4),,Phosphatidylcholines,FIA
+PC(29:2),,Phosphatidylcholines,FIA
+PC(34:1),,Phosphatidylcholines,FIA
+PC(37:5),,Phosphatidylcholines,FIA
+PC(40:5),,Phosphatidylcholines,FIA
+PC(30:0),,Phosphatidylcholines,FIA
+PC(34:2),,Phosphatidylcholines,FIA
+PC(37:6),,Phosphatidylcholines,FIA
+PC(40:6),,Phosphatidylcholines,FIA
+PC(30:1),,Phosphatidylcholines,FIA
+PC(34:3),,Phosphatidylcholines,FIA
+PC(37:7),,Phosphatidylcholines,FIA
+PC(40:7),,Phosphatidylcholines,FIA
+PC(30:2),,Phosphatidylcholines,FIA
+PC(34:4),,Phosphatidylcholines,FIA
+PC(38:0),,Phosphatidylcholines,FIA
+PC(40:8),,Phosphatidylcholines,FIA
+PC(30:3),,Phosphatidylcholines,FIA
+PC(34:5),,Phosphatidylcholines,FIA
+PC(38:1),,Phosphatidylcholines,FIA
+PC(40:9),,Phosphatidylcholines,FIA
+PC(31:0),,Phosphatidylcholines,FIA
+PC(35:0),,Phosphatidylcholines,FIA
+PC(38:2),,Phosphatidylcholines,FIA
+PC(41:1),,Phosphatidylcholines,FIA
+PC(31:1),,Phosphatidylcholines,FIA
+PC(35:1),,Phosphatidylcholines,FIA
+PC(38:3),,Phosphatidylcholines,FIA
+PC(41:2),,Phosphatidylcholines,FIA
+PC(31:2),,Phosphatidylcholines,FIA
+PC(35:2),,Phosphatidylcholines,FIA
+PC(38:4),,Phosphatidylcholines,FIA
+PC(41:3),,Phosphatidylcholines,FIA
+PC(31:3),,Phosphatidylcholines,FIA
+PC(35:3),,Phosphatidylcholines,FIA
+PC(38:5),,Phosphatidylcholines,FIA
+PC(41:4),,Phosphatidylcholines,FIA
+PC(32:0),,Phosphatidylcholines,FIA
+PC(35:4),,Phosphatidylcholines,FIA
+PC(38:6),,Phosphatidylcholines,FIA
+PC(41:5),,Phosphatidylcholines,FIA
+PC(32:1),,Phosphatidylcholines,FIA
+PC(35:5),,Phosphatidylcholines,FIA
+PC(38:7),,Phosphatidylcholines,FIA
+PC(41:8),,Phosphatidylcholines,FIA
+PC(32:2),,Phosphatidylcholines,FIA
+PC(36:0),,Phosphatidylcholines,FIA
+PC(39:0),,Phosphatidylcholines,FIA
+PC(42:0),,Phosphatidylcholines,FIA
+PC(32:3),,Phosphatidylcholines,FIA
+PC(36:1),,Phosphatidylcholines,FIA
+PC(39:1),,Phosphatidylcholines,FIA
+PC(42:1),,Phosphatidylcholines,FIA
+PC(32:4),,Phosphatidylcholines,FIA
+PC(36:2),,Phosphatidylcholines,FIA
+PC(39:2),,Phosphatidylcholines,FIA
+PC(42:2),,Phosphatidylcholines,FIA
+PC(32:5),,Phosphatidylcholines,FIA
+PC(36:3),,Phosphatidylcholines,FIA
+PC(39:3),,Phosphatidylcholines,FIA
+PC(42:3),,Phosphatidylcholines,FIA
+PC(42:4),,Phosphatidylcholines,FIA
+PC-O(29:0),,Phosphatidylcholines,FIA
+PC-O(34:3),,Phosphatidylcholines,FIA
+PC-O(40:0),,Phosphatidylcholines,FIA
+PC(42:5),,Phosphatidylcholines,FIA
+PC-O(30:0),,Phosphatidylcholines,FIA
+PC-O(34:4),,Phosphatidylcholines,FIA
+PC-O(40:1),,Phosphatidylcholines,FIA
+PC(42:6),,Phosphatidylcholines,FIA
+PC-O(30:1),,Phosphatidylcholines,FIA
+PC-O(35:3),,Phosphatidylcholines,FIA
+PC-O(40:2),,Phosphatidylcholines,FIA
+PC(42:7),,Phosphatidylcholines,FIA
+PC-O(30:2),,Phosphatidylcholines,FIA
+PC-O(35:4),,Phosphatidylcholines,FIA
+PC-O(40:3),,Phosphatidylcholines,FIA
+PC(42:10),,Phosphatidylcholines,FIA
+PC-O(31:0),,Phosphatidylcholines,FIA
+PC-O(36:0),,Phosphatidylcholines,FIA
+PC-O(40:4),,Phosphatidylcholines,FIA
+PC(43:2),,Phosphatidylcholines,FIA
+PC-O(31:1),,Phosphatidylcholines,FIA
+PC-O(36:1),,Phosphatidylcholines,FIA
+PC-O(40:5),,Phosphatidylcholines,FIA
+PC(43:6),,Phosphatidylcholines,FIA
+PC-O(31:3),,Phosphatidylcholines,FIA
+PC-O(36:2),,Phosphatidylcholines,FIA
+PC-O(40:6),,Phosphatidylcholines,FIA
+PC(44:1),,Phosphatidylcholines,FIA
+PC-O(32:0),,Phosphatidylcholines,FIA
+PC-O(36:3),,Phosphatidylcholines,FIA
+PC-O(40:7),,Phosphatidylcholines,FIA
+PC(44:3),,Phosphatidylcholines,FIA
+PC-O(32:1),,Phosphatidylcholines,FIA
+PC-O(36:4),,Phosphatidylcholines,FIA
+PC-O(40:8),,Phosphatidylcholines,FIA
+PC(44:5),,Phosphatidylcholines,FIA
+PC-O(32:2),,Phosphatidylcholines,FIA
+PC-O(36:5),,Phosphatidylcholines,FIA
+PC-O(42:0),,Phosphatidylcholines,FIA
+PC(44:6),,Phosphatidylcholines,FIA
+PC-O(32:3),,Phosphatidylcholines,FIA
+PC-O(36:6),,Phosphatidylcholines,FIA
+PC-O(42:1),,Phosphatidylcholines,FIA
+PC(44:7),,Phosphatidylcholines,FIA
+PC-O(33:0),,Phosphatidylcholines,FIA
+PC-O(37:6),,Phosphatidylcholines,FIA
+PC-O(42:2),,Phosphatidylcholines,FIA
+PC(44:10),,Phosphatidylcholines,FIA
+PC-O(33:1),,Phosphatidylcholines,FIA
+PC-O(37:7),,Phosphatidylcholines,FIA
+PC-O(42:3),,Phosphatidylcholines,FIA
+PC(44:12),,Phosphatidylcholines,FIA
+PC-O(33:2),,Phosphatidylcholines,FIA
+PC-O(38:0),,Phosphatidylcholines,FIA
+PC-O(42:4),,Phosphatidylcholines,FIA
+PC(46:1),,Phosphatidylcholines,FIA
+PC-O(33:3),,Phosphatidylcholines,FIA
+PC-O(38:1),,Phosphatidylcholines,FIA
+PC-O(42:5),,Phosphatidylcholines,FIA
+PC(46:2),,Phosphatidylcholines,FIA
+PC-O(33:4),,Phosphatidylcholines,FIA
+PC-O(38:2),,Phosphatidylcholines,FIA
+PC-O(42:6),,Phosphatidylcholines,FIA
+PC-O(26:0),,Phosphatidylcholines,FIA
+PC-O(33:6),,Phosphatidylcholines,FIA
+PC-O(38:3),,Phosphatidylcholines,FIA
+PC-O(44:3),,Phosphatidylcholines,FIA
+PC-O(26:1),,Phosphatidylcholines,FIA
+PC-O(34:0),,Phosphatidylcholines,FIA
+PC-O(38:4),,Phosphatidylcholines,FIA
+PC-O(44:4),,Phosphatidylcholines,FIA
+PC-O(28:0),,Phosphatidylcholines,FIA
+PC-O(34:1),,Phosphatidylcholines,FIA
+PC-O(38:5),,Phosphatidylcholines,FIA
+PC-O(44:5),,Phosphatidylcholines,FIA
+PC-O(28:1),,Phosphatidylcholines,FIA
+PC-O(34:2),,Phosphatidylcholines,FIA
+PC-O(38:6),,Phosphatidylcholines,FIA
+PC-O(44:6),,Phosphatidylcholines,FIA
+SM(30:1),,Sphingomyelins,FIA
+SM(34:2),,Sphingomyelins,FIA
+SM(38:3),,Sphingomyelins,FIA
+SM(42:1),,Sphingomyelins,FIA
+SM(31:0),,Sphingomyelins,FIA
+SM(35:1),,Sphingomyelins,FIA
+SM(39:1),,Sphingomyelins,FIA
+SM(42:2),,Sphingomyelins,FIA
+SM(31:1),,Sphingomyelins,FIA
+SM(36:0),,Sphingomyelins,FIA
+SM(39:2),,Sphingomyelins,FIA
+SM(42:3),,Sphingomyelins,FIA
+SM(32:1),,Sphingomyelins,FIA
+SM(36:1),,Sphingomyelins,FIA
+SM(40:1),,Sphingomyelins,FIA
+SM(43:1),,Sphingomyelins,FIA
+SM(32:2),,Sphingomyelins,FIA
+SM(36:2),,Sphingomyelins,FIA
+SM(40:2),,Sphingomyelins,FIA
+SM(43:2),,Sphingomyelins,FIA
+SM(33:1),,Sphingomyelins,FIA
+SM(37:1),,Sphingomyelins,FIA
+SM(40:4),,Sphingomyelins,FIA
+SM(44:1),,Sphingomyelins,FIA
+SM(33:2),,Sphingomyelins,FIA
+SM(38:1),,Sphingomyelins,FIA
+SM(41:1),,Sphingomyelins,FIA
+SM(44:2),,Sphingomyelins,FIA
+SM(34:1),,Sphingomyelins,FIA
+SM(38:2),,Sphingomyelins,FIA
+SM(41:2),,Sphingomyelins,FIA
+Cer(34:0),,Ceramides,FIA
+Cer(40:1),,Ceramides,FIA
+Cer(42:2),,Ceramides,FIA
+Cer(34:1),,Ceramides,FIA
+Cer(41:1),,Ceramides,FIA
+Cer(43:1),,Ceramides,FIA
+Cer(38:1),,Ceramides,FIA
+Cer(42:1),,Ceramides,FIA
+Cer(44:0),,Ceramides,FIA
+CE(16:0),,Cholesteryl Esters,FIA
+CE(17:2),,Cholesteryl Esters,FIA
+CE(19:2),,Cholesteryl Esters,FIA
+CE(22:5),,Cholesteryl Esters,FIA
+CE(16:1),,Cholesteryl Esters,FIA
+CE(18:1),,Cholesteryl Esters,FIA
+CE(19:3),,Cholesteryl Esters,FIA
+CE(22:6),,Cholesteryl Esters,FIA
+CE(17:0),,Cholesteryl Esters,FIA
+CE(18:2),,Cholesteryl Esters,FIA
+CE(20:4),,Cholesteryl Esters,FIA
+CE(17:1),,Cholesteryl Esters,FIA
+CE(18:3),,Cholesteryl Esters,FIA
+CE(20:5),,Cholesteryl Esters,FIA

@@ -1,0 +1,206 @@
+## Samples and Compounds {.tabset}
+
+<!-- Calc missing compounds already here to show prominet warning on top of this section -->
+```{r}
+# Get expected compounds
+expected_compounds <-
+  KNOWN_COMPOUNDS %>%
+  filter(Method == meas_type) %>%
+  mutate(Batch = "Expected") %>%
+  mutate(Class = tolower(Class))
+
+biocrates_compounds <- biocrates %>%
+  select(Compound, Class, Batch) %>%
+  unique()
+```
+
+```{r}
+# In case of Biocrates p400 Kit, check for missing compounds and try to complete
+IS_P400 <- params$kit == BIOCRATES_P400
+
+# Missing compounds
+all_compounds <- unique(expected_compounds$Compound)
+missing_compounds <-
+  biocrates_compounds %>%
+  group_by(Batch) %>%
+  do(Missing.Compound = all_compounds[!all_compounds %in% .$Compound]) %>%
+  filter(length(Missing.Compound) > 0)
+ANY_MISSING <- nrow(missing_compounds) > 0
+
+HANDLE_MISSING <- IS_P400 && ANY_MISSING
+```
+
+```{r import_info_compounds_missing_warning, results="asis", eval=HANDLE_MISSING}
+warning_text <- "Warning: Missing compounds identified (see Compounds Missing)!  
+Background: For the Biocrates AbsoluteIDQ p400 HR Kit, MetIDQ may export data without columns for
+specific compounds, if no data was acquired in any of the samples. This might not be the case for all
+batches of a multi-batch experiment/study. Integrating such batches might result in wrong
+calculations and conclusions for instant with respect to numbers and ratios of missing values. Thus,
+MeTaQuaC complements these missing compounds as missing values (currently with no class or status)."
+message(warning_text)
+```
+
+
+### Samples
+```{r import_info_samples, results="asis"}
+# Sample info
+biocrates_samples <- biocrates %>%
+  select(
+    Sample.Identification, Sample.Type, Well.Position, Sequence.Position,
+    Sample.Name, contains("Batch")) %>%
+  unique()
+cat(paste("\n**Number of samples in total:**", nrow(biocrates_samples), "\n"))
+cat("\n**List of all samples:**\n")
+easy_datatable(biocrates_samples)
+
+# Number of samples per batch
+cat("\n**Number of samples per batch:**\n")
+easy_datatable(biocrates_samples %>% group_by(Batch) %>% summarize(`Sample Count` = n()))
+
+# Sample type distribution per batch
+print(
+  ggplot(data = biocrates_samples, aes(x = Sample.Type, fill = Sample.Type)) +
+    geom_bar(alpha = 0.75) + coord_flip() +
+    geom_text(stat='count', aes(label=..count..)) +
+    theme(legend.position = "bottom") +
+    facet_wrap(~ Batch)
+)
+```
+
+
+### Compounds
+```{r import_info_compounds, results="asis"}
+# Table of available compounds
+biocrates_compounds <- biocrates %>%
+  select(Compound, Class) %>%
+  unique()
+
+## Overall
+# Number of available compounds
+cat(paste("\n**Number of compounds in total:**", length(biocrates_compounds$Compound), "\n"))
+cat("\n**List of all compounds:**\n")
+easy_datatable(biocrates_compounds)
+
+## Per batch
+biocrates_compounds <- biocrates %>%
+  select(Compound, Class, Batch) %>%
+  unique()
+
+# Number of compounds per batch
+cat("\n**Number of compounds per batch:**\n")
+easy_datatable(biocrates_compounds %>% group_by(Batch) %>% summarize(`Compound Count` = n()))
+
+# Compound class distribution per batch
+print(
+  ggplot(data = biocrates_compounds, aes(x = Class, fill = Class)) +
+    geom_bar(alpha = 0.75) + coord_flip() +
+    geom_text(stat='count', aes(label=..count..)) +
+    theme(legend.position = "bottom") +
+    facet_wrap(~ Batch)
+)
+```
+
+
+<!-- ### Compounds Missing -->
+```{r import_info_compounds_missing, results="asis", eval=HANDLE_MISSING}
+cat("\n### Compounds Missing\n")
+missing_compounds <- missing_compounds %>% tidyr::unnest(Missing.Compound)
+
+cat(paste("\n**Number of missing compounds in total (intersected):**",
+          length(unique(missing_compounds$Missing.Compound)), "\n"))
+cat("\n**List of missing compounds:**\n")
+easy_datatable(missing_compounds)
+
+# Number of missing compounds per batch
+cat("\n**Number of missing compounds per batch:**\n")
+easy_datatable(missing_compounds %>% group_by(Batch) %>% summarize(`Compound Count` = n()))
+
+print(
+  ggplot(data = missing_compounds, aes(x = Missing.Compound, y = Batch)) +
+    geom_point(shape = 4, color = "red", size = 4) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
+)
+
+# # Compounds with an average frequency per sample != 1
+# as.data.frame(table(Compound = biocrates$Compound, Sample = biocrates$Sample.Name)) %>%
+#   group_by(Compound) %>% summarize(Average.Freq = mean(Freq)) %>%
+#   filter(Average.Freq != 1) %>%
+#   arrange(Average.Freq)
+#
+# # Samples with an average frequency per compound != 1
+# as.data.frame(table(Compound = biocrates$Compound, Sample = biocrates$Sample.Name)) %>%
+#   group_by(Sample) %>% summarize(Average.Freq = mean(Freq)) %>%
+#   filter(Average.Freq != 1) %>%
+#   arrange(Average.Freq)
+```
+
+
+<!-- ### Compounds Completed -->
+```{r import_info_compounds_completed, results="asis", eval=HANDLE_MISSING}
+cat("\n### Compounds Completed\n")
+# Complete missing compounds/measurements as NA
+biocrates <- complete_missing_compounds(data = biocrates,
+                                        expected_compounds = KNOWN_COMPOUNDS,
+                                        method = meas_type)
+
+# Table of available compounds
+biocrates_compounds <- biocrates %>%
+  select(Compound, Class) %>%
+  unique()
+
+## Overall
+# Number of available compounds
+cat(paste("\n**Number of compounds in total:**", length(biocrates_compounds$Compound), "\n"))
+cat("\n**List of all compounds:**\n")
+easy_datatable(biocrates_compounds)
+
+## Per batch
+biocrates_compounds <- biocrates %>%
+  select(Compound, Class, Batch) %>%
+  unique()
+
+# Number of compounds per batch
+cat("\n**Number of compounds per batch:**\n")
+easy_datatable(biocrates_compounds %>% group_by(Batch) %>% summarize(`Compound Count` = n()))
+
+# Compound class distribution per batch
+print(
+  ggplot(data = biocrates_compounds, aes(x = Class, fill = Class)) +
+    geom_bar(alpha = 0.75) + coord_flip() +
+    geom_text(stat='count', aes(label=..count..)) +
+    theme(legend.position = "bottom") +
+    facet_wrap(~ Batch)
+)
+
+# # Missing compounds
+# # Total set might still missing compounds not available in all batches!
+# all_compounds <- unique(expected_compounds$Compound)
+# missing_compounds <-
+#   biocrates_compounds %>%
+#   group_by(Batch) %>%
+#   do(Missing.Compound = all_compounds[!all_compounds %in% .$Compound]) %>%
+#   filter(length(Missing.Compound) > 0)
+#
+# if (nrow(missing_compounds) > 0){
+#   missing_compounds <- missing_compounds %>% unnest(Missing.Compound)
+#   print(
+#     ggplot(data = missing_compounds, aes(x = Missing.Compound, y = Batch)) +
+#       geom_point(shape = 4, color = "red", size = 4) +
+#       theme(axis.text.x = element_text(angle = 90, hjust = 1))
+#   )
+#   
+#   missing_compounds
+# }
+
+# # Compounds with an average frequency per sample != 1
+# as.data.frame(table(Compound = biocrates$Compound, Sample = biocrates$Sample.Name)) %>%
+#   group_by(Compound) %>% summarize(Average.Freq = mean(Freq)) %>%
+#   filter(Average.Freq != 1) %>%
+#   arrange(Average.Freq)
+#
+# # Samples with an average frequency per compound != 1
+# as.data.frame(table(Compound = biocrates$Compound, Sample = biocrates$Sample.Name)) %>%
+#   group_by(Sample) %>% summarize(Average.Freq = mean(Freq)) %>%
+#   filter(Average.Freq != 1) %>%
+#   arrange(Average.Freq)
+```

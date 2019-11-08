@@ -1,0 +1,115 @@
+## Import
+
+Import of **`r params$kit`** data of measurement type **`r params$measurement_type`**.
+
+Data files to import:
+```{r data_files}
+# Data files
+pander::pander(params$data_files)
+```
+
+```{r import, results="asis"}
+# Measurement Type
+meas_type <- params$measurement_type
+
+# Import batches
+num_batches <- length(params$data_files)
+imports <- vector(mode = "list", length = num_batches)
+conc_col_name <- vector(mode ="character", length = num_batches)
+for (i in seq_len(num_batches)){
+  cat(paste0("\nImporting batch `", names(params$data_files)[i], "`...\n"))
+  import <- import_biocrates_unit(data_files = params$data_files[[i]],
+                                  zero2na = params$zero2na,
+                                  measurement_type = meas_type,
+                                  pool_indicator = POOL_INDICATOR)
+
+  # Add batch variable
+  import$Batch <- names(params$data_files)[i]
+
+  # Collect concentration column names to check unit consistency
+  conc_col_name[i] <- grep(TABLE_TYPES[1], names(import), value = TRUE)
+  names(conc_col_name)[i] <- names(params$data_files)[i]
+
+  imports[[i]] <- import
+}
+
+# Check concenctration unit concistency over batches
+if (length(unique(conc_col_name)) == 1) {
+  # If consistent/unique then replace global concentration name
+  assign("CONCENTRATION", unique(conc_col_name), PKG_ENV)
+} else {
+  # Otherwise replace concentration column names by global name without units
+  for (i in seq_len(num_batches)){
+    names(imports[[i]])[conc_col_name[i]] <- PKG_ENV$CONCENTRATION
+  }
+  # And warn user
+  cat(paste0("Inconsistent concentration units between batches:\n",
+                 paste0("\t", names(conc_col_name), ":\t", conc_col_name,
+                       collapse = "\n"),
+                 "\nUsing unit-free column name instead. But check your data!"))
+}
+
+# Merge batches
+biocrates <- bind_rows(imports)
+
+# Set "Batch" if data set contains multi batches, else NULL
+if (length(unique(biocrates$Batch)) > 1) {
+  BATCH <- "Batch"
+  MULTIBATCH <- TRUE
+} else {
+  BATCH <- NULL
+}
+
+# Add batch to sample name
+if (!is.null(BATCH)) {
+  biocrates$Sample.Name <- paste0(biocrates$Sample.Name, "_", biocrates$Batch)
+  # biocrates$Sequence.Position <- paste(sprintf("%02d", biocrates$Sequence.Position),
+  #                                   biocrates$Batch)
+  # biocrates$Sequence.Position <- factor(
+  #   biocrates$Sequence.Position, levels = sort(unique(biocrates$Sequence.Position)))
+}
+
+# Set available data types
+if (meas_type == "LC") {
+  DATA_TYPES <- c(PKG_ENV$CONCENTRATION, AREA, INTENSITY, ITSD_AREA, ITSD_INTENSITY)
+} else { # "FIA"
+  DATA_TYPES <- c(PKG_ENV$CONCENTRATION, INTENSITY, ITSD_INTENSITY)
+}
+```
+
+```{r}
+# Check if a proper dataset is available
+REQUIRED_METAQUAC_COLUMNS <- c(make.names(c(
+  "Sample Type",
+  "Sample Identification",
+  "Well Position",
+  "Compound",
+  "Sample Name",
+  "MetIDQ_Status",
+  "Class",
+  "Sequence Position",
+  "Sample Name",
+  "Batch"
+)), "Well Coordinates", DATA_TYPES)
+
+if (!all(REQUIRED_METAQUAC_COLUMNS %in% names(biocrates)) || nrow(biocrates) < 1) {
+  CONTINUE <- FALSE
+  message("Error: Data import failed, further processing canceled!")
+  print(biocrates)
+}
+```
+
+
+```{r, eval=CONTINUE}
+duplicate_samples <- get_sample_duplicates(biocrates)
+```
+
+```{r, eval=CONTINUE&&nrow(duplicate_samples)>0, results="asis"}
+message("Error: Sample duplicates with inconsistent sample information detected!")
+cat("One or more samples with the same identifier (Sample Identification) but different annotations
+    in other columns have been detected. This would interfere with data processing and prevent
+    reliable analysis. Thus, further processing is canceled. Please use the list of duplicated
+    samples provided below for guidance to correct your data.")
+easy_datatable(duplicate_samples, caption = "Sample duplicates.")
+CONTINUE <- FALSE
+```

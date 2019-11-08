@@ -1,0 +1,131 @@
+## Study Variables Profile
+```{r study_variable_profile, results="asis"}
+if (length(PROFILING_VARIABLES) > 0) {
+  cat(paste0(
+    "This study variables profile visualizes group sizes within study variables as well as
+    intersected with other study variables, if more than one is indicated. Set Size =
+    Number of samples per group in variable (color-coded). Intersection Size = Number of
+    samples with same combination of groups.The following variable(s) are used:",
+    "\n**", paste(PROFILING_VARIABLES, collapse = "**, **"), "**."))
+  
+  plot_study_variables_profile(biocrates, PROFILING_VARIABLES)
+} else {
+  cat("No variables have been selected for profiling.")
+}
+```
+
+
+## Status Profiles {.tabset}
+Status profiles visualize the occurrence of the different possible measurement statuses. Profiles
+are generated over all measurements, for different sample types (in percentages, since the number of
+samples vary per type), for different samples, for different compound classes (in percentages, since
+the number of compounds vary per class), as well as for different compounds.
+
+```{r, results="asis", eval=params$kit==BIOCRATES_Q500&&params$measurement_type=="LC"}
+message("**Note**: Many LC compounds in the Biocrates MxP Quant 500 Kit are 1-point calibrated and
+don't feature an external standard. Thus, a high number of \"< LOD\" is to be expected within 
+standard calibration samples.")
+```
+
+### Overall
+```{r status_profiles_overview, results="asis", fig.height=3}
+easy_datatable(count_status(data = biocrates), round_colums = "Percentage",
+               caption = "Number of statuses in all measurements.")
+plot_status_profile(data = biocrates)
+
+# General figure params
+num_columns <- 4
+fig_height_heatmap <- 4
+```
+
+
+### Per sample type {.tabset}
+```{r}
+# Profile figure size
+num_types <- biocrates %>% pull(Sample.Type) %>% unique() %>% length()
+fig_height_status_types <- ceiling(num_types/num_columns) * 1.2 + 1
+# Heatmap figure sizes
+fig_width_heatmap_types <- 0.15 * num_types + 1.5
+
+easy_datatable(count_status(data = biocrates, grouping = "Sample.Type"), round_colums = "Percentage",
+               caption = "Number of statuses per sample type.")
+```
+
+#### Heatmap
+```{r status_heatmap_per_type, results="asis", fig.height=fig_height_heatmap, fig.width=fig_width_heatmap_types}
+plot_status_heatmap(data = biocrates, grouping = "Sample.Type", percentage = TRUE)
+```
+
+#### Single
+```{r status_profiles_per_type, results="asis", fig.height=fig_height_status_types}
+plot_status_profile(data = biocrates, grouping = "Sample.Type", percentage = TRUE)
+```
+
+
+### Per sample {.tabset}
+```{r}
+# Profile figure size
+num_samples <- biocrates %>% pull(Sample.Name) %>% unique() %>% length()
+fig_height_status_samples <- ceiling(num_samples/num_columns) * 1.2 + 1
+# Heatmap figure sizes
+fig_width_heatmap_samples <- 0.15 * num_samples + 1.5
+
+easy_datatable(count_status(data = biocrates, grouping = "Sample.Name"), round_colums = "Percentage",
+               caption = "Number of statuses per sample.")
+```
+
+#### Heatmap
+```{r status_heatmap_per_sample, results="asis", fig.height=fig_height_heatmap, fig.width=fig_width_heatmap_samples}
+plot_status_heatmap(data = biocrates, grouping = "Sample.Name")
+```
+
+#### Single
+```{r status_profiles_per_sample, results="asis", fig.height=fig_height_status_samples}
+plot_status_profile(data = biocrates, grouping = "Sample.Name")
+```
+
+
+### Per compound class {.tabset}
+```{r}
+# Profile figure size
+num_class <- biocrates %>% pull(Class) %>% unique() %>% length()
+fig_height_status_compounds <- ceiling(num_class/num_columns) * 1.2 + 1
+# Heatmap figure sizes
+fig_width_heatmap_class <- 0.15 * num_class + 1.5
+
+easy_datatable(count_status(data = biocrates, grouping = "Class"), round_colums = "Percentage",
+               caption = "Number of statuses per compound class.")
+```
+
+#### Heatmap
+```{r status_heatmap_per_class, results="asis", fig.height=fig_height_heatmap, fig.width=fig_width_heatmap_class}
+plot_status_heatmap(data = biocrates, grouping = "Class", percentage = TRUE)
+```
+
+#### Single
+```{r status_profiles_per_class, results="asis", fig.height=fig_height_status_compounds}
+plot_status_profile(data = biocrates, grouping = "Class", percentage = TRUE)
+```
+
+
+### Per compound {.tabset}
+```{r}
+# Profile figure size
+num_compounds <- biocrates %>% pull(Compound) %>% unique() %>% length()
+fig_height_status_compounds <- ceiling(num_compounds/num_columns) * 1.2 + 1
+# Heatmap figure sizes
+fig_width_heatmap_compounds <- 0.15 * num_compounds + 1.5
+
+easy_datatable(count_status(data = biocrates, grouping = "Compound"), round_colums = "Percentage",
+               caption = "Number of statuses per compound.")
+```
+
+#### Heatmap
+```{r status_heatmap_per_compound, results="asis", fig.height=fig_height_heatmap, fig.width=fig_width_heatmap_compounds}
+plot_status_heatmap(data = biocrates, grouping = "Compound")
+```
+
+#### Single
+```{r status_profiles_per_compound, results="asis", fig.height=fig_height_status_compounds}
+plot_status_profile(data = biocrates, grouping = "Compound")
+```

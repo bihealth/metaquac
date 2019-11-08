@@ -1,0 +1,81 @@
+## Restructuring
+
+<!-- Most of the restructuring is currently done already during the import of Biocrates data. -->
+
+The imported data was restructured as follows:
+
+* Convert to **long table** (or [molten dataset](http://dx.doi.org/10.18637/jss.v059.i10)). Each row
+includes only one measurement, i.e. the data of one compound in one sample and all corresponding
+information.
+* Add **Sample Identification "Blank"** for blank samples, as they are empty when exported from
+MetIDQ.
+* Add **Sample Type "`r SAMPLE_TYPE_POOLED_QC`"** for pooled QC samples. `r SAMPLE_TYPE_POOLED_QC`
+samples are identified by any occurrence of the term "pool" (case-insensitive) in the column
+`r params$pool_indicator` (parameter `pool_indicator`). In contrast, **"Reference QC"** will refer
+to Biocrates' QC Level 2 samples.
+* Add **Sequence Position**, i.e. sample acquisition order. This position is calculated from
+MetIDQ's Well Position, as this one depicts a position by
+[row-major order](https://en.wikipedia.org/wiki/Row-_and_column-major_order) which does not reflect
+the actual acquisition order.
+* Add **Well Coordinates**, indicating the two dimensional position on the well plate. This position
+is calculated from MetIDQ's Well Position and indicates rows by letters and columns by numbers.
+* Add a **unique Sample Name**, which is a combination of Sample Identifier, Sequence Position and
+potentially Batch (if available). These names assure unambiguous identification and analysis of
+measurements within or between several batches (e.g. in particular technical samples such as
+calibration standard or reference QC samples share sample identifications).
+* Remove **nonessential columns**, as some of them currently interfere with proper data merging or
+processing later. This includes (for now, to be optimized/reduced):
+Plate Bar Code,
+Sample Bar Code,
+Submission Name,
+Material,
+Plate Production No.,
+Plate Note,
+Run Number,
+Injection Number,
+Measurement Time,
+Sample Description,
+Collection Date,
+Org. Info and
+OP.
+* Unify **missing values**, i.e. "" (empty field), "0" (zero) and "NA" (not available) are converted
+to "NA".
+* **Factorize Compounds** with level order based on compound class and compound name.
+
+
+```{r filter, results="asis"}
+# Filter predefined samples
+removed_samples <- data.frame()
+if ("filter_regex" %in% names(params) && params$filter_regex != "") {
+  # Print samples to be removed
+  cat("### Sample filtering\n")
+  cat(paste0("Samples removed due to regular expression filter `", params$filter_regex, "`:\n"))
+  removed_samples <- biocrates %>%
+    filter(grepl(params$filter_regex, Sample.Identification)) %>%
+    select(Sample.Identification, Batch) %>%
+    unique() %>%
+    arrange(Batch, Sample.Identification)
+
+  # Remove samples
+  biocrates <- biocrates %>%
+    filter(!grepl(params$filter_regex, Sample.Identification))
+}
+easy_datatable(removed_samples, caption = "Removed samples")
+```
+
+```{r}
+# Factorize compounds ordered by compound class and name
+compound_levels <- biocrates %>%
+  arrange(Class, Compound) %>%
+  select(Compound) %>%
+  distinct() %>%
+  pull(Compound)
+biocrates$Compound <- factor(biocrates$Compound, levels = compound_levels)
+```
+
+```{r, results="asis"}
+# Are there any SAMPLE_TYPE_POOLED_QC samples? More than one?
+POOLS_AVAILABLE <- SAMPLE_TYPE_POOLED_QC %in% biocrates$Sample.Type
+POOLS_ENOUGH <- biocrates %>% filter(Sample.Type == SAMPLE_TYPE_POOLED_QC) %>%
+  select(Sample.Name) %>% distinct() %>% pull(Sample.Name) %>% length() > 1
+```

@@ -1,0 +1,11 @@
+```{r}
+for (set in params$metadata_extraction){
+  biocrates <- extract_metadata(
+    data = biocrates,
+    output_column = set$to ,
+    split_number = set$position,
+    input_column = set$from,
+    split_string = set$separator,
+    sample_type = SAMPLE_TYPE_BIOLOGICAL)
+}
+```

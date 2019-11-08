@@ -1,0 +1,38 @@
+Package: metaquac
+Type: Package
+Title: Metabolomics Targeted Quality Control
+Version: 0.1.0
+Author: Mathias Kuhring
+Maintainer: Mathias Kuhring <mathias.kuhring@bihealth.de>
+Description:
+    MeTaQuaC is a package to facilitate efficient quality control (QC) for targeted metabolomics
+    analysis with focus on Biocrates kits. It provides a simple interface to create extensive,
+    reproducable and well documented html QC reports in an automated fashion.
+Depends: R (>= 3.4.0)
+Imports:
+    assertthat (>= 0.2.1),
+    dplyr (>= 0.7.7),
+    DMwR2 (>= 0.0.2),
+    DT (>= 0.4),
+    ggfortify (>= 0.4.5),
+    ggplot2 (>= 3.1.0),
+    ggpmisc (>= 0.3.0),
+    ggrepel (>= 0.8.0),
+    gplots (>= 3.0.1),
+    knitr (>= 1.20),
+    pander (>= 0.6.3),
+    R.utils (>= 2.9.0),
+    readr (>= 1.1.1),
+    rlang (>= 0.3.0),
+    rmarkdown (>= 1.10),
+    stringr (>= 1.3.1),
+    tibble (>= 1.4.2),
+    tidyr (>= 0.8.0),
+    UpSetR (>= 1.3.3),
+    viridis (>= 0.5.1)
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Suggests:
+    testthat (>= 2.0.1)
+RoxygenNote: 6.1.1

@@ -1,0 +1,228 @@
+```{r}
+# Preprocessing parameters
+ppparams <- list(
+  statuses_to_keep = params$preproc_keep_status,
+  threshold_2a = params$filter_compound_qc_max_mv_ratio,
+  threshold_2b = params$filter_compound_qc_max_rsd,
+  threshold_3a = 1,
+  threshold_3b = params$filter_compound_bs_max_mv_ratio,
+  threshold_4  = params$filter_sample_max_mv_ratio
+)
+```
+
+The following preprocessing procedures are applied on the data in this order:
+
+1. **Status Preprocessing**
+    a. Discard unreliable measurements based on Biocratus status
+2. **Remove unreliable __compounds__** (qualitative filter)
+    a. Based on missing values ratio in Reference QCs (**>=`r ppparams$threshold_2a * 100`%**)
+    b. Based on %RSD of Reference QCs (**>=`r ppparams$threshold_2b`%**)
+3. **Remove underrepresented __compounds__** (quantitative filter)
+    a. Based on only missing values in biological samples (**=`r ppparams$threshold_3a * 100`%**)
+    b. Based on missing values ratio in biological samples (**>=`r ppparams$threshold_3b * 100`%**)
+4. **Remove underrepresented __biological samples__** (quantitative filter)
+    a. Based on missing values ratio of compounds (**>=`r ppparams$threshold_4 * 100`%**)
+
+The preprocessing statuses and filter thresholds can be modified with the following parameters of
+the `create_report` function (refer to the readme or function description for details):
+
+* `preproc_keep_status`
+* `filter_compound_qc_max_mv_ratio`
+* `filter_compound_qc_max_rsd`
+* `filter_compound_bs_max_mv_ratio`
+* `filter_sample_max_mv_ratio`
+
+The result of each preprocessing or filter step can be found in the tab with the corresponding
+enumerator. Please note, as each tab contains a table with the complete dataset in the
+corresponding filtered form, loading the tab for the first time might take a couple of seconds.
+
+```{r}
+message("**Note**: The beginning of each following section will indicate on which dataset
+calculations and visualizations are based. Thereby, the preprocessed datasets will be
+referenced as **1**, **2a**, **2b**, **3a**, **3b** and **4**, resp.")
+
+# Execute preprocessing
+datasets <- execute_preprocessing(biocrates, ppparams)
+# Remove "biocrates" dataset to ensure following sections select the preprocessed dataset they need
+rm(biocrates)
+```
+
+
+## Step **1**
+
+1. **Status Preprocessing**
+    a. Discard unreliable measurements based on Biocratus status
+
+The status preprocessing discards measurements based on Biocrates quality statuses.
+
+By default, only "Valid" measurements are considered as reliable and are kept
+for further analysis. Hence, all other statuses including "< LLOQ" and "> ULOQ"
+(out of quantification range / extrapolated calibration), "STD/QC < Limit" and
+"STD/QC > Limit" (insufficient accuracy in STDs and QCs), "ISTD Out of Range"
+(internal standard too high or low) and other statuses are usually considered as
+unreliable and measurements are transformed to missing values (set to NA).
+
+Based on the parameter `preproc_keep_status`, measurements with the following statuses will be
+retained:
+**`r paste0(ppparams$statuses_to_keep, collapse = "**, **")`**
+
+Missing **Concentration** values before Biocrates status preprocessing:
+**`r sum(is.na(datasets$original[[PKG_ENV$CONCENTRATION]]))`** of **`r nrow(datasets$original)`**
+(`r round(sum(is.na(datasets$original[[PKG_ENV$CONCENTRATION]])) / nrow(datasets$original) * 100)`%)
+
+Missing **Concentration** values after Biocrates status preprocessing:
+**`r sum(is.na(datasets$discarded[[PKG_ENV$CONCENTRATION]]))`** of **`r nrow(datasets$discarded)`**
+(`r round(sum(is.na(datasets$discarded[[PKG_ENV$CONCENTRATION]])) / nrow(datasets$discarded) * 100)`%)
+
+```{r}
+easy_datatable(
+  summarize_missing_values_per_sample(datasets$discarded, plot = FALSE),
+  round_colums = "% Missing Values",
+  caption = "Missing values per sample after status preprocessing")
+
+easy_datatable(
+  summarize_missing_values_per_compound(datasets$discarded, plot = FALSE),
+  round_colums = "% Missing Values",
+  caption = "Missing values per compound after status preprocessing")
+
+easy_datatable(
+  datasets$discarded,
+  caption = paste0("Full data after status preprocessing"))
+```
+
+
+## Step **2a**
+
+2. **Remove unreliable __compounds__** (qualitative filter)
+    a. Based on missing values ratio in Reference QCs (**>=`r ppparams$threshold_2a * 100`%**)
+
+To alter the threshold use  parameter `filter_compound_qc_max_mv_ratio`.
+
+Number of compounds before: **`r length(unique(datasets$discarded$Compound))`**  
+Number of compounds left: **`r length(unique(datasets$filter_compounds_by_qc_mv_kept$Compound))`**
+
+```{r}
+# 2. Remove unreliable compounds
+#   a. Based on missing values ratio in QCs (samples of type SAMPLE_TYPE_REFERENCE_QC)
+#      Valid ratio of NAs is max 0.2 by default
+easy_datatable(
+  datasets$filter_compounds_by_qc_mv_removed,
+  caption = paste0("Removed compounds due to ", ppparams$threshold_2a*100, "% QC MVs"))
+easy_datatable(
+  datasets$filter_compounds_by_qc_mv_kept,
+  caption = paste0("Full data kept after ", ppparams$threshold_2a*100, "% QC MVs filtering"))
+```
+
+
+## Step **2b**
+
+2. **Remove unreliable __compounds__** (qualitative filter)
+    b. Based on %RSD of Reference QCs (**>=`r ppparams$threshold_2b`%**)
+
+To alter the threshold use parameter `filter_compound_qc_max_rsd`.
+
+Number of compounds before: **`r length(unique(datasets$filter_compounds_by_qc_mv_kept$Compound))`**  
+Number of compounds left: **`r length(unique(datasets$filter_compounds_by_qc_rsd_kept$Compound))`**
+
+```{r}
+#   b. Based on %RSD of QCs (default >15%)
+easy_datatable(
+  datasets$filter_compounds_by_qc_rsd_removed,
+  caption = paste0("Removed compounds due to ", ppparams$threshold_2b, " %RSD in QCs"))
+easy_datatable(
+  datasets$filter_compounds_by_qc_rsd_kept,
+  caption = paste0("Full data kept after ", ppparams$threshold_2b, "%RSD QC filtering"))
+```
+
+
+## Step **3a**
+
+3. **Remove underrepresented __compounds__** (quantitative filter)
+    a. Based on only missing values in biological samples (**=`r ppparams$threshold_3a * 100`%**)
+
+Number of compounds before: **`r length(unique(datasets$filter_compounds_by_qc_rsd_kept$Compound))`**  
+Number of compounds left: **`r length(unique(datasets$filter_compounds_by_sample_all_mv_kept$Compound))`**
+
+```{r}
+# 4. Remove underrepresented compounds
+#   a. Remove completely missing compounds
+easy_datatable(
+  datasets$filter_compounds_by_sample_all_mv_removed,
+  caption = paste0("Removed compounds due to ", ppparams$threshold_3a*100, "% Sample MVs"))
+easy_datatable(
+  datasets$filter_compounds_by_sample_all_mv_kept,
+  caption = paste0("Full data kept after ", ppparams$threshold_3a*100, "% Sample MVs filtering"))
+```
+
+
+## Step **3b**
+
+3. **Remove underrepresented __compounds__** (quantitative filter)
+    b. Based on missing values ratio in biological samples (**>=`r ppparams$threshold_3b * 100`%**)
+
+To alter the threshold use  parameter `filter_compound_bs_max_mv_ratio`.
+
+Number of compounds before: **`r length(unique(datasets$filter_compounds_by_sample_all_mv_kept$Compound))`**  
+Number of compounds left: **`r length(unique(datasets$filter_compounds_by_sample_mv_kept$Compound))`**
+
+```{r}
+#   b. Based on missing value ratio over all (!) biological samples (>25%)
+#      Valid ratio of NAs is max 0.25 by default
+easy_datatable(
+  datasets$filter_compounds_by_sample_mv_removed,
+  caption = paste0("Removed compounds due to ", ppparams$threshold_3b*100, "% Sample MVs"))
+easy_datatable(
+  datasets$filter_compounds_by_sample_mv_kept,
+  caption = paste0("Full data kept after ", ppparams$threshold_3b*100, "% Sample MVs filtering"))
+```
+
+
+## Step **4**
+
+4. **Remove underrepresented __biological samples__** (quantitative filter)
+    a. Based on missing values ratio of compounds (**>=`r ppparams$threshold_4 * 100`%**)
+
+To alter the threshold use parameter `filter_sample_max_mv_ratio`.
+
+Number of all samples before: **`r length(unique(datasets$filter_compounds_by_sample_mv_kept$Sample.Name))`**  
+Number of all samples left: **`r length(unique(datasets$filter_samples_by_compound_mv_kept$Sample.Name))`**  
+
+Number of biological samples before:
+**`r datasets$filter_compounds_by_sample_mv_kept %>% filter(Sample.Type == SAMPLE_TYPE_BIOLOGICAL) %>% distinct(Sample.Name) %>% nrow()`**  
+Number of biological samples left:
+**`r datasets$filter_samples_by_compound_mv_kept %>% filter(Sample.Type == SAMPLE_TYPE_BIOLOGICAL) %>% distinct(Sample.Name) %>% nrow()`**
+
+```{r}
+# 4. Remove underrepresented samples
+#   a. Based on missing value ratio over compounds
+#      Valid ratio of NAs is max 0.2 by default
+easy_datatable(
+  datasets$filter_samples_by_compound_mv_removed,
+  caption = paste0("Removed samples due to ", ppparams$threshold_4*100, "% Compound MVs"))
+easy_datatable(
+  datasets$filter_samples_by_compound_mv_kept,
+  caption = paste0("Full data kept after ", ppparams$threshold_4*100, "% Compound MVs filtering"))
+```
+
+
+## Unprocessed Data
+
+Missing value counts either by samples or by compounds based on unprocessed data (i.e. no values
+have been turned into missing values based on status and nothing is filtered) as well as the full
+unprocessed dataset is available in the tables below.
+
+```{r}
+easy_datatable(
+  summarize_missing_values_per_sample(datasets$original, plot = FALSE),
+  round_colums = "% Missing Values",
+  caption = "Missing values per sample before status preprocessing")
+
+easy_datatable(
+  summarize_missing_values_per_compound(datasets$original, plot = FALSE),
+  round_colums = "% Missing Values",
+  caption = "Missing values per compound before status preprocessing")
+
+easy_datatable(
+  datasets$original,
+  caption = paste0("Full data before preprocessing"))
+```

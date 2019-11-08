@@ -1,0 +1,351 @@
+## Additional figures
+
+### Replicate dispersion {.tabset}
+The following figures illustrate reproducibility by comparing compound measures
+(e.g. concentration) within and between groups such as different sample types and
+conditions in study variables (as indicated with parameter `study_variables`).
+
+This analysis is based on status-preprocessed dataset 3a.
+
+```{r}
+# Select dataset
+biocrates <- datasets$filter_compounds_by_sample_all_mv_kept
+```
+
+```{r}
+num_compounds <- biocrates %>% pull(Compound) %>% unique() %>% length()
+num_columns <- 3
+fig_height_dispersion <- ceiling(num_compounds/num_columns) * 1 + 1.5
+```
+
+#### Per sample type
+```{r, fig.height=fig_height_dispersion}
+# Illustrate concentrations in different sample types
+plot_replicate_dispersion(bcdata = biocrates,
+                          grouping = "Sample.Type",
+                          color = "Sample.Type")
+```
+
+#### Per study variable {.tabset}
+```{r, results="asis", fig.height=fig_height_dispersion}
+# Concentration dispersion plots over different study variable groups
+disp_plots_fun <- function(var, data, info, parent = NULL, name){
+  if (is.null(parent)){
+    plot <- plot_replicate_dispersion(bcdata = data,
+                                      sample_types = SAMPLE_TYPE_BIOLOGICAL,
+                                      grouping = var,
+                                      color = var)
+  } else {
+    plot <- plot_replicate_dispersion(bcdata = data,
+                                      sample_types = SAMPLE_TYPE_BIOLOGICAL,
+                                      grouping = var,
+                                      color = parent)
+  }
+
+  return(list(
+    Header = paste0("\n##### ", info, var, "\n"),
+    Plot = plot))
+}
+
+if (length(STUDY_VARIABLES) > 0){
+  var_plots <- recursive_execution(vars = STUDY_VARIABLES,
+                                   end_fun = disp_plots_fun,
+                                   data = biocrates,
+                                   separate_parent = FALSE)
+  for (var_plot in var_plots){
+    cat(var_plot$Header)
+    print(var_plot$Plot)
+  }
+}
+```
+
+### Replicate %RSDs
+Relative standard deviations per compound or compound class are calculated and visualized
+for different sample groupings, either by sample type or for biological replicates (i.e.
+samples from the same group within variables indicated with parameter
+`replicate_variables`).
+
+This analysis is based on the status-preprocessed dataset 3a.
+
+```{r}
+# Select dataset
+biocrates <- datasets$filter_compounds_by_sample_all_mv_kept
+```
+
+```{r}
+# Figure size calculations
+calc_fig_sizes_rep_rsd <- function(bcdata, rep_variables, sample_types, unit, legends = 0,
+                                   num_combinations = NULL, unit_factor = 1){
+  num_variables <- length(rep_variables)
+  num_units <- bcdata %>% pull(UQ(sym(unit))) %>% unique() %>% length()
+  if (is.null(num_combinations)){
+    num_combinations <- bcdata %>%
+      filter(Sample.Type %in% sample_types) %>%
+      select(one_of(rep_variables)) %>% distinct() %>% nrow()
+  }
+
+  facet_parts <- max(unit_factor * num_units + 3.5 * num_variables,
+                     3.5 * num_variables * 2.5)
+  facet_parts_max <- 90
+
+  num_columns <- min(max(floor(facet_parts_max / facet_parts), 1), num_combinations)
+  num_rows <- ceiling(num_combinations/num_columns)
+
+  fig_width_rep_rsd <- 7
+  if (facet_parts_max / facet_parts < 1){
+    fig_width_rep_rsd <- (1/7) + (6/7) * 7 / facet_parts_max * facet_parts
+  }
+  fig_height_rep_rsd <- max((num_rows + 1) * 1.2, 3.5) + legends
+
+  return(list(h = fig_height_rep_rsd, w = fig_width_rep_rsd, c = num_columns))
+}
+```
+
+#### Compounds {.tabset}
+##### Type replicates
+```{r}
+rep_variables <- c("Batch", "Sample.Type")
+sample_types <- c(SAMPLE_TYPE_POOLED_QC, SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_BIOLOGICAL)
+# Calculate figure size
+fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
+  biocrates, rep_variables, sample_types, "Compound")
+```
+
+```{r, fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
+plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                       sample_types = sample_types,
+                       facet_cols = fig_sizes_rep_rsd$c)
+```
+
+```{r}
+#### Biological replicates
+if (length(REPLICATE_VARIABLES) > 0){
+  rep_variables <- REPLICATE_VARIABLES
+  sample_types <- c(SAMPLE_TYPE_BIOLOGICAL)
+  # Calculate figure size
+  fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
+    biocrates, rep_variables, sample_types, "Compound")
+}
+```
+
+```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
+if (length(REPLICATE_VARIABLES) > 0){
+  cat(paste0("\n##### BRs\n"))
+  print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                               sample_types = sample_types,
+                               facet_cols = fig_sizes_rep_rsd$c))
+
+  if (all(c("BR", "TR") %in% names(biocrates))){
+    cat(paste0("\n##### BRs (mean TRs)\n"))
+    print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                                 sample_types = sample_types, tec_reps_use = "mean",
+                                 facet_cols = fig_sizes_rep_rsd$c))
+
+    cat(paste0("\n##### BRs (median TRs)\n"))
+    print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                                 sample_types = sample_types, tec_reps_use = "median",
+                                 facet_cols = fig_sizes_rep_rsd$c))
+  }
+}
+```
+
+```{r}
+#### Technical replicates
+if (length(REPLICATE_VARIABLES) > 0){
+  if (all(c("BR", "TR") %in% names(biocrates))){
+    rep_variables <- REPLICATE_VARIABLES
+    sample_types <- c(SAMPLE_TYPE_BIOLOGICAL)
+    num_combinations <- biocrates %>%
+      filter(Sample.Type %in% sample_types) %>%
+      select(one_of(rep_variables), BR, TR) %>% distinct() %>%
+      group_by_at(vars(one_of(rep_variables), BR)) %>%
+      filter(all(n() > 1)) %>% ungroup() %>%
+      select(one_of(rep_variables)) %>% distinct() %>%  nrow()
+    max_tr_number <-  biocrates %>%
+      filter(Sample.Type %in% sample_types) %>%
+      select(one_of(rep_variables), BR, TR) %>% distinct() %>%
+      group_by_at(vars(one_of(rep_variables), BR)) %>%
+      filter(all(n() > 1)) %>% summarize(Number = n())
+    max_tr_number <- max(max_tr_number$Number)
+    unit_factor <- max(1, max_tr_number/2)
+    # Calculate figure size
+    fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
+      biocrates, c(rep_variables), sample_types, "Compound", legends = 1,
+      num_combinations = num_combinations, unit_factor = unit_factor)
+  }
+}
+```
+
+```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
+if (length(REPLICATE_VARIABLES) > 0){
+  if (all(c("BR", "TR") %in% names(biocrates))){
+    cat(paste0("\n##### Technical replicates only\n"))
+    print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                                 sample_types = sample_types, tec_reps_use = "only",
+                                 facet_cols = fig_sizes_rep_rsd$c))
+  }
+}
+```
+
+#### Classes {.tabset}
+##### QC Replicates
+```{r}
+rep_variables <- c("Batch", "Sample.Type")
+sample_types <- c(SAMPLE_TYPE_POOLED_QC, SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_BIOLOGICAL)
+# Calculate figure size
+fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
+  biocrates, rep_variables, sample_types, "Class")
+```
+
+```{r, fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
+plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                       sample_types = sample_types,
+                       facet_cols = fig_sizes_rep_rsd$c, unit = "Class")
+```
+
+```{r}
+##### Biological replicates
+if (length(REPLICATE_VARIABLES) > 0){
+  rep_variables <- REPLICATE_VARIABLES
+  sample_types <- c(SAMPLE_TYPE_BIOLOGICAL)
+  # Calculate figure size
+  fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
+    biocrates, rep_variables, sample_types, "Class")
+}
+```
+
+```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
+if (length(REPLICATE_VARIABLES) > 0){
+  cat("\n##### BRs\n")
+  print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                               sample_types = sample_types,
+                               facet_cols = fig_sizes_rep_rsd$c, unit = "Class"))
+
+  if (all(c("BR", "TR") %in% names(biocrates))){
+    cat("\n##### BRs (mean TRs)\n")
+    print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                                 sample_types = sample_types, tec_reps_use = "mean",
+                                 facet_cols = fig_sizes_rep_rsd$c, unit = "Class"))
+
+    cat("\n##### BRs (median TRs)\n")
+    print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                                 sample_types = sample_types, tec_reps_use = "median",
+                                 facet_cols = fig_sizes_rep_rsd$c, unit = "Class"))
+  }
+}
+```
+
+```{r}
+#### Technical replicates
+if (length(REPLICATE_VARIABLES) > 0){
+  if (all(c("BR", "TR") %in% names(biocrates))){
+    rep_variables <- REPLICATE_VARIABLES
+    sample_types <- c(SAMPLE_TYPE_BIOLOGICAL)
+    num_combinations <- biocrates %>%
+      filter(Sample.Type %in% sample_types) %>%
+      select(one_of(rep_variables), BR, TR) %>% distinct() %>%
+      group_by_at(vars(one_of(rep_variables), BR)) %>%
+      filter(all(n() > 1)) %>% ungroup() %>%
+      select(one_of(rep_variables)) %>% distinct() %>%  nrow()
+    max_tr_number <-  biocrates %>%
+      filter(Sample.Type %in% sample_types) %>%
+      select(one_of(rep_variables), BR, TR) %>% distinct() %>%
+      group_by_at(vars(one_of(rep_variables), BR)) %>%
+      filter(all(n() > 1)) %>% summarize(Number = n())
+    max_tr_number <- max(max_tr_number$Number)
+    unit_factor <- max(1, max_tr_number/2)
+    # Calculate figure size
+    fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
+      biocrates, c(rep_variables), sample_types, "Class", legends = 1,
+      num_combinations = num_combinations, unit_factor = unit_factor)
+  }
+}
+```
+
+```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
+if (length(REPLICATE_VARIABLES) > 0){
+  if (all(c("BR", "TR") %in% names(biocrates))){
+    cat("\n##### Technical replicates only\n")
+    print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                                 sample_types = sample_types, tec_reps_use = "only",
+                                 facet_cols = fig_sizes_rep_rsd$c, unit = "Class"))
+  }
+}
+```
+
+
+### Concentration Profiles {.tabset}
+Simple metabolite concentration profiles overlapped per sample (point and line plot) or summarized
+(as box plots) are created to enable a brief impression of overall sample behavior consistency (e.g.
+to justify later normalization).
+
+This analysis is based on the status-preprocessed dataset 1.
+
+```{r}
+# Select dataset
+biocrates <- datasets$discarded
+```
+
+```{r}
+rep_variables <- c("Sample.Name")
+sample_types <- c(SAMPLE_TYPE_REFERENCE_QC) # just need to indicate one type
+# Calculate figure sizes
+fig_sizes_points <- calc_fig_sizes_rep_rsd(
+  biocrates, rep_variables, sample_types, "Compound", num_combinations = 1)
+fig_sizes_box <- calc_fig_sizes_rep_rsd(
+  biocrates, rep_variables, sample_types, "Compound", num_combinations = 1, legends = 1)
+```
+
+
+#### Reference QCs
+```{r, fig.height=fig_sizes_points$h, fig.width=fig_sizes_points$w}
+plot_sample_profiles_points(
+  bcdata = biocrates, target = PKG_ENV$CONCENTRATION, sample_types = SAMPLE_TYPE_REFERENCE_QC)
+```
+
+```{r, fig.height=fig_sizes_box$h, fig.width=fig_sizes_box$w}
+plot_sample_profiles_box(
+  bcdata = biocrates, target = PKG_ENV$CONCENTRATION, sample_types = SAMPLE_TYPE_REFERENCE_QC)
+```
+
+
+```{r, fig.height=fig_sizes_points$h, fig.width=fig_sizes_points$w, eval=POOLS_AVAILABLE, results="asis"}
+cat(paste0("\n#### ", SAMPLE_TYPE_POOLED_QC, "s\n"))
+plot_sample_profiles_points(
+  bcdata = biocrates, target = PKG_ENV$CONCENTRATION, sample_types = SAMPLE_TYPE_POOLED_QC)
+```
+
+```{r, fig.height=fig_sizes_box$h, fig.width=fig_sizes_box$w, eval=POOLS_AVAILABLE}
+plot_sample_profiles_box(
+  bcdata = biocrates, target = PKG_ENV$CONCENTRATION, sample_types = SAMPLE_TYPE_POOLED_QC)
+```
+
+
+#### Biological samples
+```{r, fig.height=fig_sizes_points$h, fig.width=fig_sizes_points$w}
+plot_sample_profiles_points(
+  bcdata = biocrates, target = PKG_ENV$CONCENTRATION, sample_types = SAMPLE_TYPE_BIOLOGICAL)
+```
+
+```{r, fig.height=fig_sizes_box$h, fig.width=fig_sizes_box$w}
+plot_sample_profiles_box(
+  bcdata = biocrates, target = PKG_ENV$CONCENTRATION, sample_types = SAMPLE_TYPE_BIOLOGICAL)
+```
+
+
+```{r, fig.height=fig_sizes_points$h, fig.width=fig_sizes_points$w, eval=NORMALIZED, results='asis'}
+cat("#### Biological samples (normalized)\n")
+plot_sample_profiles_points(
+  bcdata = biocrates_normalized, target = PKG_ENV$CONCENTRATION, sample_types = SAMPLE_TYPE_BIOLOGICAL)
+```
+
+```{r, fig.height=fig_sizes_box$h, fig.width=fig_sizes_box$w, eval=NORMALIZED}
+plot_sample_profiles_box(
+  bcdata = biocrates_normalized, target = PKG_ENV$CONCENTRATION, sample_types = SAMPLE_TYPE_BIOLOGICAL)
+```
+
+
+```{r}
+# Remove "biocrates" dataset to ensure following sections select the dataset they need
+rm(biocrates)
+```

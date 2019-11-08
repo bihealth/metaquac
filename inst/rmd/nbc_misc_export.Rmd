@@ -1,0 +1,23 @@
+## Data export
+
+The fully preprocessed dataset 4 is exported for further analysis in R, Excel, etc.
+This means the export provides a fully merged dataset with respect to injection pairs
+as well as potentially different batches, which compounds and samples were filtered as
+described in the preprocessing section.
+
+To access data from intermediary preprocessing steps, please refer to the corresponding
+tables in the preprocessing section.
+
+```{r}
+export_prefix <- file.path(params$export_dir, params$export_name)
+export_dataset <- datasets$filter_samples_by_compound_mv_kept
+save(export_dataset, file = paste0(export_prefix, ".RData"))
+readr::write_csv(export_dataset, paste0(export_prefix, ".csv"))
+readr::write_tsv(export_dataset, paste0(export_prefix, ".tsv"))
+```
+
+Exported preprocessed/filtered Biocrates data as:
+
+* **RData**: `r paste0(export_prefix, ".RData")`
+* **Csv**: `r paste0(export_prefix, ".csv")`
+* **Tsv**: `r paste0(export_prefix, ".tsv")`

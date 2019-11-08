@@ -1,0 +1,118 @@
+<!--
+Statistical evaluation and classification of compound variability provided by Yoann Gloaguen
+-->
+
+```{r}
+# Select dataset for QC
+biocrates <- datasets$discarded
+```
+
+## Compound variability {.tabset}
+### Overview
+The plot below shows the standard deviation of each individual metabolite against their average
+concentration, separately for QC and biological samples (i.e. technical vs biological variability).
+
+A linear regression analysis is used to attempt to separate the technical and biological
+variability. The outputs of the models are used to score and assess this separation, and can be used
+as indicator for data quality.
+
+```{r SD_vs_mean_model, fig.align='center'}
+compound_var_stats <- compound_variability_scoring(biocrates)
+```
+
+Please see the details and the plot below for more information.
+
+```{r SD_vs_mean_plot, fig.align='center'}
+sd_mean_comp <- plot_compound_sd_vs_mean(
+  data = biocrates,
+  target = PKG_ENV$CONCENTRATION,
+  sample_types = c(SAMPLE_TYPE_BIOLOGICAL, SAMPLE_TYPE_REFERENCE_QC),
+  return_with_data = TRUE)
+
+sd_mean_comp$scatterplot
+```
+
+
+### Details
+
+<!-- A one sided Wilcoxon test is used to check that QC SDs are lower than biological sample SDs. -->
+
+An integrative linear model is used to assess differences in technical and biological variability:
+`log(SD) ~ Group + log(Mean)/Group` with Group being a factor indicating QC or biological samples.
+
+Model results are combined to identify four important main cases of differences in technical and
+biological variability:
+
+1) `k >= 7`: A clear biological variability on top of the technical one.
+2) `k = 2:6`: Inconclusive differences in biological and technical variability.
+3) `k = 0:1`: A strong technical variability which hides the biological one.
+4) `k < 0`: Something clearly wrong (when variability in QC decreases with increasing amount of
+   metabolite concentration).
+
+with final score k being computed to allow the classification of the four main cases as follows:
+
+    k = 0
+    k = k + (r_squared > 0.8)
+    k = k + 2*(delta_intercept > 0 & delta_intercept_pvalue < 0.05)
+    k = k + 4*(delta_slope > 0)
+    k = k - 8*(qc_slope < 0)
+
+The results are as follows:
+
+* Linear regression model results:
+    * R squared = `r compound_var_stats$r_squared`
+    * QC slope = `r compound_var_stats$qc_slope`
+    * Delta slope (Sample - QC) = `r compound_var_stats$delta_slope`
+    * Delta slope p-value = `r compound_var_stats$delta_slope_pvalue`
+    * Delta intercept (Sample - QC) = `r compound_var_stats$delta_intercept`
+    * Delta intercept p-value = `r compound_var_stats$delta_intercept_pvalue`
+* Variability Score:
+    * k = `r compound_var_stats$k`
+
+<!-- * Wilcoxon test results: -->
+<!--     * Wilcoxon test p-value = `r compound_var_stats$wilcox_pvalue` -->
+
+
+<!-- ### Per study variable {.tabset} -->
+```{r, results="asis"}
+# Compare SDs vs Means over different study variable groups
+sd_plots_fun <- function(var, data, info, parent){
+  # Plot compound SDs vs Means of PKG_ENV$CONCENTRATION
+  plot_sd <- plot_compound_sd_vs_mean(data = data, shape = BATCH,
+                                   target = PKG_ENV$CONCENTRATION,
+                                   sample_types = c(SAMPLE_TYPE_BIOLOGICAL, SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_POOLED_QC),
+                                   study_class = var)
+
+  plot_rsd <- plot_compound_rsd_vs_mean(data = data, shape = BATCH,
+                                    target = PKG_ENV$CONCENTRATION,
+                                    sample_types = c(SAMPLE_TYPE_BIOLOGICAL, SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_POOLED_QC),
+                                    study_class = var)
+
+  return(list(
+    Header = paste0("\n#### ", info, var, "\n"),
+    Plot_sd = plot_sd,
+    Plot_rsd = plot_rsd))
+}
+
+if (length(STUDY_VARIABLES) > 0) {
+  cat("\n### Per study variable {.tabset}\n")
+  cat("\nFor visual examination, SD as well as %RSDs are plotted against the mean per compound not
+only separated by sample type but further separated by groups in study variables of the biological
+samples.\n")
+  var_plots <- recursive_execution(vars = STUDY_VARIABLES,
+                                   end_fun = sd_plots_fun,
+                                   data = biocrates,
+                                   keep_sample_types = c(SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_POOLED_QC))
+  for (var_plot in var_plots) {
+    cat(var_plot$Header)
+    print(var_plot$Plot_sd)
+    print(var_plot$Plot_rsd)
+  }
+}
+```
+
+
+```{r}
+# Remove "biocrates" dataset to ensure following sections select the dataset they need
+rm(biocrates)
+```
