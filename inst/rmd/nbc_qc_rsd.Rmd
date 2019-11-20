@@ -24,20 +24,20 @@ calc_fig_sizes_rep_rsd <- function(bcdata, rep_variables, sample_types, unit, le
       filter(Sample.Type %in% sample_types) %>%
       select(one_of(rep_variables)) %>% distinct() %>% nrow()
   }
-
+  
   facet_parts <- max(unit_factor * num_units + 3.5 * num_variables,
                      3.5 * num_variables * 2.5)
   facet_parts_max <- 90
-
+  
   num_columns <- min(max(floor(facet_parts_max / facet_parts), 1), num_combinations)
   num_rows <- ceiling(num_combinations/num_columns)
-
+  
   fig_width_rep_rsd <- 7
   if (facet_parts_max / facet_parts < 1){
     fig_width_rep_rsd <- (1/7) + (6/7) * 7 / facet_parts_max * facet_parts
   }
   fig_height_rep_rsd <- max((num_rows + 1) * 1.2, 3.5) + legends
-
+  
   return(list(h = fig_height_rep_rsd, w = fig_width_rep_rsd, c = num_columns))
 }
 ```
@@ -57,6 +57,11 @@ fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
 plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                        sample_types = sample_types,
                        facet_cols = fig_sizes_rep_rsd$c)
+easy_datatable(
+  data = table_bio_replicate_rsd(
+    bcdata = biocrates, rep_variables = rep_variables, sample_types = sample_types
+  ),
+  caption = paste0("Compound %RSDs per sample type"))
 ```
 
 ```{r}
@@ -70,24 +75,40 @@ if (length(REPLICATE_VARIABLES) > 0){
 }
 ```
 
-```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
-if (length(REPLICATE_VARIABLES) > 0){
-  cat(paste0("\n###### Study groups \n"))
+```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w, eval=length(REPLICATE_VARIABLES) > 0}
+
+cat(paste0("\n###### Study groups \n"))
+print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                             sample_types = sample_types,
+                             facet_cols = fig_sizes_rep_rsd$c))
+easy_datatable(
+  data = table_bio_replicate_rsd(
+    bcdata = biocrates, rep_variables = rep_variables, sample_types = sample_types
+  ),
+  caption = paste0("Compound %RSDs per study groups"))
+
+if (all(c("BR", "TR") %in% names(biocrates))){
+  cat(paste0("\n###### BRs (mean TRs)\n"))
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
-                               sample_types = sample_types,
+                               sample_types = sample_types, tec_reps_use = "mean",
                                facet_cols = fig_sizes_rep_rsd$c))
-
-  if (all(c("BR", "TR") %in% names(biocrates))){
-    cat(paste0("\n###### BRs (mean TRs)\n"))
-    print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
-                                 sample_types = sample_types, tec_reps_use = "mean",
-                                 facet_cols = fig_sizes_rep_rsd$c))
-
-    cat(paste0("\n###### BRs (median TRs)\n"))
-    print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
-                                 sample_types = sample_types, tec_reps_use = "median",
-                                 facet_cols = fig_sizes_rep_rsd$c))
-  }
+  easy_datatable(
+    data = table_bio_replicate_rsd(
+      bcdata = biocrates, rep_variables = rep_variables,
+      sample_types = sample_types, tec_reps_use = "mean"
+    ),
+    caption = paste0("Compound %RSDs per study groups"))
+  
+  cat(paste0("\n###### BRs (median TRs)\n"))
+  print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                               sample_types = sample_types, tec_reps_use = "median",
+                               facet_cols = fig_sizes_rep_rsd$c))
+  easy_datatable(
+    data = table_bio_replicate_rsd(
+      bcdata = biocrates, rep_variables = rep_variables,
+      sample_types = sample_types, tec_reps_use = "median"
+    ),
+    caption = paste0("Compound %RSDs per study groups"))
 }
 ```
 
@@ -118,14 +139,18 @@ if (length(REPLICATE_VARIABLES) > 0){
 }
 ```
 
-```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
-if (length(REPLICATE_VARIABLES) > 0){
-  if (all(c("BR", "TR") %in% names(biocrates))){
-    cat(paste0("\n###### Technical replicates only\n"))
-    print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
-                                 sample_types = sample_types, tec_reps_use = "only",
-                                 facet_cols = fig_sizes_rep_rsd$c))
-  }
+```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w, eval=length(REPLICATE_VARIABLES) > 0}
+if (all(c("BR", "TR") %in% names(biocrates))){
+  cat(paste0("\n###### Technical replicates only\n"))
+  print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                               sample_types = sample_types, tec_reps_use = "only",
+                               facet_cols = fig_sizes_rep_rsd$c))
+  easy_datatable(
+    data = table_bio_replicate_rsd(
+      bcdata = biocrates, rep_variables = rep_variables,
+      sample_types = sample_types, tec_reps_use = "only"
+    ),
+    caption = paste0("Compound %RSDs per study groups"))
 }
 ```
 
@@ -144,6 +169,11 @@ fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
 plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                        sample_types = sample_types,
                        facet_cols = fig_sizes_rep_rsd$c)
+easy_datatable(
+  data = table_bio_replicate_rsd(
+    bcdata = biocrates, rep_variables = rep_variables, sample_types = sample_types
+  ),
+  caption = paste0("Compound %RSDs per sample type"))
 ```
 
 ```{r}
@@ -157,24 +187,39 @@ if (length(REPLICATE_VARIABLES) > 0){
 }
 ```
 
-```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
-if (length(REPLICATE_VARIABLES) > 0){
-  cat(paste0("\n###### Study groups \n"))
+```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w, eval=length(REPLICATE_VARIABLES) > 0}
+cat(paste0("\n###### Study groups \n"))
+print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                             sample_types = sample_types,
+                             facet_cols = fig_sizes_rep_rsd$c))
+easy_datatable(
+  data = table_bio_replicate_rsd(
+    bcdata = biocrates, rep_variables = rep_variables, sample_types = sample_types
+  ),
+  caption = paste0("Compound %RSDs per study groups"))
+
+if (all(c("BR", "TR") %in% names(biocrates))){
+  cat(paste0("\n###### BRs (mean TRs)\n"))
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
-                               sample_types = sample_types,
+                               sample_types = sample_types, tec_reps_use = "mean",
                                facet_cols = fig_sizes_rep_rsd$c))
-
-  if (all(c("BR", "TR") %in% names(biocrates))){
-    cat(paste0("\n###### BRs (mean TRs)\n"))
-    print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
-                                 sample_types = sample_types, tec_reps_use = "mean",
-                                 facet_cols = fig_sizes_rep_rsd$c))
-
-    cat(paste0("\n###### BRs (median TRs)\n"))
-    print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
-                                 sample_types = sample_types, tec_reps_use = "median",
-                                 facet_cols = fig_sizes_rep_rsd$c))
-  }
+  easy_datatable(
+    data = table_bio_replicate_rsd(
+      bcdata = biocrates, rep_variables = rep_variables,
+      sample_types = sample_types, tec_reps_use = "mean"
+    ),
+    caption = paste0("Compound %RSDs per study groups"))
+  
+  cat(paste0("\n###### BRs (median TRs)\n"))
+  print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                               sample_types = sample_types, tec_reps_use = "median",
+                               facet_cols = fig_sizes_rep_rsd$c))
+  easy_datatable(
+    data = table_bio_replicate_rsd(
+      bcdata = biocrates, rep_variables = rep_variables,
+      sample_types = sample_types, tec_reps_use = "median"
+    ),
+    caption = paste0("Compound %RSDs per study groups"))
 }
 ```
 
@@ -205,14 +250,18 @@ if (length(REPLICATE_VARIABLES) > 0){
 }
 ```
 
-```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
-if (length(REPLICATE_VARIABLES) > 0){
-  if (all(c("BR", "TR") %in% names(biocrates))){
-    cat(paste0("\n###### Technical replicates only\n"))
-    print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
-                                 sample_types = sample_types, tec_reps_use = "only",
-                                 facet_cols = fig_sizes_rep_rsd$c))
-  }
+```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w, eval=length(REPLICATE_VARIABLES) > 0}
+if (all(c("BR", "TR") %in% names(biocrates))){
+  cat(paste0("\n###### Technical replicates only\n"))
+  print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                               sample_types = sample_types, tec_reps_use = "only",
+                               facet_cols = fig_sizes_rep_rsd$c))
+  easy_datatable(
+    data = table_bio_replicate_rsd(
+      bcdata = biocrates, rep_variables = rep_variables,
+      sample_types = sample_types, tec_reps_use = "only"
+    ),
+    caption = paste0("Compound %RSDs per study groups"))
 }
 ```
 
@@ -232,6 +281,12 @@ fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
 plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                        sample_types = sample_types,
                        facet_cols = fig_sizes_rep_rsd$c, unit = "Class")
+easy_datatable(
+  data = table_bio_replicate_rsd(
+    bcdata = biocrates, rep_variables = rep_variables,
+    sample_types = sample_types, unit = "Class"
+  ),
+  caption = paste0("Median class %RSDs per sample type"))
 ```
 
 ```{r}
@@ -245,24 +300,40 @@ if (length(REPLICATE_VARIABLES) > 0){
 }
 ```
 
-```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
-if (length(REPLICATE_VARIABLES) > 0){
-  cat("\n###### Study groups\n")
+```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w, eval=length(REPLICATE_VARIABLES) > 0}
+cat("\n###### Study groups\n")
+print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                             sample_types = sample_types,
+                             facet_cols = fig_sizes_rep_rsd$c, unit = "Class"))
+easy_datatable(
+  data = table_bio_replicate_rsd(
+    bcdata = biocrates, rep_variables = rep_variables,
+    sample_types = sample_types, unit = "Class"
+  ),
+  caption = paste0("Median class %RSDs per study groups"))
+
+if (all(c("BR", "TR") %in% names(biocrates))){
+  cat("\n###### BRs (mean TRs)\n")
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
-                               sample_types = sample_types,
+                               sample_types = sample_types, tec_reps_use = "mean",
                                facet_cols = fig_sizes_rep_rsd$c, unit = "Class"))
-
-  if (all(c("BR", "TR") %in% names(biocrates))){
-    cat("\n###### BRs (mean TRs)\n")
-    print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
-                                 sample_types = sample_types, tec_reps_use = "mean",
-                                 facet_cols = fig_sizes_rep_rsd$c, unit = "Class"))
-
-    cat("\n###### BRs (median TRs)\n")
-    print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
-                                 sample_types = sample_types, tec_reps_use = "median",
-                                 facet_cols = fig_sizes_rep_rsd$c, unit = "Class"))
-  }
+  easy_datatable(
+    data = table_bio_replicate_rsd(
+      bcdata = biocrates, rep_variables = rep_variables,
+      sample_types = sample_types, tec_reps_use = "mean", unit = "Class"
+    ),
+    caption = paste0("Median class %RSDs per study groups"))
+  
+  cat("\n###### BRs (median TRs)\n")
+  print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                               sample_types = sample_types, tec_reps_use = "median",
+                               facet_cols = fig_sizes_rep_rsd$c, unit = "Class"))
+  easy_datatable(
+    data = table_bio_replicate_rsd(
+      bcdata = biocrates, rep_variables = rep_variables,
+      sample_types = sample_types, tec_reps_use = "median", unit = "Class"
+    ),
+    caption = paste0("Median class %RSDs per study groups"))
 }
 ```
 
@@ -293,14 +364,18 @@ if (length(REPLICATE_VARIABLES) > 0){
 }
 ```
 
-```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
-if (length(REPLICATE_VARIABLES) > 0){
-  if (all(c("BR", "TR") %in% names(biocrates))){
-    cat("\n###### Technical replicates only\n")
-    print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
-                                 sample_types = sample_types, tec_reps_use = "only",
-                                 facet_cols = fig_sizes_rep_rsd$c, unit = "Class"))
-  }
+```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w, eval=length(REPLICATE_VARIABLES) > 0}
+if (all(c("BR", "TR") %in% names(biocrates))){
+  cat("\n###### Technical replicates only\n")
+  print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                               sample_types = sample_types, tec_reps_use = "only",
+                               facet_cols = fig_sizes_rep_rsd$c, unit = "Class"))
+  easy_datatable(
+    data = table_bio_replicate_rsd(
+      bcdata = biocrates, rep_variables = rep_variables,
+      sample_types = sample_types, tec_reps_use = "only", unit = "Class"
+    ),
+    caption = paste0("Median class %RSDs per study groups"))
 }
 ```
 
@@ -319,6 +394,12 @@ fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
 plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                        sample_types = sample_types,
                        facet_cols = fig_sizes_rep_rsd$c, unit = "Class")
+easy_datatable(
+  data = table_bio_replicate_rsd(
+    bcdata = biocrates, rep_variables = rep_variables,
+    sample_types = sample_types, unit = "Class"
+  ),
+  caption = paste0("Median class %RSDs per sample type"))
 ```
 
 ```{r}
@@ -332,24 +413,40 @@ if (length(REPLICATE_VARIABLES) > 0){
 }
 ```
 
-```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
-if (length(REPLICATE_VARIABLES) > 0){
-  cat("\n###### Study groups\n")
+```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w, eval=length(REPLICATE_VARIABLES) > 0}
+cat("\n###### Study groups\n")
+print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                             sample_types = sample_types,
+                             facet_cols = fig_sizes_rep_rsd$c, unit = "Class"))
+easy_datatable(
+  data = table_bio_replicate_rsd(
+    bcdata = biocrates, rep_variables = rep_variables,
+    sample_types = sample_types, unit = "Class"
+  ),
+  caption = paste0("Median class %RSDs per study groups"))
+
+if (all(c("BR", "TR") %in% names(biocrates))){
+  cat("\n###### BRs (mean TRs)\n")
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
-                               sample_types = sample_types,
+                               sample_types = sample_types, tec_reps_use = "mean",
                                facet_cols = fig_sizes_rep_rsd$c, unit = "Class"))
-
-  if (all(c("BR", "TR") %in% names(biocrates))){
-    cat("\n###### BRs (mean TRs)\n")
-    print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
-                                 sample_types = sample_types, tec_reps_use = "mean",
-                                 facet_cols = fig_sizes_rep_rsd$c, unit = "Class"))
-
-    cat("\n###### BRs (median TRs)\n")
-    print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
-                                 sample_types = sample_types, tec_reps_use = "median",
-                                 facet_cols = fig_sizes_rep_rsd$c, unit = "Class"))
-  }
+  easy_datatable(
+    data = table_bio_replicate_rsd(
+      bcdata = biocrates, rep_variables = rep_variables,
+      sample_types = sample_types, tec_reps_use = "mean", unit = "Class"
+    ),
+    caption = paste0("Median class %RSDs per study groups"))
+  
+  cat("\n###### BRs (median TRs)\n")
+  print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                               sample_types = sample_types, tec_reps_use = "median",
+                               facet_cols = fig_sizes_rep_rsd$c, unit = "Class"))
+  easy_datatable(
+    data = table_bio_replicate_rsd(
+      bcdata = biocrates, rep_variables = rep_variables,
+      sample_types = sample_types, tec_reps_use = "median", unit = "Class"
+    ),
+    caption = paste0("Median class %RSDs per study groups"))
 }
 ```
 
@@ -380,14 +477,18 @@ if (length(REPLICATE_VARIABLES) > 0){
 }
 ```
 
-```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
-if (length(REPLICATE_VARIABLES) > 0){
-  if (all(c("BR", "TR") %in% names(biocrates))){
-    cat("\n###### Technical replicates only\n")
-    print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
-                                 sample_types = sample_types, tec_reps_use = "only",
-                                 facet_cols = fig_sizes_rep_rsd$c, unit = "Class"))
-  }
+```{r, results="asis", fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w, eval=length(REPLICATE_VARIABLES) > 0}
+if (all(c("BR", "TR") %in% names(biocrates))){
+  cat("\n###### Technical replicates only\n")
+  print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
+                               sample_types = sample_types, tec_reps_use = "only",
+                               facet_cols = fig_sizes_rep_rsd$c, unit = "Class"))
+  easy_datatable(
+    data = table_bio_replicate_rsd(
+      bcdata = biocrates, rep_variables = rep_variables,
+      sample_types = sample_types, tec_reps_use = "only", unit = "Class"
+    ),
+    caption = paste0("Median class %RSDs per study groups"))
 }
 ```
 
