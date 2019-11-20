@@ -121,11 +121,15 @@ knitr::opts_knit$set(
   eval.after = 'fig.cap'
 )
 
-# Set chunk eval variable defaults
+# Set chunk/code evaluation control variables defaults
 CONTINUE <- TRUE
 MULTIBATCH <- FALSE
-POOLS_AVAILABLE <- FALSE
-POOLS_ENOUGH <- FALSE
+AVAILABLE_BIOLOGICAL <- FALSE
+AVAILABLE_POOLED_QC <- FALSE
+AVAILABLE_REFERENCE_QC <- FALSE
+ENOUGH_BIOLOGICAL <- FALSE
+ENOUGH_POOLED_QC <- FALSE
+ENOUGH_REFERENCE_QC <- FALSE
 NORMALIZED <- FALSE
 ```
 

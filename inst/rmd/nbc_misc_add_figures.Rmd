@@ -95,13 +95,13 @@ plot_sample_profiles_box(
 ```
 
 
-```{r, fig.height=fig_sizes_points$h, fig.width=fig_sizes_points$w, eval=POOLS_AVAILABLE, results="asis"}
+```{r, fig.height=fig_sizes_points$h, fig.width=fig_sizes_points$w, eval=AVAILABLE_POOLED_QC, results="asis"}
 cat(paste0("\n#### ", SAMPLE_TYPE_POOLED_QC, "s\n"))
 plot_sample_profiles_points(
   bcdata = biocrates, target = PKG_ENV$CONCENTRATION, sample_types = SAMPLE_TYPE_POOLED_QC)
 ```
 
-```{r, fig.height=fig_sizes_box$h, fig.width=fig_sizes_box$w, eval=POOLS_AVAILABLE}
+```{r, fig.height=fig_sizes_box$h, fig.width=fig_sizes_box$w, eval=AVAILABLE_POOLED_QC}
 plot_sample_profiles_box(
   bcdata = biocrates, target = PKG_ENV$CONCENTRATION, sample_types = SAMPLE_TYPE_POOLED_QC)
 ```
