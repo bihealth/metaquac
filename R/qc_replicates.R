@@ -93,7 +93,7 @@ plot_bio_replicate_rsd <- function(bcdata = biocrates,
 
   y_var <- "%RSD"
   if (summarize != "Compound"){
-    y_var <- paste("%RSD", summarize, summary_type)
+    y_var <- paste(stringr::str_to_title(summary_type), summarize, "%RSD")
   }
 
   # Plot
@@ -177,7 +177,7 @@ table_bio_replicate_rsd <- function(bcdata = biocrates,
   # Summarize by class (optional)
   y_var <- "%RSD"
   if (summarize != "Compound"){
-    y_var <- paste("%RSD", summarize, summary_type)
+    y_var <- paste(stringr::str_to_title(summary_type), summarize, "%RSD")
     rsddata <- rsddata %>%
       filter(!is.na(`%RSD`)) %>%
       group_by_at(vars(one_of(summarize, rep_variables, bio_reps)))
