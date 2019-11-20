@@ -176,6 +176,9 @@ Please refer to Biocrates' manuals and documents provided with the kit used.
 ```{r child="nbc_qc_compound_variability.Rmd", eval=CONTINUE}
 ```
 
+```{r child="nbc_qc_rsd.Rmd", eval=CONTINUE}
+```
+
 ```{r child="nbc_calibration_scatter.Rmd", eval=CONTINUE}
 ```
 
