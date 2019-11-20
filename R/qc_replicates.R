@@ -73,80 +73,33 @@ plot_bio_replicate_rsd <- function(bcdata = biocrates,
                                    tec_reps_use = c("include", "only",
                                                     "mean", "median")[1],
                                    rsd_threshold = 15,
-                                   unit = c("Compound", "Class")[1],
-                                   class_summary = c("mean", "median")[2],
+                                   summarize = c("Compound", "Class", "Sample.Type")[1],
+                                   summary_type = c("mean", "median")[2],
                                    facet_cols = 2){
 
-  assert_that(all(rep_variables %in% names(bcdata)))
-  assert_that(target %in% names(bcdata))
-  # disabled, since default doesn't apply to studies without pooled QC samples:
-  # assert_that(all(sample_types %in% bcdata$Sample.Type))
-  assert_that(tec_reps_use %in% c("include", "only", "mean", "median"))
-  assert_that(unit %in% c("Compound", "Class"))
-  assert_that(class_summary %in% c("mean", "median"))
+  # Get RSDs
+  rsddata <- table_bio_replicate_rsd(
+    bcdata = bcdata,
+    rep_variables = rep_variables,
+    target = target,
+    sample_types = sample_types,
+    bio_reps = bio_reps,
+    tec_reps = tec_reps,
+    tec_reps_use = tec_reps_use,
+    rsd_threshold = rsd_threshold,
+    summarize = summarize,
+    summary_type = summary_type
+  )
 
-  rsddata <- bcdata
-
-  # Select samples
-  if (!is.null(sample_types)){
-    rsddata <- rsddata %>%
-      filter(Sample.Type %in% sample_types)
-  }
-
-  # Handle technical replicates
-  fill <- NULL
-  if (tec_reps_use == "only"){
-    # Only compare TRs, i.e. BR groups with more than one sample
-    rsddata <- rsddata %>%
-      group_by_at(vars(Compound, Class, one_of(rep_variables, bio_reps))) %>%
-      filter(all(n() > 1))
-    fill <- paste0("`", bio_reps, "`")
-  } else if (tec_reps_use == "mean"){
-    # Summarize TRs as one BRs via mean
-    rsddata <- rsddata %>%
-      group_by_at(vars(Compound, Class, one_of(rep_variables, bio_reps))) %>%
-      summarize(UQ(sym(target)) := mean(UQ(sym(target)), na.rm = TRUE))
-  } else if (tec_reps_use == "median"){
-    # Summarize TRs as one BRs via median
-    rsddata <- rsddata %>%
-      group_by_at(vars(Compound, Class, one_of(rep_variables, bio_reps))) %>%
-      summarize(UQ(sym(target)) := median(UQ(sym(target)), na.rm = TRUE))
-  } else {
-    # Include, i.e. don't differentiate TRs from BRs
-    rsddata <- rsddata %>%
-      filter(!is.na(UQ(sym(target)))) %>%
-      group_by_at(vars(Compound, Class, one_of(rep_variables)))
-  }
-
-  # Calculate %RSD
-  rsddata <- rsddata %>%
-    filter(!is.na(UQ(sym(target)))) %>%
-    summarize(`%RSD` = rsd(UQ(sym(target))),
-              `# Samples` = n())
-
-  # Summarize by class (optional)
   y_var <- "%RSD"
-  if (unit == "Class"){
-    y_var <- paste("%RSD class", class_summary)
-    rsddata <- rsddata %>%
-      filter(!is.na(`%RSD`)) %>%
-      group_by_at(vars(Class, one_of(rep_variables, bio_reps)))
-    if (class_summary == "mean"){
-      rsddata <- rsddata %>%
-        summarize(UQ(sym(y_var)) := mean(`%RSD`, na.rm = TRUE),
-                  `# Compounds` = n())
-    } else { # median
-      rsddata <- rsddata %>%
-        summarize(UQ(sym(y_var)) := median(`%RSD`, na.rm = TRUE),
-                  `# Compounds` = n())
-    }
+  if (summarize != "Compound"){
+    y_var <- paste("%RSD", summarize, summary_type)
   }
 
   # Plot
   g <- ggplot(data = rsddata,
-              mapping = aes_string(x = paste0("`", unit, "`"),
-                                   y = paste0("`", y_var, "`"),
-                                   fill = fill)) +
+              mapping = aes_string(x = paste0("`", summarize, "`"),
+                                   y = paste0("`", y_var, "`"))) +
     facet_wrap(as.formula(paste(paste(rep_variables, collapse = "+"), "~ .")),
                labeller = label_wrap_gen(multi_line=TRUE), strip.position = "right",
                scales = "fixed", ncol = facet_cols) +
@@ -155,7 +108,7 @@ plot_bio_replicate_rsd <- function(bcdata = biocrates,
     geom_bar(stat = "identity", alpha = 0.75, position = "dodge2") +
     geom_hline(yintercept = rsd_threshold, color = "red") +
     scale_y_continuous(breaks = c(pretty(rsddata[[y_var]]), rsd_threshold)) +
-    ylab(label = y_var) + xlab(label = unit)
+    ylab(label = y_var) + xlab(label = summarize)
 
   return(g)
 }
@@ -173,16 +126,16 @@ table_bio_replicate_rsd <- function(bcdata = biocrates,
                                     tec_reps_use = c("include", "only",
                                                      "mean", "median")[1],
                                     rsd_threshold = 15,
-                                    unit = c("Compound", "Class")[1],
-                                    class_summary = c("mean", "median")[2]){
+                                    summarize = c("Compound", "Class", "Sample.Type")[1],
+                                    summary_type = c("mean", "median")[2]){
 
   assert_that(all(rep_variables %in% names(bcdata)))
   assert_that(target %in% names(bcdata))
   # disabled, since default doesn't apply to studies without pooled QC samples:
   # assert_that(all(sample_types %in% bcdata$Sample.Type))
   assert_that(tec_reps_use %in% c("include", "only", "mean", "median"))
-  assert_that(unit %in% c("Compound", "Class"))
-  assert_that(class_summary %in% c("mean", "median"))
+  assert_that(summarize %in% c("Compound", "Class", "Sample.Type"))
+  assert_that(summary_type %in% c("mean", "median"))
 
   rsddata <- bcdata
 
@@ -193,13 +146,11 @@ table_bio_replicate_rsd <- function(bcdata = biocrates,
   }
 
   # Handle technical replicates
-  fill <- NULL
   if (tec_reps_use == "only"){
     # Only compare TRs, i.e. BR groups with more than one sample
     rsddata <- rsddata %>%
       group_by_at(vars(Compound, Class, one_of(rep_variables, bio_reps))) %>%
       filter(all(n() > 1))
-    fill <- paste0("`", bio_reps, "`")
   } else if (tec_reps_use == "mean"){
     # Summarize TRs as one BRs via mean
     rsddata <- rsddata %>%
@@ -225,12 +176,12 @@ table_bio_replicate_rsd <- function(bcdata = biocrates,
 
   # Summarize by class (optional)
   y_var <- "%RSD"
-  if (unit == "Class"){
-    y_var <- paste("%RSD class", class_summary)
+  if (summarize != "Compound"){
+    y_var <- paste("%RSD", summarize, summary_type)
     rsddata <- rsddata %>%
       filter(!is.na(`%RSD`)) %>%
-      group_by_at(vars(Class, one_of(rep_variables, bio_reps)))
-    if (class_summary == "mean"){
+      group_by_at(vars(one_of(summarize, rep_variables, bio_reps)))
+    if (summary_type == "mean"){
       rsddata <- rsddata %>%
         summarize(UQ(sym(y_var)) := mean(`%RSD`, na.rm = TRUE),
                   `# Compounds` = n(),
