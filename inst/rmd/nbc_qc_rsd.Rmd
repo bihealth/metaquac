@@ -11,7 +11,7 @@ This analysis is based on the status-preprocessed dataset 1.
 # Select dataset
 biocrates <- datasets$discarded
 
-# Gather replicate variables to used them as one variable for the calculations of separate
+# Gather replicate variables to use them as one variable for the calculations of separate
 # group variables %RSDs (in comparison to interacting group variables %RSDs)
 if (length(REPLICATE_VARIABLES) > 0) {
   biocrates_regrouped <- biocrates %>%

@@ -241,6 +241,8 @@ in reference QC samples (Biocrates' QC Level 2) (default = 0.3, exclusive, disab
 samples (Biocrates' QC Level 2) (default = 15\%, exclusive, disable with NULL).
 * `filter_compound_bs_max_mv_ratio` Set maximum ratio of missing values allowed for compounds
 in biological samples (Biocrates' Sample) (default = 0.3, exclusive, disable with NULL).
+* `filter_compound_bs_min_rsd` Set minimum \%RSD allowed for compounds in biological samples
+#' (default = 15\%, exclusive, disable with NULL).
 * `filter_sample_max_mv_ratio` Set maximum ratio of missing values allowed per biological
 sample (Biocrates' Sample) (default < 0.2, exclusive, disable with NULL).
 * `data_tables` Control data tables availability in reports. "all" (default) will show all

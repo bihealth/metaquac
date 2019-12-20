@@ -321,6 +321,32 @@ remove_compounds_rsd <- function(data,
 }
 
 
+# Remove compounds with low %RSD within the samples of the specified types (replicates).
+# This is usually applied to biological samples to remove biologically invariable/stable compounds.
+remove_compounds_rsd_low <- function(
+  data,
+  target = PKG_ENV$CONCENTRATION,
+  sample_type = SAMPLE_TYPE_BIOLOGICAL,
+  min_rsd = 15
+){
+  # Identify compounds with low %RSDs
+  to_remove <- data.frame()
+  if (!is.null(min_rsd)) {
+    assertthat::assert_that(0 <= min_rsd && min_rsd <= 100)
+    to_remove <- data %>%
+      filter(Sample.Type %in% sample_type) %>%
+      group_by(Compound) %>%
+      summarize(`%RSD` = rsd(UQ(sym(target)))) %>%
+      filter(`%RSD` <= min_rsd)
+  }
+
+  # Remove invalid compounds
+  data <- subset(data, subset = !Compound %in% unique(to_remove$Compound))
+
+  return(list(data = data, removed = to_remove))
+}
+
+
 # Remove samples with to many missing values
 remove_samples_na <- function(data,
                               target = PKG_ENV$CONCENTRATION,
