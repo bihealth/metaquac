@@ -60,7 +60,7 @@ if ("filter_regex" %in% names(params) && params$filter_regex != "") {
   biocrates <- biocrates %>%
     filter(!grepl(params$filter_regex, Sample.Identification))
 }
-easy_datatable(removed_samples, caption = "Removed samples")
+easy_datatable(removed_samples, caption = "Removed samples", show_type = "statistics")
 ```
 
 ```{r}

@@ -69,6 +69,13 @@ params:
   filter_compound_bs_max_mv_ratio: 0.3
   filter_sample_max_mv_ratio: 0.2
 
+  # Control data tables availability in reports. "all" (default) will show all
+  # implemented data tables (with vcs export buttons). "stats" will only show tables of summarized
+  # data (such as countings, %RSDs, etc.), but not the actual measurements (neither original nor
+  # pre-processed). "none" will show no data tables at all, i.e. the report is mainly limited to
+  # visualizations.
+  data_tables: all
+
   # [WIP] Optional additional normalization for biological samples (CURRENTLY DISABLED)
   # Currently either PQN or None
   # (not visibly passed via create_report function, yet)

@@ -243,7 +243,11 @@ samples (Biocrates' QC Level 2) (default = 15\%, exclusive, disable with NULL).
 in biological samples (Biocrates' Sample) (default = 0.3, exclusive, disable with NULL).
 * `filter_sample_max_mv_ratio` Set maximum ratio of missing values allowed per biological
 sample (Biocrates' Sample) (default < 0.2, exclusive, disable with NULL).
-
+* `data_tables` Control data tables availability in reports. "all" (default) will show all
+implemented data tables (with vcs export buttons). "stats" will only show tables of summarized
+data (such as countings, %RSDs, etc.), but not the actual measurements (neither original nor
+pre-processed). "none" will show no data tables at all, i.e. the report is mainly limited to
+visualizations.
 
 ## General Notes on Biocrates Data
 

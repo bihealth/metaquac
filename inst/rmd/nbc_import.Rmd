@@ -110,6 +110,6 @@ cat("One or more samples with the same identifier (Sample Identification) but di
     in other columns have been detected. This would interfere with data processing and prevent
     reliable analysis. Thus, further processing is canceled. Please use the list of duplicated
     samples provided below for guidance to correct your data.")
-easy_datatable(duplicate_samples, caption = "Sample duplicates.")
+easy_datatable(duplicate_samples, caption = "Sample duplicates.", show_type = "statistics")
 CONTINUE <- FALSE
 ```

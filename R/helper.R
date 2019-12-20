@@ -86,48 +86,67 @@ table_mod_round <- function(data,
 # A DT datatable default
 # Note: Call only directly from a notebook chunk, as DT datatables won't render
 # if called within a function!
-easy_datatable <- function(data,
-                           arrange_by = NULL,
-                           caption = NULL,
-                           round_colums = NULL,
-                           round_digits = 2,
-                           pvalues_columns = NULL,
-                           pvalues_action = "trim",
-                           pvalues_digits = 5,
-                           rownames = FALSE,
-                           class = "display compact nowrap",
-                           extensions = "Buttons",
-                           options = list(
-                             pageLength = 10,
-                             scrollX = TRUE,
-                             dom = "Bfrtip",
-                             buttons = c("csv")),
-                           ...){
+easy_datatable <- function(
+  data,
+  arrange_by = NULL,
+  caption = NULL,
+  round_colums = NULL,
+  round_digits = 2,
+  pvalues_columns = NULL,
+  pvalues_action = "trim",
+  pvalues_digits = 5,
+  rownames = FALSE,
+  class = "display compact nowrap",
+  extensions = "Buttons",
+  options = list(
+    pageLength = 10,
+    scrollX = TRUE,
+    dom = "Bfrtip",
+    buttons = c("csv")),
+  show_type = c("measurements", "statistics")[1],
+  show = PKG_ENV$TABLE_DISPLAY,
+  ...
+){
 
-  # Round columns
-  data <- table_mod_round(
-    data, round_colums = round_colums, round_digits = round_digits
-  )
-  # Modify p-values
-  data <- table_mod_pvalue(
-    data, pvalues_columns = pvalues_columns,
-    pvalues_action = pvalues_action, pvalues_digits = pvalues_digits
-  )
+  assertthat::assert_that(show_type %in% c("measurements", "statistics"))
+  assertthat::assert_that(show %in% c("all", "stats", "none"))
 
-  # Sort table
-  if (!is.null(arrange_by)){
-    data <- data %>%
-      arrange(UQ(sym(arrange_by)))
+  # Control display of tables according to allowed types
+  if (show == "none" || (show == "stats" && show_type == "measurements")) {
+    table_out <- DT::datatable(
+      data.frame("TABLE CONTENT DISABLED!"),
+      rownames = FALSE,
+      colnames = c(),
+      caption = caption,
+      options = list(pageLength = 1)
+    )
   }
+  else {
+    # Round columns
+    data <- table_mod_round(
+      data, round_colums = round_colums, round_digits = round_digits
+    )
+    # Modify p-values
+    data <- table_mod_pvalue(
+      data, pvalues_columns = pvalues_columns,
+      pvalues_action = pvalues_action, pvalues_digits = pvalues_digits
+    )
 
-  # Create table
-  table_out <- DT::datatable(data,
-                             rownames = rownames,
-                             caption = caption,
-                             class = class,
-                             extensions = extensions,
-                             options = options,
-                             ...)
+    # Sort table
+    if (!is.null(arrange_by)) {
+      data <- data %>%
+        arrange(UQ(sym(arrange_by)))
+    }
+
+    # Create table
+    table_out <- DT::datatable(data,
+                               rownames = rownames,
+                               caption = caption,
+                               class = class,
+                               extensions = extensions,
+                               options = options,
+                               ...)
+  }
 
   return(table_out)
 }

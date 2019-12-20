@@ -277,7 +277,7 @@ filter_res <- remove_samples_na(
   max_ratio = 0.0,
   max_mode = "inclusive")
 biocrates_imputed <- filter_res$data
-easy_datatable(filter_res$removed,
+easy_datatable(filter_res$removed, show_type = "statistics",
                caption = "Removed samples with MVs after imputation")
 easy_datatable(biocrates_imputed,
                caption = "Remaining median imputed dataset 4")

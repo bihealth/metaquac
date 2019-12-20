@@ -77,12 +77,12 @@ Missing **Concentration** values after Biocrates status preprocessing:
 ```{r}
 easy_datatable(
   summarize_missing_values_per_sample(datasets$discarded, plot = FALSE),
-  round_colums = "% Missing Values",
+  round_colums = "% Missing Values", show_type = "statistics",
   caption = "Missing values per sample after status preprocessing")
 
 easy_datatable(
   summarize_missing_values_per_compound(datasets$discarded, plot = FALSE),
-  round_colums = "% Missing Values",
+  round_colums = "% Missing Values", show_type = "statistics",
   caption = "Missing values per compound after status preprocessing")
 
 easy_datatable(
@@ -106,7 +106,7 @@ Number of compounds left: **`r length(unique(datasets$filter_compounds_by_qc_mv_
 #   a. Based on missing values ratio in QCs (samples of type SAMPLE_TYPE_REFERENCE_QC)
 #      Valid ratio of NAs is max 0.2 by default
 easy_datatable(
-  datasets$filter_compounds_by_qc_mv_removed,
+  datasets$filter_compounds_by_qc_mv_removed, show_type = "statistics",
   caption = paste0("Removed compounds due to ", ppparams$threshold_2a*100, "% QC MVs"))
 easy_datatable(
   datasets$filter_compounds_by_qc_mv_kept,
@@ -127,7 +127,7 @@ Number of compounds left: **`r length(unique(datasets$filter_compounds_by_qc_rsd
 ```{r}
 #   b. Based on %RSD of QCs (default >15%)
 easy_datatable(
-  datasets$filter_compounds_by_qc_rsd_removed,
+  datasets$filter_compounds_by_qc_rsd_removed, show_type = "statistics",
   caption = paste0("Removed compounds due to ", ppparams$threshold_2b, " %RSD in QCs"))
 easy_datatable(
   datasets$filter_compounds_by_qc_rsd_kept,
@@ -147,7 +147,7 @@ Number of compounds left: **`r length(unique(datasets$filter_compounds_by_sample
 # 4. Remove underrepresented compounds
 #   a. Remove completely missing compounds
 easy_datatable(
-  datasets$filter_compounds_by_sample_all_mv_removed,
+  datasets$filter_compounds_by_sample_all_mv_removed, show_type = "statistics",
   caption = paste0("Removed compounds due to ", ppparams$threshold_3a*100, "% Sample MVs"))
 easy_datatable(
   datasets$filter_compounds_by_sample_all_mv_kept,
@@ -169,7 +169,7 @@ Number of compounds left: **`r length(unique(datasets$filter_compounds_by_sample
 #   b. Based on missing value ratio over all (!) biological samples (>25%)
 #      Valid ratio of NAs is max 0.25 by default
 easy_datatable(
-  datasets$filter_compounds_by_sample_mv_removed,
+  datasets$filter_compounds_by_sample_mv_removed, show_type = "statistics",
   caption = paste0("Removed compounds due to ", ppparams$threshold_3b*100, "% Sample MVs"))
 easy_datatable(
   datasets$filter_compounds_by_sample_mv_kept,
@@ -197,7 +197,7 @@ Number of biological samples left:
 #   a. Based on missing value ratio over compounds
 #      Valid ratio of NAs is max 0.2 by default
 easy_datatable(
-  datasets$filter_samples_by_compound_mv_removed,
+  datasets$filter_samples_by_compound_mv_removed, show_type = "statistics",
   caption = paste0("Removed samples due to ", ppparams$threshold_4*100, "% Compound MVs"))
 easy_datatable(
   datasets$filter_samples_by_compound_mv_kept,
@@ -215,12 +215,16 @@ unprocessed dataset is available in the tables below.
 easy_datatable(
   summarize_missing_values_per_sample(datasets$original, plot = FALSE),
   round_colums = "% Missing Values",
-  caption = "Missing values per sample before status preprocessing")
+  caption = "Missing values per sample before status preprocessing",
+  show_type = "statistics"
+)
 
 easy_datatable(
   summarize_missing_values_per_compound(datasets$original, plot = FALSE),
   round_colums = "% Missing Values",
-  caption = "Missing values per compound before status preprocessing")
+  caption = "Missing values per compound before status preprocessing",
+  show_type = "statistics"
+)
 
 easy_datatable(
   datasets$original,
