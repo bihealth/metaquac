@@ -68,12 +68,14 @@ easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables, sample_types = sample_types
   ),
-  caption = paste0("Compound %RSDs per sample type"))
+  caption = paste0("Compound %RSDs per sample type"),
+  show_type = "statistics"
+)
 ```
 
 ```{r}
 ### Biological replicates
-if (length(REPLICATE_VARIABLES) > 0){
+if (length(REPLICATE_VARIABLES) > 0) {
   rep_variables <- REPLICATE_VARIABLES
   sample_types <- c(SAMPLE_TYPE_BIOLOGICAL)
   # Calculate figure size
@@ -92,7 +94,9 @@ easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates_regrouped, rep_variables = "Study.Group", sample_types = sample_types
   ),
-  caption = paste0("Compound %RSDs per study groups"))
+  caption = paste0("Compound %RSDs per study groups"),
+  show_type = "statistics"
+)
 
 cat(paste0("\n\n##### Study groups (interacting)\n"))
 print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
@@ -102,7 +106,9 @@ easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables, sample_types = sample_types
   ),
-  caption = paste0("Compound %RSDs per study groups"))
+  caption = paste0("Compound %RSDs per study groups"),
+  show_type = "statistics"
+)
 
 if (all(c("BR", "TR") %in% names(biocrates))){
   cat(paste0("\n##### BRs (mean TRs)\n"))
@@ -114,7 +120,9 @@ if (all(c("BR", "TR") %in% names(biocrates))){
       bcdata = biocrates, rep_variables = rep_variables,
       sample_types = sample_types, tec_reps_use = "mean"
     ),
-    caption = paste0("Compound %RSDs per study groups"))
+    caption = paste0("Compound %RSDs per study groups"),
+    show_type = "statistics"
+  )
   
   cat(paste0("\n##### BRs (median TRs)\n"))
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
@@ -125,7 +133,9 @@ if (all(c("BR", "TR") %in% names(biocrates))){
       bcdata = biocrates, rep_variables = rep_variables,
       sample_types = sample_types, tec_reps_use = "median"
     ),
-    caption = paste0("Compound %RSDs per study groups"))
+    caption = paste0("Compound %RSDs per study groups"),
+    show_type = "statistics"
+  )
 }
 ```
 
@@ -167,7 +177,9 @@ if (all(c("BR", "TR") %in% names(biocrates))){
       bcdata = biocrates, rep_variables = rep_variables,
       sample_types = sample_types, tec_reps_use = "only"
     ),
-    caption = paste0("Compound %RSDs per study groups"))
+    caption = paste0("Compound %RSDs per study groups"),
+    show_type = "statistics"
+  )
 }
 ```
 
@@ -190,7 +202,9 @@ easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables, sample_types = sample_types
   ),
-  caption = paste0("Compound %RSDs per sample type"))
+  caption = paste0("Compound %RSDs per sample type"),
+  show_type = "statistics"
+)
 ```
 
 ```{r}
@@ -217,7 +231,9 @@ easy_datatable(
     rep_variables = c("Batch", "Study.Group"),
     sample_types = sample_types
   ),
-  caption = paste0("Compound %RSDs per study groups"))
+  caption = paste0("Compound %RSDs per study groups"),
+  show_type = "statistics"
+)
 
 cat(paste0("\n\n##### Study groups (interacting)\n"))
 print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
@@ -227,7 +243,9 @@ easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables, sample_types = sample_types
   ),
-  caption = paste0("Compound %RSDs per study groups"))
+  caption = paste0("Compound %RSDs per study groups"),
+  show_type = "statistics"
+)
 
 if (all(c("BR", "TR") %in% names(biocrates))){
   cat(paste0("\n##### BRs (mean TRs)\n"))
@@ -239,7 +257,9 @@ if (all(c("BR", "TR") %in% names(biocrates))){
       bcdata = biocrates, rep_variables = rep_variables,
       sample_types = sample_types, tec_reps_use = "mean"
     ),
-    caption = paste0("Compound %RSDs per study groups"))
+    caption = paste0("Compound %RSDs per study groups"),
+    show_type = "statistics"
+  )
   
   cat(paste0("\n##### BRs (median TRs)\n"))
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
@@ -250,7 +270,9 @@ if (all(c("BR", "TR") %in% names(biocrates))){
       bcdata = biocrates, rep_variables = rep_variables,
       sample_types = sample_types, tec_reps_use = "median"
     ),
-    caption = paste0("Compound %RSDs per study groups"))
+    caption = paste0("Compound %RSDs per study groups"),
+    show_type = "statistics"
+  )
 }
 ```
 
@@ -292,7 +314,9 @@ if (all(c("BR", "TR") %in% names(biocrates))){
       bcdata = biocrates, rep_variables = rep_variables,
       sample_types = sample_types, tec_reps_use = "only"
     ),
-    caption = paste0("Compound %RSDs per study groups"))
+    caption = paste0("Compound %RSDs per study groups"),
+    show_type = "statistics"
+  )
 }
 ```
 
@@ -317,7 +341,9 @@ easy_datatable(
     bcdata = biocrates, rep_variables = rep_variables,
     sample_types = sample_types, summarize = "Class"
   ),
-  caption = paste0("Median class %RSDs per sample type"))
+  caption = paste0("Median class %RSDs per sample type"),
+  show_type = "statistics"
+)
 ```
 
 ```{r}
@@ -348,7 +374,8 @@ easy_datatable(
     sample_types = sample_types,
     summarize = "Class"
   ),
-  caption = paste0("Compound %RSDs per study groups")
+  caption = paste0("Compound %RSDs per study groups"),
+  show_type = "statistics"
 )
 
 cat(paste0("\n\n##### Study groups (interacting)\n"))
@@ -360,7 +387,9 @@ easy_datatable(
     bcdata = biocrates, rep_variables = rep_variables,
     sample_types = sample_types, summarize = "Class"
   ),
-  caption = paste0("Median class %RSDs per study groups"))
+  caption = paste0("Median class %RSDs per study groups"),
+  show_type = "statistics"
+)
 
 if (all(c("BR", "TR") %in% names(biocrates))){
   cat("\n##### BRs (mean TRs)\n")
@@ -372,7 +401,9 @@ if (all(c("BR", "TR") %in% names(biocrates))){
       bcdata = biocrates, rep_variables = rep_variables,
       sample_types = sample_types, tec_reps_use = "mean", summarize = "Class"
     ),
-    caption = paste0("Median class %RSDs per study groups"))
+    caption = paste0("Median class %RSDs per study groups"),
+    show_type = "statistics"
+  )
   
   cat("\n##### BRs (median TRs)\n")
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
@@ -383,7 +414,9 @@ if (all(c("BR", "TR") %in% names(biocrates))){
       bcdata = biocrates, rep_variables = rep_variables,
       sample_types = sample_types, tec_reps_use = "median", summarize = "Class"
     ),
-    caption = paste0("Median class %RSDs per study groups"))
+    caption = paste0("Median class %RSDs per study groups"),
+    show_type = "statistics"
+  )
 }
 ```
 
@@ -425,7 +458,9 @@ if (all(c("BR", "TR") %in% names(biocrates))){
       bcdata = biocrates, rep_variables = rep_variables,
       sample_types = sample_types, tec_reps_use = "only", summarize = "Class"
     ),
-    caption = paste0("Median class %RSDs per study groups"))
+    caption = paste0("Median class %RSDs per study groups"),
+    show_type = "statistics"
+  )
 }
 ```
 
@@ -449,7 +484,9 @@ easy_datatable(
     bcdata = biocrates, rep_variables = rep_variables,
     sample_types = sample_types, summarize = "Class"
   ),
-  caption = paste0("Median class %RSDs per sample type"))
+  caption = paste0("Median class %RSDs per sample type"),
+  show_type = "statistics"
+)
 ```
 
 ```{r}
@@ -480,7 +517,8 @@ easy_datatable(
     sample_types = sample_types,
     summarize = "Class"
   ),
-  caption = paste0("Compound %RSDs per study groups")
+  caption = paste0("Compound %RSDs per study groups"),
+  show_type = "statistics"
 )
 
 cat(paste0("\n\n##### Study groups (interacting)\n"))
@@ -492,7 +530,9 @@ easy_datatable(
     bcdata = biocrates, rep_variables = rep_variables,
     sample_types = sample_types, summarize = "Class"
   ),
-  caption = paste0("Median class %RSDs per study groups"))
+  caption = paste0("Median class %RSDs per study groups"),
+  show_type = "statistics"
+)
 
 if (all(c("BR", "TR") %in% names(biocrates))){
   cat("\n##### BRs (mean TRs)\n")
@@ -504,7 +544,9 @@ if (all(c("BR", "TR") %in% names(biocrates))){
       bcdata = biocrates, rep_variables = rep_variables,
       sample_types = sample_types, tec_reps_use = "mean", summarize = "Class"
     ),
-    caption = paste0("Median class %RSDs per study groups"))
+    caption = paste0("Median class %RSDs per study groups"),
+    show_type = "statistics"
+  )
   
   cat("\n##### BRs (median TRs)\n")
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
@@ -515,7 +557,9 @@ if (all(c("BR", "TR") %in% names(biocrates))){
       bcdata = biocrates, rep_variables = rep_variables,
       sample_types = sample_types, tec_reps_use = "median", summarize = "Class"
     ),
-    caption = paste0("Median class %RSDs per study groups"))
+    caption = paste0("Median class %RSDs per study groups"),
+    show_type = "statistics"
+  )
 }
 ```
 
@@ -557,7 +601,9 @@ if (all(c("BR", "TR") %in% names(biocrates))){
       bcdata = biocrates, rep_variables = rep_variables,
       sample_types = sample_types, tec_reps_use = "only", summarize = "Class"
     ),
-    caption = paste0("Median class %RSDs per study groups"))
+    caption = paste0("Median class %RSDs per study groups"),
+    show_type = "statistics"
+  )
 }
 ```
 
@@ -581,7 +627,9 @@ easy_datatable(
     bcdata = biocrates, rep_variables = rep_variables,
     sample_types = sample_types, summarize = "Sample.Type"
   ),
-  caption = paste0("Median sample type %RSDs"))
+  caption = paste0("Median sample type %RSDs"),
+  show_type = "statistics"
+)
 ```
 
 
@@ -603,7 +651,9 @@ easy_datatable(
     bcdata = biocrates, rep_variables = rep_variables,
     sample_types = sample_types, summarize = "Sample.Type"
   ),
-  caption = paste0("Median sample type %RSDs"))
+  caption = paste0("Median sample type %RSDs"),
+  show_type = "statistics"
+)
 ```
 
 
