@@ -51,6 +51,16 @@ calc_fig_sizes_rep_rsd <- function(bcdata, rep_variables, sample_types, unit, le
 
 ### Compounds {.tabset}
 #### All batches {.tabset}
+
+```{r}
+plot_rsd_versus(
+  data = biocrates,
+  threshold_bs = params$filter_compound_bs_min_rsd,
+  threshold_qc = params$filter_compound_qc_max_rsd
+)
+```
+
+
 ##### Sample types
 ```{r}
 rep_variables <- c("Sample.Type")
@@ -191,6 +201,17 @@ if (all(c("BR", "TR") %in% names(biocrates))){
 
 
 #### Per batch {.tabset}
+
+```{r}
+plot_rsd_versus(
+  data = biocrates,
+  threshold_bs = params$filter_compound_bs_min_rsd,
+  threshold_qc = params$filter_compound_qc_max_rsd,
+  shape = "Batch"
+)
+```
+
+
 ##### Sample types
 ```{r}
 rep_variables <- c("Batch", "Sample.Type")
