@@ -63,7 +63,8 @@ fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
 ```{r, fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
 plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                        sample_types = sample_types,
-                       facet_cols = fig_sizes_rep_rsd$c)
+                       facet_cols = fig_sizes_rep_rsd$c,
+                       rsd_threshold = params$filter_compound_qc_max_rsd)
 easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables, sample_types = sample_types
@@ -89,7 +90,8 @@ if (length(REPLICATE_VARIABLES) > 0) {
 cat(paste0("\n\n##### Study groups (separate)\n"))
 print(plot_bio_replicate_rsd(bcdata = biocrates_regrouped, rep_variables = "Study.Group",
                              sample_types = sample_types,
-                             facet_cols = fig_sizes_rep_rsd$c))
+                             facet_cols = fig_sizes_rep_rsd$c,
+                             rsd_threshold = params$filter_compound_bs_min_rsd))
 easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates_regrouped, rep_variables = "Study.Group", sample_types = sample_types
@@ -101,7 +103,8 @@ easy_datatable(
 cat(paste0("\n\n##### Study groups (interacting)\n"))
 print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                              sample_types = sample_types,
-                             facet_cols = fig_sizes_rep_rsd$c))
+                             facet_cols = fig_sizes_rep_rsd$c,
+                             rsd_threshold = params$filter_compound_bs_min_rsd))
 easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables, sample_types = sample_types
@@ -114,7 +117,8 @@ if (all(c("BR", "TR") %in% names(biocrates))){
   cat(paste0("\n##### BRs (mean TRs)\n"))
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                                sample_types = sample_types, tec_reps_use = "mean",
-                               facet_cols = fig_sizes_rep_rsd$c))
+                               facet_cols = fig_sizes_rep_rsd$c,
+                               rsd_threshold = params$filter_compound_bs_min_rsd))
   easy_datatable(
     data = table_bio_replicate_rsd(
       bcdata = biocrates, rep_variables = rep_variables,
@@ -127,7 +131,8 @@ if (all(c("BR", "TR") %in% names(biocrates))){
   cat(paste0("\n##### BRs (median TRs)\n"))
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                                sample_types = sample_types, tec_reps_use = "median",
-                               facet_cols = fig_sizes_rep_rsd$c))
+                               facet_cols = fig_sizes_rep_rsd$c,
+                               rsd_threshold = params$filter_compound_bs_min_rsd))
   easy_datatable(
     data = table_bio_replicate_rsd(
       bcdata = biocrates, rep_variables = rep_variables,
@@ -171,7 +176,8 @@ if (all(c("BR", "TR") %in% names(biocrates))){
   cat(paste0("\n##### TRs only\n"))
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                                sample_types = sample_types, tec_reps_use = "only",
-                               facet_cols = fig_sizes_rep_rsd$c))
+                               facet_cols = fig_sizes_rep_rsd$c,
+                               rsd_threshold = params$filter_compound_bs_min_rsd))
   easy_datatable(
     data = table_bio_replicate_rsd(
       bcdata = biocrates, rep_variables = rep_variables,
@@ -197,7 +203,8 @@ fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
 ```{r, fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
 plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                        sample_types = sample_types,
-                       facet_cols = fig_sizes_rep_rsd$c)
+                       facet_cols = fig_sizes_rep_rsd$c,
+                       rsd_threshold = params$filter_compound_qc_max_rsd)
 easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables, sample_types = sample_types
@@ -224,7 +231,8 @@ cat(paste0("\n\n##### Study groups (separate)\n"))
 print(plot_bio_replicate_rsd(bcdata = biocrates_regrouped,
                              rep_variables = c("Batch", "Study.Group"),
                              sample_types = sample_types,
-                             facet_cols = fig_sizes_rep_rsd$c))
+                             facet_cols = fig_sizes_rep_rsd$c,
+                             rsd_threshold = params$filter_compound_bs_min_rsd))
 easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates_regrouped,
@@ -238,7 +246,8 @@ easy_datatable(
 cat(paste0("\n\n##### Study groups (interacting)\n"))
 print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                              sample_types = sample_types,
-                             facet_cols = fig_sizes_rep_rsd$c))
+                             facet_cols = fig_sizes_rep_rsd$c,
+                             rsd_threshold = params$filter_compound_bs_min_rsd))
 easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables, sample_types = sample_types
@@ -251,7 +260,8 @@ if (all(c("BR", "TR") %in% names(biocrates))){
   cat(paste0("\n##### BRs (mean TRs)\n"))
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                                sample_types = sample_types, tec_reps_use = "mean",
-                               facet_cols = fig_sizes_rep_rsd$c))
+                               facet_cols = fig_sizes_rep_rsd$c,
+                               rsd_threshold = params$filter_compound_bs_min_rsd))
   easy_datatable(
     data = table_bio_replicate_rsd(
       bcdata = biocrates, rep_variables = rep_variables,
@@ -264,7 +274,8 @@ if (all(c("BR", "TR") %in% names(biocrates))){
   cat(paste0("\n##### BRs (median TRs)\n"))
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                                sample_types = sample_types, tec_reps_use = "median",
-                               facet_cols = fig_sizes_rep_rsd$c))
+                               facet_cols = fig_sizes_rep_rsd$c,
+                               rsd_threshold = params$filter_compound_bs_min_rsd))
   easy_datatable(
     data = table_bio_replicate_rsd(
       bcdata = biocrates, rep_variables = rep_variables,
@@ -308,7 +319,8 @@ if (all(c("BR", "TR") %in% names(biocrates))){
   cat(paste0("\n##### TRs only\n"))
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                                sample_types = sample_types, tec_reps_use = "only",
-                               facet_cols = fig_sizes_rep_rsd$c))
+                               facet_cols = fig_sizes_rep_rsd$c,
+                               rsd_threshold = params$filter_compound_bs_min_rsd))
   easy_datatable(
     data = table_bio_replicate_rsd(
       bcdata = biocrates, rep_variables = rep_variables,
@@ -335,7 +347,8 @@ fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
 ```{r, fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
 plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                        sample_types = sample_types,
-                       facet_cols = fig_sizes_rep_rsd$c, summarize = "Class")
+                       facet_cols = fig_sizes_rep_rsd$c, summarize = "Class",
+                       rsd_threshold = params$filter_compound_qc_max_rsd)
 easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables,
@@ -365,7 +378,8 @@ print(plot_bio_replicate_rsd(
   rep_variables = c("Study.Group"),
   sample_types = sample_types,
   summarize = "Class",
-  facet_cols = fig_sizes_rep_rsd$c)
+  facet_cols = fig_sizes_rep_rsd$c,
+  rsd_threshold = params$filter_compound_bs_min_rsd)
 )
 easy_datatable(
   data = table_bio_replicate_rsd(
@@ -381,7 +395,8 @@ easy_datatable(
 cat(paste0("\n\n##### Study groups (interacting)\n"))
 print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                              sample_types = sample_types,
-                             facet_cols = fig_sizes_rep_rsd$c, summarize = "Class"))
+                             facet_cols = fig_sizes_rep_rsd$c, summarize = "Class",
+                             rsd_threshold = params$filter_compound_bs_min_rsd))
 easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables,
@@ -395,7 +410,8 @@ if (all(c("BR", "TR") %in% names(biocrates))){
   cat("\n##### BRs (mean TRs)\n")
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                                sample_types = sample_types, tec_reps_use = "mean",
-                               facet_cols = fig_sizes_rep_rsd$c, summarize = "Class"))
+                               facet_cols = fig_sizes_rep_rsd$c, summarize = "Class",
+                               rsd_threshold = params$filter_compound_bs_min_rsd))
   easy_datatable(
     data = table_bio_replicate_rsd(
       bcdata = biocrates, rep_variables = rep_variables,
@@ -408,7 +424,8 @@ if (all(c("BR", "TR") %in% names(biocrates))){
   cat("\n##### BRs (median TRs)\n")
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                                sample_types = sample_types, tec_reps_use = "median",
-                               facet_cols = fig_sizes_rep_rsd$c, summarize = "Class"))
+                               facet_cols = fig_sizes_rep_rsd$c, summarize = "Class",
+                               rsd_threshold = params$filter_compound_bs_min_rsd))
   easy_datatable(
     data = table_bio_replicate_rsd(
       bcdata = biocrates, rep_variables = rep_variables,
@@ -452,7 +469,8 @@ if (all(c("BR", "TR") %in% names(biocrates))){
   cat("\n##### TRs only\n")
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                                sample_types = sample_types, tec_reps_use = "only",
-                               facet_cols = fig_sizes_rep_rsd$c, summarize = "Class"))
+                               facet_cols = fig_sizes_rep_rsd$c, summarize = "Class",
+                               rsd_threshold = params$filter_compound_bs_min_rsd))
   easy_datatable(
     data = table_bio_replicate_rsd(
       bcdata = biocrates, rep_variables = rep_variables,
@@ -478,7 +496,8 @@ fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
 ```{r, fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
 plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                        sample_types = sample_types,
-                       facet_cols = fig_sizes_rep_rsd$c, summarize = "Class")
+                       facet_cols = fig_sizes_rep_rsd$c, summarize = "Class",
+                       rsd_threshold = params$filter_compound_qc_max_rsd)
 easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables,
@@ -508,7 +527,8 @@ print(plot_bio_replicate_rsd(
   rep_variables = c("Batch", "Study.Group"),
   sample_types = sample_types,
   summarize = "Class",
-  facet_cols = fig_sizes_rep_rsd$c)
+  facet_cols = fig_sizes_rep_rsd$c,
+  rsd_threshold = params$filter_compound_bs_min_rsd)
 )
 easy_datatable(
   data = table_bio_replicate_rsd(
@@ -524,7 +544,8 @@ easy_datatable(
 cat(paste0("\n\n##### Study groups (interacting)\n"))
 print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                              sample_types = sample_types,
-                             facet_cols = fig_sizes_rep_rsd$c, summarize = "Class"))
+                             facet_cols = fig_sizes_rep_rsd$c, summarize = "Class",
+                             rsd_threshold = params$filter_compound_bs_min_rsd))
 easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables,
@@ -538,7 +559,8 @@ if (all(c("BR", "TR") %in% names(biocrates))){
   cat("\n##### BRs (mean TRs)\n")
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                                sample_types = sample_types, tec_reps_use = "mean",
-                               facet_cols = fig_sizes_rep_rsd$c, summarize = "Class"))
+                               facet_cols = fig_sizes_rep_rsd$c, summarize = "Class",
+                               rsd_threshold = params$filter_compound_bs_min_rsd))
   easy_datatable(
     data = table_bio_replicate_rsd(
       bcdata = biocrates, rep_variables = rep_variables,
@@ -551,7 +573,8 @@ if (all(c("BR", "TR") %in% names(biocrates))){
   cat("\n##### BRs (median TRs)\n")
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                                sample_types = sample_types, tec_reps_use = "median",
-                               facet_cols = fig_sizes_rep_rsd$c, summarize = "Class"))
+                               facet_cols = fig_sizes_rep_rsd$c, summarize = "Class",
+                               rsd_threshold = params$filter_compound_bs_min_rsd))
   easy_datatable(
     data = table_bio_replicate_rsd(
       bcdata = biocrates, rep_variables = rep_variables,
@@ -595,7 +618,8 @@ if (all(c("BR", "TR") %in% names(biocrates))){
   cat("\n##### TRs only\n")
   print(plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                                sample_types = sample_types, tec_reps_use = "only",
-                               facet_cols = fig_sizes_rep_rsd$c, summarize = "Class"))
+                               facet_cols = fig_sizes_rep_rsd$c, summarize = "Class",
+                               rsd_threshold = params$filter_compound_bs_min_rsd))
   easy_datatable(
     data = table_bio_replicate_rsd(
       bcdata = biocrates, rep_variables = rep_variables,
@@ -621,7 +645,8 @@ fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
 ```{r, fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
 plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                        sample_types = sample_types,
-                       facet_cols = fig_sizes_rep_rsd$c, summarize = "Sample.Type")
+                       facet_cols = fig_sizes_rep_rsd$c, summarize = "Sample.Type",
+                       rsd_threshold = params$filter_compound_qc_max_rsd)
 easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables,
@@ -645,7 +670,8 @@ fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
 ```{r, fig.height=fig_sizes_rep_rsd$h, fig.width=fig_sizes_rep_rsd$w}
 plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                        sample_types = sample_types,
-                       facet_cols = fig_sizes_rep_rsd$c, summarize = "Sample.Type")
+                       facet_cols = fig_sizes_rep_rsd$c, summarize = "Sample.Type",
+                       rsd_threshold = params$filter_compound_qc_max_rsd)
 easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables,
