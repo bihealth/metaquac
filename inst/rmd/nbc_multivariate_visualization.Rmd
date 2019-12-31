@@ -302,7 +302,7 @@ plot_sample_scatter_matrix(biocrates_imputed,
                            cat_header = "#### ")
 ```
 
-```{r, results="asis", fig.height=7, fig.width=7, dpi=150, eval=POOLS_ENOUGH}
+```{r, results="asis", fig.height=7, fig.width=7, dpi=150, eval=ENOUGH_POOLED_QC}
 # Matrix for Pooled QCs
 cat(paste0("\n### ", SAMPLE_TYPE_POOLED_QC, "s {.tabset}\n"))
 plot_sample_scatter_matrix(biocrates_imputed,

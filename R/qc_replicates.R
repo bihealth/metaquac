@@ -73,17 +73,69 @@ plot_bio_replicate_rsd <- function(bcdata = biocrates,
                                    tec_reps_use = c("include", "only",
                                                     "mean", "median")[1],
                                    rsd_threshold = 15,
-                                   unit = c("Compound", "Class")[1],
-                                   class_summary = c("mean", "median")[1],
+                                   summarize = c("Compound", "Class", "Sample.Type")[1],
+                                   summary_type = c("mean", "median")[2],
                                    facet_cols = 2){
+
+  # Get RSDs
+  rsddata <- table_bio_replicate_rsd(
+    bcdata = bcdata,
+    rep_variables = rep_variables,
+    target = target,
+    sample_types = sample_types,
+    bio_reps = bio_reps,
+    tec_reps = tec_reps,
+    tec_reps_use = tec_reps_use,
+    rsd_threshold = rsd_threshold,
+    summarize = summarize,
+    summary_type = summary_type
+  )
+
+  y_var <- "%RSD"
+  if (summarize != "Compound"){
+    y_var <- paste(stringr::str_to_title(summary_type), summarize, "%RSD")
+  }
+
+  # Plot
+  g <- ggplot(data = rsddata,
+              mapping = aes_string(x = paste0("`", summarize, "`"),
+                                   y = paste0("`", y_var, "`"))) +
+    facet_wrap(as.formula(paste(paste(rep_variables, collapse = "+"), "~ .")),
+               labeller = label_wrap_gen(multi_line=TRUE), strip.position = "right",
+               scales = "fixed", ncol = facet_cols) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+          legend.position = "bottom", legend.box = "vertical") +
+    geom_bar(stat = "identity", alpha = 0.75, position = "dodge2") +
+    geom_hline(yintercept = rsd_threshold, color = "red") +
+    scale_y_continuous(breaks = c(pretty(rsddata[[y_var]]), rsd_threshold)) +
+    ylab(label = y_var) + xlab(label = summarize)
+
+  return(g)
+}
+
+
+# %RSD bar plots of actual biological or technical replicates
+table_bio_replicate_rsd <- function(bcdata = biocrates,
+                                    rep_variables = c("Sample.Type"),
+                                    target = PKG_ENV$CONCENTRATION,
+                                    sample_types = c(SAMPLE_TYPE_POOLED_QC,
+                                                     SAMPLE_TYPE_REFERENCE_QC,
+                                                     SAMPLE_TYPE_BIOLOGICAL),
+                                    bio_reps = "BR",
+                                    tec_reps = "TR",
+                                    tec_reps_use = c("include", "only",
+                                                     "mean", "median")[1],
+                                    rsd_threshold = 15,
+                                    summarize = c("Compound", "Class", "Sample.Type")[1],
+                                    summary_type = c("mean", "median")[2]){
 
   assert_that(all(rep_variables %in% names(bcdata)))
   assert_that(target %in% names(bcdata))
   # disabled, since default doesn't apply to studies without pooled QC samples:
   # assert_that(all(sample_types %in% bcdata$Sample.Type))
   assert_that(tec_reps_use %in% c("include", "only", "mean", "median"))
-  assert_that(unit %in% c("Compound", "Class"))
-  assert_that(class_summary %in% c("mean", "median"))
+  assert_that(summarize %in% c("Compound", "Class", "Sample.Type"))
+  assert_that(summary_type %in% c("mean", "median"))
 
   rsddata <- bcdata
 
@@ -94,13 +146,11 @@ plot_bio_replicate_rsd <- function(bcdata = biocrates,
   }
 
   # Handle technical replicates
-  fill <- NULL
   if (tec_reps_use == "only"){
     # Only compare TRs, i.e. BR groups with more than one sample
     rsddata <- rsddata %>%
       group_by_at(vars(Compound, Class, one_of(rep_variables, bio_reps))) %>%
       filter(all(n() > 1))
-    fill <- paste0("`", bio_reps, "`")
   } else if (tec_reps_use == "mean"){
     # Summarize TRs as one BRs via mean
     rsddata <- rsddata %>%
@@ -122,40 +172,27 @@ plot_bio_replicate_rsd <- function(bcdata = biocrates,
   rsddata <- rsddata %>%
     filter(!is.na(UQ(sym(target)))) %>%
     summarize(`%RSD` = rsd(UQ(sym(target))),
-              Number = n())
+              `# Samples` = n())
 
   # Summarize by class (optional)
   y_var <- "%RSD"
-  if (unit == "Class"){
-    y_var <- paste("%RSD class", class_summary)
+  if (summarize != "Compound"){
+    y_var <- paste(stringr::str_to_title(summary_type), summarize, "%RSD")
     rsddata <- rsddata %>%
       filter(!is.na(`%RSD`)) %>%
-      group_by_at(vars(Class, one_of(rep_variables, bio_reps)))
-    if (class_summary == "mean"){
+      group_by_at(vars(one_of(summarize, rep_variables, bio_reps)))
+    if (summary_type == "mean"){
       rsddata <- rsddata %>%
         summarize(UQ(sym(y_var)) := mean(`%RSD`, na.rm = TRUE),
-                  Number = n())
+                  `# Compounds` = n(),
+                  `Mean # Samples` =  mean(`# Samples`, na.rm = TRUE))
     } else { # median
       rsddata <- rsddata %>%
         summarize(UQ(sym(y_var)) := median(`%RSD`, na.rm = TRUE),
-                  Number = n())
+                  `# Compounds` = n(),
+                  `Median # Samples` =  median(`# Samples`, na.rm = TRUE))
     }
   }
 
-  # Plot
-  g <- ggplot(data = rsddata,
-              mapping = aes_string(x = paste0("`", unit, "`"),
-                                   y = paste0("`", y_var, "`"),
-                                   fill = fill)) +
-    facet_wrap(as.formula(paste(paste(rep_variables, collapse = "+"), "~ .")),
-               labeller = label_wrap_gen(multi_line=TRUE), strip.position = "right",
-               scales = "fixed", ncol = facet_cols) +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
-          legend.position = "bottom", legend.box = "vertical") +
-    geom_bar(stat = "identity", alpha = 0.75, position = "dodge2") +
-    geom_hline(yintercept = rsd_threshold, color = "red") +
-    scale_y_continuous(breaks = c(pretty(rsddata[[y_var]]), rsd_threshold)) +
-    ylab(label = y_var) + xlab(label = unit)
-
-  return(g)
+  return(rsddata)
 }

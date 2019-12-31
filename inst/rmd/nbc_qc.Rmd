@@ -458,14 +458,14 @@ print(assisting_plots$distribution)
 ```
 
 
-```{r, results="asis", eval=POOLS_ENOUGH}
+```{r, results="asis", eval=ENOUGH_POOLED_QC}
 cat(paste0("\n\n##### ", SAMPLE_TYPE_POOLED_QC, "s {.tabset}\n"))
 cat("\n\n###### Single batches\n")
 easy_datatable(sequence_batch_horizontality(data = biocrates, sample_type = SAMPLE_TYPE_POOLED_QC),
                caption = "Single batch models coefficients.", show_type = "statistics")
 ```
 
-```{r, results="asis", eval=POOLS_ENOUGH&&MULTIBATCH}
+```{r, results="asis", eval=ENOUGH_POOLED_QC&&MULTIBATCH}
 cat("\n\n###### Batch comparison\n")
 results <- sequence_batch_conformity(
   data = biocrates,
@@ -477,7 +477,7 @@ easy_datatable(results$coefficients, caption = "Multi batch model coefficients."
                show_type = "statistics")
 ```
 
-```{r, results="asis", eval=POOLS_ENOUGH}
+```{r, results="asis", eval=ENOUGH_POOLED_QC}
 cat("\n\n###### Auxiliary Figures\n")
 assisting_plots <- sequence_batch_assistant_plots(data = biocrates, sample_type = SAMPLE_TYPE_POOLED_QC)
 print(assisting_plots$sequence)

@@ -74,8 +74,22 @@ biocrates$Compound <- factor(biocrates$Compound, levels = compound_levels)
 ```
 
 ```{r, results="asis"}
+# Are there any SAMPLE_TYPE_BIOLOGICAL samples? More than one?
+AVAILABLE_BIOLOGICAL <- SAMPLE_TYPE_BIOLOGICAL %in% biocrates$Sample.Type
+ENOUGH_BIOLOGICAL <- biocrates %>% filter(Sample.Type == SAMPLE_TYPE_BIOLOGICAL) %>%
+  select(Sample.Name) %>% distinct() %>% pull(Sample.Name) %>% length() > 1
+```
+
+```{r, results="asis"}
 # Are there any SAMPLE_TYPE_POOLED_QC samples? More than one?
-POOLS_AVAILABLE <- SAMPLE_TYPE_POOLED_QC %in% biocrates$Sample.Type
-POOLS_ENOUGH <- biocrates %>% filter(Sample.Type == SAMPLE_TYPE_POOLED_QC) %>%
+AVAILABLE_POOLED_QC <- SAMPLE_TYPE_POOLED_QC %in% biocrates$Sample.Type
+ENOUGH_POOLED_QC <- biocrates %>% filter(Sample.Type == SAMPLE_TYPE_POOLED_QC) %>%
+  select(Sample.Name) %>% distinct() %>% pull(Sample.Name) %>% length() > 1
+```
+
+```{r, results="asis"}
+# Are there any SAMPLE_TYPE_REFERENCE_QC samples? More than one?
+AVAILABLE_REFERENCE_QC <- SAMPLE_TYPE_REFERENCE_QC %in% biocrates$Sample.Type
+ENOUGH_REFERENCE_QC <- biocrates %>% filter(Sample.Type == SAMPLE_TYPE_REFERENCE_QC) %>%
   select(Sample.Name) %>% distinct() %>% pull(Sample.Name) %>% length() > 1
 ```

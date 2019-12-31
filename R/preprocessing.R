@@ -174,10 +174,19 @@ execute_preprocessing <- function(data, ppparams){
   datasets$filter_compounds_by_sample_mv_kept <- filter_res$data
   datasets$filter_compounds_by_sample_mv_removed <- filter_res$removed
 
+  #   c. Based on %RSD of biological samples (default <15%)
+  filter_res <- remove_compounds_rsd_low(
+    data = datasets$filter_compounds_by_sample_mv_kept,
+    target = PKG_ENV$CONCENTRATION,
+    sample_type = SAMPLE_TYPE_BIOLOGICAL,
+    min_rsd = ppparams$threshold_3c)
+  datasets$filter_compounds_by_sample_rsd_kept <- filter_res$data
+  datasets$filter_compounds_by_sample_rsd_removed <- filter_res$removed
+
   # 4. Remove underrepresented samples
   #   a. Based on missing value ratio over compounds
   filter_res <- remove_samples_na(
-    data = datasets$filter_compounds_by_sample_mv_kept,
+    data = datasets$filter_compounds_by_sample_rsd_kept,
     target = PKG_ENV$CONCENTRATION,
     max_ratio = ppparams$threshold_4)
   datasets$filter_samples_by_compound_mv_kept <- filter_res$data
