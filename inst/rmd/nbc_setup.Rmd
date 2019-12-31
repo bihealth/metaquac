@@ -36,6 +36,7 @@ knitr::knit_hooks$set(
 
 
 # Parse and validate parameters
+init_dynamic_global_variables()
 
 # Data files
 if ("data_files" %in% names(params)){
@@ -132,5 +133,11 @@ if (!is.null(params$filter_sample_max_mv_ratio)) {
   assertthat::assert_that(
     0 <= params$filter_sample_max_mv_ratio && params$filter_sample_max_mv_ratio <= 1
   )
+}
+
+# Data tables visibility
+if (!is.null(params$data_tables)) {
+  assertthat::assert_that(params$data_tables %in% c("all", "stats", "none"))
+  assign("TABLE_DISPLAY", params$data_tables, PKG_ENV)
 }
 ```

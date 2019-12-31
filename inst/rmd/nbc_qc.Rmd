@@ -120,7 +120,7 @@ data_na$data %>%
             # `# Compounds` should be the same for all types, if all samples contain the same compounds
             `# Compounds` = mean(`# Total`),
             `# Samples` = n()) %>%
-  easy_datatable(caption = "Missing values summary per sample type.",
+  easy_datatable(caption = "Missing values summary per sample type.", show_type = "statistics",
                  round_colums = c("Mean(# MVs)", "SD(# MVs)", "# Compounds"))
 ```
 
@@ -150,7 +150,7 @@ data_na$data %>%
             # `# Compounds` should be the same for all batches, if all samples contain the same compounds
             `# Compounds` = mean(`# Total`),
             `# Samples` = n()) %>%
-  easy_datatable(caption = "Missing values summary per batch.",
+  easy_datatable(caption = "Missing values summary per batch.", show_type = "statistics",
                  round_colums = c("Mean(# MVs)", "SD(# MVs)", "# Compounds"))
 
 cat("\n\n##### Reference QCs\n")
@@ -176,7 +176,7 @@ data_na$data %>%
             # `# Compounds` should be the same for all batches, if all samples contain the same compounds
             `# Compounds` = mean(`# Total`),
             `# Samples` = n()) %>%
-  easy_datatable(caption = "Missing values summary per batch.",
+  easy_datatable(caption = "Missing values summary per batch.", show_type = "statistics",
                  round_colums = c("Mean(# MVs)", "SD(# MVs)", "# Compounds"))
 
 cat(paste0("\n\n##### ", SAMPLE_TYPE_POOLED_QC, "s\n"))
@@ -202,7 +202,7 @@ data_na$data %>%
             # `# Compounds` should be the same for all batches, if all samples contain the same compounds
             `# Compounds` = mean(`# Total`),
             `# Samples` = n()) %>%
-  easy_datatable(caption = "Missing values summary per batch.",
+  easy_datatable(caption = "Missing values summary per batch.", show_type = "statistics",
                  round_colums = c("Mean(# MVs)", "SD(# MVs)", "# Compounds"))
 
 cat("\n\n##### Biological sample\n")
@@ -228,7 +228,7 @@ data_na$data %>%
             # `# Compounds` should be the same for all batches, if all samples contain the same compounds
             `# Compounds` = mean(`# Total`),
             `# Samples` = n()) %>%
-  easy_datatable(caption = "Missing values summary per batch.",
+  easy_datatable(caption = "Missing values summary per batch.", show_type = "statistics",
                  round_colums = c("Mean(# MVs)", "SD(# MVs)", "# Compounds"))
 ```
 
@@ -358,7 +358,8 @@ if (length(STUDY_VARIABLES) > 0){
     print(var_plot$Plot1)
     cat("\n")
     cat(knitr::knit_print(
-      easy_datatable(var_plot$Data1, caption = "Compound MVs within study groups.")))
+      easy_datatable(var_plot$Data1, caption = "Compound MVs within study groups.",
+                     show_type = "statistics")))
     cat("\n")
   }
 }
@@ -434,7 +435,7 @@ message("**Note**: Expect inferior results for FIA data due to one-point calibra
 ```{r, results="asis"}
 cat("\n\n###### Single batches\n")
 easy_datatable(sequence_batch_horizontality(data = biocrates, sample_type = SAMPLE_TYPE_REFERENCE_QC),
-               caption = "Single batch models coefficients.")
+               caption = "Single batch models coefficients.", show_type = "statistics")
 ```
 
 ```{r, results="asis", eval=MULTIBATCH}
@@ -445,7 +446,8 @@ results <- sequence_batch_conformity(
 )
 cat(paste("\n\nKruskal-Wallis p-value:", results$kruskal_pvalue, "\n"))
 cat(paste("\n\nModel fit:", results$r_squared, "\n"))
-easy_datatable(results$coefficients, caption = "Multi batch model coefficients.")
+easy_datatable(results$coefficients, caption = "Multi batch model coefficients.",
+               show_type = "statistics")
 ```
 
 ```{r, results="asis"}
@@ -456,14 +458,14 @@ print(assisting_plots$distribution)
 ```
 
 
-```{r, results="asis", eval=POOLS_ENOUGH}
+```{r, results="asis", eval=ENOUGH_POOLED_QC}
 cat(paste0("\n\n##### ", SAMPLE_TYPE_POOLED_QC, "s {.tabset}\n"))
 cat("\n\n###### Single batches\n")
 easy_datatable(sequence_batch_horizontality(data = biocrates, sample_type = SAMPLE_TYPE_POOLED_QC),
-               caption = "Single batch models coefficients.")
+               caption = "Single batch models coefficients.", show_type = "statistics")
 ```
 
-```{r, results="asis", eval=POOLS_ENOUGH&&MULTIBATCH}
+```{r, results="asis", eval=ENOUGH_POOLED_QC&&MULTIBATCH}
 cat("\n\n###### Batch comparison\n")
 results <- sequence_batch_conformity(
   data = biocrates,
@@ -471,10 +473,11 @@ results <- sequence_batch_conformity(
 )
 cat(paste("\n\nKruskal-Wallis p-value:", results$kruskal_pvalue, "\n"))
 cat(paste("\n\nModel fit:", results$r_squared, "\n"))
-easy_datatable(results$coefficients, caption = "Multi batch model coefficients.")
+easy_datatable(results$coefficients, caption = "Multi batch model coefficients.",
+               show_type = "statistics")
 ```
 
-```{r, results="asis", eval=POOLS_ENOUGH}
+```{r, results="asis", eval=ENOUGH_POOLED_QC}
 cat("\n\n###### Auxiliary Figures\n")
 assisting_plots <- sequence_batch_assistant_plots(data = biocrates, sample_type = SAMPLE_TYPE_POOLED_QC)
 print(assisting_plots$sequence)
@@ -486,7 +489,7 @@ print(assisting_plots$distribution)
 ```{r, results="asis"}
 cat("\n\n###### Single batches\n")
 easy_datatable(sequence_batch_horizontality(data = biocrates, sample_type = SAMPLE_TYPE_BIOLOGICAL),
-               caption = "Single batch models coefficients.")
+               caption = "Single batch models coefficients.", show_type = "statistics")
 ```
 
 ```{r, results="asis", eval=MULTIBATCH}
@@ -494,7 +497,8 @@ cat("\n\n###### Batch comparison\n")
 results <- sequence_batch_conformity(data = biocrates, sample_type = SAMPLE_TYPE_BIOLOGICAL)
 cat(paste("\n\nKruskal-Wallis p-value:", results$kruskal_pvalue, "\n"))
 cat(paste("\n\nModel fit:", results$r_squared, "\n"))
-easy_datatable(results$coefficients, caption = "Multi batch model coefficients.")
+easy_datatable(results$coefficients, caption = "Multi batch model coefficients.",
+               show_type = "statistics")
 ```
 
 ```{r, results="asis"}

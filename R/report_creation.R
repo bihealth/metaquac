@@ -47,8 +47,15 @@
 #' samples (Biocrates' QC Level 2) (default = 15\%, exclusive, disable with NULL).
 #' @param filter_compound_bs_max_mv_ratio Set maximum ratio of missing values allowed for compounds
 #' in biological samples (Biocrates' Sample) (default = 0.3, exclusive, disable with NULL).
+#' @param filter_compound_bs_min_rsd Set minimum \%RSD allowed for compounds in biological samples
+#' (default = 15\%, exclusive, disable with NULL).
 #' @param filter_sample_max_mv_ratio Set maximum ratio of missing values allowed per biological
 #' sample (Biocrates' Sample) (default < 0.2, exclusive, disable with NULL).
+#' @param data_tables Control data tables availability in reports. "all" (default) will show all
+#' implemented data tables (with vcs export buttons). "stats" will only show tables of summarized
+#' data (such as countings, %RSDs, etc.), but not the actual measurements (neither original nor
+#' pre-processed). "none" will show no data tables at all, i.e. the report is mainly limited to
+#' visualizations.
 #' @param ... Masked parameters for development and testing only.
 #'
 #' @export
@@ -179,7 +186,9 @@ create_qc_report <- function(
   filter_compound_qc_max_mv_ratio = 0.3,
   filter_compound_qc_max_rsd = 15,
   filter_compound_bs_max_mv_ratio = 0.3,
+  filter_compound_bs_min_rsd = 15,
   filter_sample_max_mv_ratio = 0.2,
+  data_tables = c("all", "stats", "none")[1],
   ...
 ){
 
@@ -209,7 +218,9 @@ create_qc_report <- function(
       filter_compound_qc_max_mv_ratio = filter_compound_qc_max_mv_ratio,
       filter_compound_qc_max_rsd = filter_compound_qc_max_rsd,
       filter_compound_bs_max_mv_ratio = filter_compound_bs_max_mv_ratio,
+      filter_compound_bs_min_rsd = filter_compound_bs_min_rsd,
       filter_sample_max_mv_ratio = filter_sample_max_mv_ratio,
+      data_tables = data_tables,
       ...
     ),
     clean = TRUE)

@@ -277,7 +277,7 @@ filter_res <- remove_samples_na(
   max_ratio = 0.0,
   max_mode = "inclusive")
 biocrates_imputed <- filter_res$data
-easy_datatable(filter_res$removed,
+easy_datatable(filter_res$removed, show_type = "statistics",
                caption = "Removed samples with MVs after imputation")
 easy_datatable(biocrates_imputed,
                caption = "Remaining median imputed dataset 4")
@@ -302,7 +302,7 @@ plot_sample_scatter_matrix(biocrates_imputed,
                            cat_header = "#### ")
 ```
 
-```{r, results="asis", fig.height=7, fig.width=7, dpi=150, eval=POOLS_ENOUGH}
+```{r, results="asis", fig.height=7, fig.width=7, dpi=150, eval=ENOUGH_POOLED_QC}
 # Matrix for Pooled QCs
 cat(paste0("\n### ", SAMPLE_TYPE_POOLED_QC, "s {.tabset}\n"))
 plot_sample_scatter_matrix(biocrates_imputed,

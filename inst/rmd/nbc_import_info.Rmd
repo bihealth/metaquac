@@ -51,11 +51,12 @@ biocrates_samples <- biocrates %>%
   unique()
 cat(paste("\n**Number of samples in total:**", nrow(biocrates_samples), "\n"))
 cat("\n**List of all samples:**\n")
-easy_datatable(biocrates_samples)
+easy_datatable(biocrates_samples, show_type = "statistics")
 
 # Number of samples per batch
 cat("\n**Number of samples per batch:**\n")
-easy_datatable(biocrates_samples %>% group_by(Batch) %>% summarize(`Sample Count` = n()))
+easy_datatable(biocrates_samples %>% group_by(Batch) %>% summarize(`Sample Count` = n()),
+               show_type = "statistics")
 
 # Sample type distribution per batch
 print(
@@ -79,7 +80,7 @@ biocrates_compounds <- biocrates %>%
 # Number of available compounds
 cat(paste("\n**Number of compounds in total:**", length(biocrates_compounds$Compound), "\n"))
 cat("\n**List of all compounds:**\n")
-easy_datatable(biocrates_compounds)
+easy_datatable(biocrates_compounds, show_type = "statistics")
 
 ## Per batch
 biocrates_compounds <- biocrates %>%
@@ -88,7 +89,8 @@ biocrates_compounds <- biocrates %>%
 
 # Number of compounds per batch
 cat("\n**Number of compounds per batch:**\n")
-easy_datatable(biocrates_compounds %>% group_by(Batch) %>% summarize(`Compound Count` = n()))
+easy_datatable(biocrates_compounds %>% group_by(Batch) %>% summarize(`Compound Count` = n()),
+               show_type = "statistics")
 
 # Compound class distribution per batch
 print(
@@ -109,11 +111,12 @@ missing_compounds <- missing_compounds %>% tidyr::unnest(Missing.Compound)
 cat(paste("\n**Number of missing compounds in total (intersected):**",
           length(unique(missing_compounds$Missing.Compound)), "\n"))
 cat("\n**List of missing compounds:**\n")
-easy_datatable(missing_compounds)
+easy_datatable(missing_compounds, show_type = "statistics")
 
 # Number of missing compounds per batch
 cat("\n**Number of missing compounds per batch:**\n")
-easy_datatable(missing_compounds %>% group_by(Batch) %>% summarize(`Compound Count` = n()))
+easy_datatable(missing_compounds %>% group_by(Batch) %>% summarize(`Compound Count` = n()),
+               show_type = "statistics")
 
 print(
   ggplot(data = missing_compounds, aes(x = Missing.Compound, y = Batch)) +
@@ -152,7 +155,7 @@ biocrates_compounds <- biocrates %>%
 # Number of available compounds
 cat(paste("\n**Number of compounds in total:**", length(biocrates_compounds$Compound), "\n"))
 cat("\n**List of all compounds:**\n")
-easy_datatable(biocrates_compounds)
+easy_datatable(biocrates_compounds, show_type = "statistics")
 
 ## Per batch
 biocrates_compounds <- biocrates %>%
@@ -161,7 +164,8 @@ biocrates_compounds <- biocrates %>%
 
 # Number of compounds per batch
 cat("\n**Number of compounds per batch:**\n")
-easy_datatable(biocrates_compounds %>% group_by(Batch) %>% summarize(`Compound Count` = n()))
+easy_datatable(biocrates_compounds %>% group_by(Batch) %>% summarize(`Compound Count` = n()),
+               show_type = "statistics")
 
 # Compound class distribution per batch
 print(

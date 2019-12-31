@@ -30,7 +30,7 @@ standard calibration samples.")
 ### Overall
 ```{r status_profiles_overview, results="asis", fig.height=3}
 easy_datatable(count_status(data = biocrates), round_colums = "Percentage",
-               caption = "Number of statuses in all measurements.")
+               caption = "Number of statuses in all measurements.", show_type = "statistics")
 plot_status_profile(data = biocrates)
 
 # General figure params
@@ -48,7 +48,7 @@ fig_height_status_types <- ceiling(num_types/num_columns) * 1.2 + 1
 fig_width_heatmap_types <- 0.15 * num_types + 1.5
 
 easy_datatable(count_status(data = biocrates, grouping = "Sample.Type"), round_colums = "Percentage",
-               caption = "Number of statuses per sample type.")
+               caption = "Number of statuses per sample type.", show_type = "statistics")
 ```
 
 #### Heatmap
@@ -71,7 +71,7 @@ fig_height_status_samples <- ceiling(num_samples/num_columns) * 1.2 + 1
 fig_width_heatmap_samples <- 0.15 * num_samples + 1.5
 
 easy_datatable(count_status(data = biocrates, grouping = "Sample.Name"), round_colums = "Percentage",
-               caption = "Number of statuses per sample.")
+               caption = "Number of statuses per sample.", show_type = "statistics")
 ```
 
 #### Heatmap
@@ -94,7 +94,7 @@ fig_height_status_compounds <- ceiling(num_class/num_columns) * 1.2 + 1
 fig_width_heatmap_class <- 0.15 * num_class + 1.5
 
 easy_datatable(count_status(data = biocrates, grouping = "Class"), round_colums = "Percentage",
-               caption = "Number of statuses per compound class.")
+               caption = "Number of statuses per compound class.", show_type = "statistics")
 ```
 
 #### Heatmap
@@ -117,7 +117,7 @@ fig_height_status_compounds <- ceiling(num_compounds/num_columns) * 1.2 + 1
 fig_width_heatmap_compounds <- 0.15 * num_compounds + 1.5
 
 easy_datatable(count_status(data = biocrates, grouping = "Compound"), round_colums = "Percentage",
-               caption = "Number of statuses per compound.")
+               caption = "Number of statuses per compound.", show_type = "statistics")
 ```
 
 #### Heatmap

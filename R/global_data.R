@@ -83,10 +83,11 @@ SAMPLE_TYPE_REFERENCE_QC <- "QC Level 2" # currently fixed for Biocrates
 # Create an environment for global variables which needs to be changed during report creation
 PKG_ENV <- new.env(parent = emptyenv())
 
-# Initialize modifiable global variables (do a begin of report creation!)
-init_global_variables <- function(){
+# Initialize modifiable global variables (do at begin of report creation!)
+init_dynamic_global_variables <- function(){
   # Reset environment
   remove(list = ls(), envir = PKG_ENV)
 
   assign("CONCENTRATION", "Concentration", PKG_ENV)
+  assign("TABLE_DISPLAY", "all", PKG_ENV)
 }
