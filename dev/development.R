@@ -51,10 +51,10 @@ batches_fia_normqc2 <- list(
 )
 
 # Study and replicate variables
-study_variables <- list("Group", "Sex",
-                        "Group" = list("Sex"))
-replicate_variables <- c("Group", "Sex")
-profiling_variables <- c("Group", "Sex")
+study_variables <- list("Group", "Condition",
+                        "Group" = list("Condition"))
+replicate_variables <- c("Group", "Condition")
+profiling_variables <- c("Group", "Condition")
 
 # Parameter LC
 params = list(

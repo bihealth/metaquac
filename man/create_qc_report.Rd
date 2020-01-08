@@ -18,7 +18,8 @@ create_qc_report(data_files, kit = c("Biocrates AbsoluteIDQ p400 HR Kit",
   "Blank Out of Range")[1], filter_compound_qc_max_mv_ratio = 0.3,
   filter_compound_qc_max_rsd = 15,
   filter_compound_bs_max_mv_ratio = 0.3,
-  filter_sample_max_mv_ratio = 0.2, ...)
+  filter_compound_bs_min_rsd = 15, filter_sample_max_mv_ratio = 0.2,
+  data_tables = c("all", "stats", "none")[1], ...)
 }
 \arguments{
 \item{data_files}{Data files as exported by MetIDQ (txt), indicated as an R list providing the
@@ -79,8 +80,17 @@ samples (Biocrates' QC Level 2) (default = 15\%, exclusive, disable with NULL).}
 \item{filter_compound_bs_max_mv_ratio}{Set maximum ratio of missing values allowed for compounds
 in biological samples (Biocrates' Sample) (default = 0.3, exclusive, disable with NULL).}
 
+\item{filter_compound_bs_min_rsd}{Set minimum \%RSD allowed for compounds in biological samples
+(default = 15\%, exclusive, disable with NULL).}
+
 \item{filter_sample_max_mv_ratio}{Set maximum ratio of missing values allowed per biological
 sample (Biocrates' Sample) (default < 0.2, exclusive, disable with NULL).}
+
+\item{data_tables}{Control data tables availability in reports. "all" (default) will show all
+implemented data tables (with vcs export buttons). "stats" will only show tables of summarized
+data (such as countings, %RSDs, etc.), but not the actual measurements (neither original nor
+pre-processed). "none" will show no data tables at all, i.e. the report is mainly limited to
+visualizations.}
 
 \item{...}{Masked parameters for development and testing only.}
 }
@@ -141,9 +151,9 @@ title = "Biocrates QC - p400 - LC",
 report_output_name = "biocrates_qc_p400_lc",
 report_output_dir = "biocrates_p400_test",
 pool_indicator = "Sample.Identification",
-profiling_variables = c("Group", "Sex"),
-study_variables = list("Group", "Sex", "Group" = list("Sex")),
-replicate_variables = c("Sex")
+profiling_variables = c("Group", "Condition"),
+study_variables = list("Group", "Condition", "Group" = list("Condition")),
+replicate_variables = c("Group", "Condition")
 )
 
 # Biocrates AbsoluteIDQ p400 HR Kit - FIA injection
@@ -167,9 +177,9 @@ title = "Biocrates QC - p400 - FIA",
 report_output_name = "biocrates_qc_p400_fia",
 report_output_dir = "biocrates_p400_test",
 pool_indicator = "Sample.Identification",
-profiling_variables = c("Group", "Sex"),
-study_variables = list("Group", "Sex", "Group" = list("Sex")),
-replicate_variables = c("Sex")
+profiling_variables = c("Group", "Condition"),
+study_variables = list("Group", "Condition", "Group" = list("Condition")),
+replicate_variables = c("Group", "Condition")
 )
 
 }
