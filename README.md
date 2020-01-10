@@ -139,9 +139,9 @@ metaquac::create_qc_report(
   report_output_name = "biocrates_qc_p400_lc",
   report_output_dir = "biocrates_p400_test",
   pool_indicator = "Sample.Identification",
-  profiling_variables = c("Group", "Sex"),
-  study_variables = list("Group", "Sex", "Group" = list("Sex")),
-  replicate_variables = c("Sex")
+  profiling_variables = c("Group", "Condition"),
+  study_variables = list("Group", "Condition", "Group" = list("Condition")),
+  replicate_variables = c("Group", "Condition")
 )
 ```
 
@@ -167,9 +167,9 @@ metaquac::create_qc_report(
   report_output_name = "biocrates_qc_p400_fia",
   report_output_dir = "biocrates_p400_test",
   pool_indicator = "Sample.Identification",
-  profiling_variables = c("Group", "Sex"),
-  study_variables = list("Group", "Sex", "Group" = list("Sex")),
-  replicate_variables = c("Sex")
+  profiling_variables = c("Group", "Condition"),
+  study_variables = list("Group", "Condition", "Group" = list("Condition")),
+  replicate_variables = c("Group", "Condition")
 )
 ```
 
