@@ -8,8 +8,8 @@
 #' files per batch via named vectors. E.g. list(Batch1 = c("Batch1_LC1.txt", "Batch1_LC2.txt"),
 #' Batch2 = c("Batch2_LC1.txt","Batch2_LC2.txt")).
 #' @param kit The Biocrates Kit used to create the data to import. Currently supported are
-#' "Biocrates AbsoluteIDQ p400 HR Kit" and "Biocrates MxP Quant 500 Kit" (default =
-#' "Biocrates AbsoluteIDQ p400 HR Kit").
+#' "Biocrates AbsoluteIDQ p400 HR Kit", "Biocrates MxP Quant 500 Kit" and
+#' "Biocrates AbsoluteIDQ Stero17 Kit" (default = "Biocrates AbsoluteIDQ p400 HR Kit").
 #' @param measurement_type The measurement type (i.e. injection type) of the data to import, i.e.
 #' either "LC" or "FIA" (default = "LC").
 #' @param title Custom title for report (default = "Biocrates QC Report").
@@ -153,7 +153,8 @@
 create_qc_report <- function(
   data_files,
   kit = c("Biocrates AbsoluteIDQ p400 HR Kit",
-          "Biocrates MxP Quant 500 Kit")[1],
+          "Biocrates AbsoluteIDQ Stero17 Kit",
+          "Biocrates MxP Quant 500 Kit",)[1],
   measurement_type = c("LC", "FIA")[1],
   title = "Biocrates QC Report",
   author = unname(Sys.info()["user"]),

@@ -5,8 +5,8 @@
 \title{Create a MeTaQuaC QC report based on Biocrates data (as exported by MetIDQ).}
 \usage{
 create_qc_report(data_files, kit = c("Biocrates AbsoluteIDQ p400 HR Kit",
-  "Biocrates MxP Quant 500 Kit")[1], measurement_type = c("LC",
-  "FIA")[1], title = "Biocrates QC Report",
+  "Biocrates AbsoluteIDQ Stero17 Kit", "Biocrates MxP Quant 500 Kit", )[1],
+  measurement_type = c("LC", "FIA")[1], title = "Biocrates QC Report",
   author = unname(Sys.info()["user"]),
   report_output_name = paste0(format(Sys.time(), "\%Y\%m\%d_\%H\%M\%S"),
   "_qc_report_", measurement_type), report_output_dir = "reports",
@@ -27,8 +27,8 @@ files per batch via named vectors. E.g. list(Batch1 = c("Batch1_LC1.txt", "Batch
 Batch2 = c("Batch2_LC1.txt","Batch2_LC2.txt")).}
 
 \item{kit}{The Biocrates Kit used to create the data to import. Currently supported are
-"Biocrates AbsoluteIDQ p400 HR Kit" and "Biocrates MxP Quant 500 Kit" (default =
-"Biocrates AbsoluteIDQ p400 HR Kit").}
+"Biocrates AbsoluteIDQ p400 HR Kit", "Biocrates MxP Quant 500 Kit" and
+"Biocrates AbsoluteIDQ Stero17 Kit" (default = "Biocrates AbsoluteIDQ p400 HR Kit").}
 
 \item{measurement_type}{The measurement type (i.e. injection type) of the data to import, i.e.
 either "LC" or "FIA" (default = "LC").}

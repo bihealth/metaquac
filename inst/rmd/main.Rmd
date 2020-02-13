@@ -13,8 +13,8 @@ params:
   # Batch2 = c("Batch2_LC1.txt","Batch2_LC2.txt")).
   data_files:
   # The Biocrates Kit used to create the data to import. Currently supported are
-  # "Biocrates AbsoluteIDQ p400 HR Kit" and "Biocrates MxP Quant 500 Kit" (default =
-  # "Biocrates AbsoluteIDQ p400 HR Kit").
+  # "Biocrates AbsoluteIDQ p400 HR Kit", "Biocrates MxP Quant 500 Kit" and
+  # "Biocrates AbsoluteIDQ Stero17 Kit" (default = "Biocrates AbsoluteIDQ p400 HR Kit").
   kit: Biocrates AbsoluteIDQ p400 HR Kit
   # The measurement type (i.e. injection type) of the data to import, i.e.
   # either "LC" or "FIA" (default = "LC").
