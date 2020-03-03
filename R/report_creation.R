@@ -154,7 +154,7 @@ create_qc_report <- function(
   data_files,
   kit = c("Biocrates AbsoluteIDQ p400 HR Kit",
           "Biocrates AbsoluteIDQ Stero17 Kit",
-          "Biocrates MxP Quant 500 Kit",)[1],
+          "Biocrates MxP Quant 500 Kit")[1],
   measurement_type = c("LC", "FIA")[1],
   title = "Biocrates QC Report",
   author = unname(Sys.info()["user"]),
