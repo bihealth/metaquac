@@ -12,7 +12,9 @@ Please refer to our article to learn more about the underlying ideas of MeTaQuaC
 MeTaQuaC supports the following Biocrates Kits (for the present):
 
 * Biocrates AbsoluteIDQ p400 HR Kit
+* Biocrates AbsoluteIDQ Stero17 Kit
 * Biocrates MxP Quant 500 Kit
+
 
 **Note**: Before using MeTaQuaC to create a QC report, please make sure to be familiar with the
 Biocrates kit used, i.e. familiarize yourself with the compounds, sample types, status values,
@@ -203,8 +205,8 @@ Currently, QC report creation is controlled by the one main function of the MeTa
 files per batch via named vectors. E.g. list(Batch1 = c("Batch1_LC1.txt", "Batch1_LC2.txt"),
 Batch2 = c("Batch2_LC1.txt","Batch2_LC2.txt")).
 * `kit` The Biocrates Kit used to create the data to import. Currently supported are
-"Biocrates AbsoluteIDQ p400 HR Kit" and "Biocrates MxP Quant 500 Kit" (default =
-"Biocrates AbsoluteIDQ p400 HR Kit").
+"Biocrates AbsoluteIDQ p400 HR Kit", "Biocrates MxP Quant 500 Kit" and
+"Biocrates AbsoluteIDQ Stero17 Kit" (default = "Biocrates AbsoluteIDQ p400 HR Kit").
 * `measurement_type` The measurement type (i.e. injection type) of the data to import, i.e.
 either "LC" or "FIA" (default = "LC").
 * `title` Custom title for report (default = "Biocrates QC Report").

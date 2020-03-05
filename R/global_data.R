@@ -5,7 +5,8 @@
 # Supported kits
 BIOCRATES_P400 <- "Biocrates AbsoluteIDQ p400 HR Kit"
 BIOCRATES_Q500 <- "Biocrates MxP Quant 500 Kit"
-KITS <- c(BIOCRATES_P400, BIOCRATES_Q500)
+BIOCRATES_STERO17 <- "Biocrates AbsoluteIDQ Stero17 Kit"
+KITS <- c(BIOCRATES_P400, BIOCRATES_Q500, BIOCRATES_STERO17)
 
 # Allowed MetIDQ status values
 METIDQ_STATUSES <- c(
