@@ -137,17 +137,6 @@ knitr::opts_chunk$set(
 knitr::opts_knit$set(
   eval.after = 'fig.cap'
 )
-
-# Set chunk/code evaluation control variables defaults
-CONTINUE <- TRUE
-MULTIBATCH <- FALSE
-AVAILABLE_BIOLOGICAL <- FALSE
-AVAILABLE_POOLED_QC <- FALSE
-AVAILABLE_REFERENCE_QC <- FALSE
-ENOUGH_BIOLOGICAL <- FALSE
-ENOUGH_POOLED_QC <- FALSE
-ENOUGH_REFERENCE_QC <- FALSE
-NORMALIZED <- FALSE
 ```
 
 ```{r child="nbc_setup.Rmd"}

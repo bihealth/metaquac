@@ -7,7 +7,8 @@ BIOCRATES_P180 <- "Biocrates AbsoluteIDQ p180 Kit"
 BIOCRATES_P400 <- "Biocrates AbsoluteIDQ p400 HR Kit"
 BIOCRATES_Q500 <- "Biocrates MxP Quant 500 Kit"
 BIOCRATES_STERO17 <- "Biocrates AbsoluteIDQ Stero17 Kit"
-KITS <- c(BIOCRATES_P180, BIOCRATES_P400, BIOCRATES_Q500, BIOCRATES_STERO17)
+KITS_BIOCRATES <- c(BIOCRATES_P180, BIOCRATES_P400, BIOCRATES_Q500, BIOCRATES_STERO17)
+KITS <- c(KITS_BIOCRATES)
 
 # Allowed MetIDQ status values
 METIDQ_STATUSES <- c(
@@ -70,27 +71,45 @@ COLORS_TRAFFIC <- c("#2dc937", "#e7b416", "#cc3232")
 COLUMN_SAMPLE_NAME <- "Sample.Name"
 COLUMN_SAMPLE_TYPE <- "Sample.Type"
 
-# Measurement types
-# CONCENTRATION <- "Concentration" # moved to modifiable variables
-INTENSITY <- "Analyte Intensity [cps]"
-AREA <- "Analyte Peak Area [area]"
-ITSD_INTENSITY <- "Internal Std. Intensity [cps]"
-ITSD_AREA <- "Internal Std. Peak Area [area]"
+# TODO: replace/use everywhere:
+COLUMN_BATCH <- "Batch"
+COLUMN_FEATURE <- "Compound"
+
+COLUMN_WELL_COORDINATES <- "Well.Coordinates"
+COLUMN_WELL_POSITION <- "Well.Position"
+COLUMN_SEQUENCE_POSITION <- "Sequence.Position"
+
+# Measurement data type variables
+MANIFESTATION_VARIABLES <- c(
+  "CONCENTRATION", "INTENSITY", "AREA", "ISTD_INTENSITY", "ISTD_AREA"
+)
 
 # Sample types
 SAMPLE_TYPE_BIOLOGICAL <- "Sample"
 SAMPLE_TYPE_POOLED_QC <- "Pooled QC"
-SAMPLE_TYPE_REFERENCE_QC <- "QC Level 2" # currently fixed for Biocrates
+SAMPLE_TYPE_BLANK <- "Blank"
 
 
 # Create an environment for global variables which needs to be changed during report creation
-PKG_ENV <- new.env(parent = emptyenv())
+ENV <- new.env(parent = emptyenv())
 
 # Initialize modifiable global variables (do at begin of report creation!)
 init_dynamic_global_variables <- function(){
   # Reset environment
-  remove(list = ls(), envir = PKG_ENV)
+  remove(list = ls(), envir = ENV)
 
-  assign("CONCENTRATION", "Concentration", PKG_ENV)
-  assign("TABLE_DISPLAY", "all", PKG_ENV)
+  # Init measurement value types with Biocrates types as default
+  assign("CONCENTRATION", "Concentration", ENV) # Unit added on import
+  assign("INTENSITY", "Analyte Intensity [cps]", ENV)
+  assign("AREA", "Analyte Peak Area [area]", ENV)
+  assign("ISTD_INTENSITY", "Internal Std. Intensity [cps]", ENV)
+  assign("ISTD_AREA", "Internal Std. Peak Area [area]", ENV)
+
+  # Init samples types with Biocrates types as default
+  assign("SAMPLE_TYPE_REFERENCE_QC", "QC Level 2", ENV)
+
+  # Init position type to be used in plots
+  assign("PLOT_SAMPLE_LABEL", NULL, ENV)
+
+  assign("TABLE_DISPLAY", "all", ENV)
 }

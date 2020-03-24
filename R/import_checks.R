@@ -11,7 +11,7 @@ get_sample_duplicates <- function(
   suppressWarnings(
     data_samples <-
       data %>%
-      select(-one_of(c("Compound", PKG_ENV$COMPOUND_INFO_HEADER, "MetIDQ_Status")),
+      select(-one_of(c("Compound", ENV$COMPOUND_INFO_HEADER, "MetIDQ_Status")),
              -matches(TABLE_TYPES_REGEX_ALL)) %>%
       distinct()
   )

@@ -35,8 +35,35 @@ knitr::knit_hooks$set(
 )
 
 
+# Set chunk/code evaluation control variables defaults
+CONTINUE <- TRUE
+MULTIBATCH <- FALSE
+AVAILABLE_BIOLOGICAL <- FALSE
+AVAILABLE_POOLED_QC <- FALSE
+AVAILABLE_REFERENCE_QC <- FALSE
+ENOUGH_BIOLOGICAL <- FALSE
+ENOUGH_POOLED_QC <- FALSE
+ENOUGH_REFERENCE_QC <- FALSE
+NORMALIZED <- FALSE
+IS_BIOCRATES <- FALSE
+
+
 # Parse and validate parameters
+
+# Initiate some dynamic global variables
 init_dynamic_global_variables()
+
+# Kit selection
+if ("kit" %in% names(params)) {
+  assert_that(params$kit %in% KITS)
+  if (params$kit %in% KITS_BIOCRATES){
+    IS_BIOCRATES = TRUE
+  }
+} else {
+  stop(paste0(
+        "No kit selected. Currently supported: '",
+        paste(KITS, collapse = "', '"), "'"))
+}
 
 # Data files
 if ("data_files" %in% names(params)){
@@ -100,15 +127,6 @@ if ("additional_normalization" %in% names(params)){
   assert_that(params$additional_normalization %in% c("None", "PQN"))
 }
 
-# Kit selection
-if ("kit" %in% names(params)){
-  assert_that(params$kit %in% KITS)
-} else {
-  stop(paste0(
-    "No kit selected. Currently supported: '",
-    paste(KITS, collapse = "', '"), "'"))
-}
-
 # MetIDQ statuses
 assertthat::assert_that("preproc_keep_status" %in% names(params))
 assertthat::assert_that(all(params$preproc_keep_status %in% METIDQ_STATUSES))
@@ -138,7 +156,7 @@ if (!is.null(params$filter_sample_max_mv_ratio)) {
 # Data tables visibility
 if (!is.null(params$data_tables)) {
   assertthat::assert_that(params$data_tables %in% c("all", "stats", "none"))
-  assign("TABLE_DISPLAY", params$data_tables, PKG_ENV)
+  assign("TABLE_DISPLAY", params$data_tables, ENV)
 }
 
 # Optional metadata import and modifications

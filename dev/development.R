@@ -13,7 +13,7 @@ library(tidyr)
 sapply(list.files("R", full.names = TRUE), source)
 
 
-### p400 test ######################################################################################
+### p400 test ##################################################################
 
 # Output folder with date and time stamp
 stamp <- format(Sys.time(), "%Y%m%d_%H%M%S")
@@ -72,9 +72,10 @@ params = list(
   replicate_variables = replicate_variables,
   zero2na = TRUE,
   preproc_keep_status = "Valid",
-  filter_compound_qc_max_mv_ratio = 0.2,
+  filter_compound_qc_max_mv_ratio = 0.3,
   filter_compound_qc_max_rsd = 15,
-  filter_compound_bs_max_mv_ratio = 0.25,
+  filter_compound_bs_max_mv_ratio = 0.3,
+  filter_compound_bs_min_rsd = 15,
   filter_sample_max_mv_ratio = 0.2
 )
 # Now execute child notebooks: nbc_setup > nbc_import > ...
@@ -95,15 +96,16 @@ params = list(
   replicate_variables = replicate_variables,
   zero2na = TRUE,
   preproc_keep_status = "Valid",
-  filter_compound_qc_max_mv_ratio = 0.2,
+  filter_compound_qc_max_mv_ratio = 0.3,
   filter_compound_qc_max_rsd = 15,
-  filter_compound_bs_max_mv_ratio = 0.25,
+  filter_compound_bs_max_mv_ratio = 0.3,
+  filter_compound_bs_min_rsd = 15,
   filter_sample_max_mv_ratio = 0.2
 )
 # Now execute child notebooks: nbc_setup > nbc_import > ...
 
 
-### Quant 500 test #################################################################################
+### Quant 500 test #############################################################
 
 # Output folder with date and time stamp
 stamp <- format(Sys.time(), "%Y%m%d_%H%M%S")
@@ -134,9 +136,10 @@ params = list(
   replicate_variables = replicate_variables,
   zero2na = TRUE,
   preproc_keep_status = "Valid",
-  filter_compound_qc_max_mv_ratio = 0.2,
+  filter_compound_qc_max_mv_ratio = 0.3,
   filter_compound_qc_max_rsd = 15,
-  filter_compound_bs_max_mv_ratio = 0.25,
+  filter_compound_bs_max_mv_ratio = 0.3,
+  filter_compound_bs_min_rsd = 15,
   filter_sample_max_mv_ratio = 0.2
 )
 # Now execute child notebooks: nbc_setup > nbc_import > ...
@@ -157,9 +160,10 @@ params = list(
   replicate_variables = replicate_variables,
   zero2na = TRUE,
   preproc_keep_status = "Valid",
-  filter_compound_qc_max_mv_ratio = 0.2,
+  filter_compound_qc_max_mv_ratio = 0.3,
   filter_compound_qc_max_rsd = 15,
-  filter_compound_bs_max_mv_ratio = 0.25,
+  filter_compound_bs_max_mv_ratio = 0.3,
+  filter_compound_bs_min_rsd = 15,
   filter_sample_max_mv_ratio = 0.2
 )
 # Now execute child notebooks: nbc_setup > nbc_import > ...

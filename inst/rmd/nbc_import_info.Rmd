@@ -16,7 +16,7 @@ biocrates_compounds <- biocrates %>%
 
 ```{r}
 # In case of Biocrates p400 Kit, check for missing compounds and try to complete
-IS_P400 <- params$kit == BIOCRATES_P400
+IS_P400 <- params$kit == KIT_BIOCRATES_P400
 
 # Missing compounds
 all_compounds <- unique(expected_compounds$Compound)

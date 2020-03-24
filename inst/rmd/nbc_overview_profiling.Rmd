@@ -21,7 +21,7 @@ are generated over all measurements, for different sample types (in percentages,
 samples vary per type), for different samples, for different compound classes (in percentages, since
 the number of compounds vary per class), as well as for different compounds.
 
-```{r, results="asis", eval=params$kit==BIOCRATES_Q500&&params$measurement_type=="LC"}
+```{r, results="asis", eval=params$kit==KIT_BIOCRATES_Q500&&params$measurement_type=="LC"}
 message("**Note**: Many LC compounds in the Biocrates MxP Quant 500 Kit are 1-point calibrated and
 don't feature an external standard. Thus, a high number of \"< LOD\" is to be expected within 
 standard calibration samples.")

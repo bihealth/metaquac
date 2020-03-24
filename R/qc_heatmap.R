@@ -100,9 +100,9 @@ plot_heatmap_fluc_features <- function(num, rld_df, target, ...){
 
 # Plot heatmap of samples vs compounds with respect to the target variable
 plot_sample_heatmap <- function(data,
-                                target = PKG_ENV$CONCENTRATION,
+                                target = ENV$CONCENTRATION,
                                 sample_types = c(SAMPLE_TYPE_BIOLOGICAL,
-                                                 SAMPLE_TYPE_REFERENCE_QC,
+                                                 ENV$SAMPLE_TYPE_REFERENCE_QC,
                                                  SAMPLE_TYPE_POOLED_QC),
                                 sample_color_by = NULL,
                                 dist_fun = NULL,

@@ -64,7 +64,7 @@ plot_rsd_versus(
 ##### Sample types
 ```{r}
 rep_variables <- c("Sample.Type")
-sample_types <- c(SAMPLE_TYPE_POOLED_QC, SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_BIOLOGICAL)
+sample_types <- c(SAMPLE_TYPE_POOLED_QC, ENV$SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_BIOLOGICAL)
 # Calculate figure size
 fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
   biocrates, rep_variables, sample_types, "Compound")
@@ -215,7 +215,7 @@ plot_rsd_versus(
 ##### Sample types
 ```{r}
 rep_variables <- c("Batch", "Sample.Type")
-sample_types <- c(SAMPLE_TYPE_POOLED_QC, SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_BIOLOGICAL)
+sample_types <- c(SAMPLE_TYPE_POOLED_QC, ENV$SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_BIOLOGICAL)
 # Calculate figure size
 fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
   biocrates, rep_variables, sample_types, "Compound")
@@ -359,7 +359,7 @@ if (all(c("BR", "TR") %in% names(biocrates))){
 ##### Sample types
 ```{r}
 rep_variables <- c("Sample.Type")
-sample_types <- c(SAMPLE_TYPE_POOLED_QC, SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_BIOLOGICAL)
+sample_types <- c(SAMPLE_TYPE_POOLED_QC, ENV$SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_BIOLOGICAL)
 # Calculate figure size
 fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
   biocrates, rep_variables, sample_types, "Class")
@@ -508,7 +508,7 @@ if (all(c("BR", "TR") %in% names(biocrates))){
 ##### Sample types
 ```{r}
 rep_variables <- c("Batch", "Sample.Type")
-sample_types <- c(SAMPLE_TYPE_POOLED_QC, SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_BIOLOGICAL)
+sample_types <- c(SAMPLE_TYPE_POOLED_QC, ENV$SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_BIOLOGICAL)
 # Calculate figure size
 fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
   biocrates, rep_variables, sample_types, "Class")
@@ -657,7 +657,7 @@ if (all(c("BR", "TR") %in% names(biocrates))){
 #### All batches
 ```{r}
 rep_variables <- c("Sample.Type")
-sample_types <- c(SAMPLE_TYPE_POOLED_QC, SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_BIOLOGICAL)
+sample_types <- c(SAMPLE_TYPE_POOLED_QC, ENV$SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_BIOLOGICAL)
 # Calculate figure size
 fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
   biocrates, rep_variables, sample_types, "Sample.Type")
@@ -682,7 +682,7 @@ easy_datatable(
 #### Per batch
 ```{r}
 rep_variables <- c("Batch", "Sample.Type")
-sample_types <- c(SAMPLE_TYPE_POOLED_QC, SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_BIOLOGICAL)
+sample_types <- c(SAMPLE_TYPE_POOLED_QC, ENV$SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_BIOLOGICAL)
 # Calculate figure size
 fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
   biocrates, rep_variables, sample_types, "Sample.Type")

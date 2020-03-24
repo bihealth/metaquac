@@ -6,7 +6,7 @@
 # Keep only columns (variable) of interest from the biocrates dataframe
 selected_columns <- names(df) %in% c(
   "Compound", "Sample.Name", "Sample.Identification", "Sample.Type",
-  "Analyte Peak Area [area]", PKG_ENV$CONCENTRATION,
+  "Analyte Peak Area [area]", ENV$CONCENTRATION,
   "Internal Std. Peak Area [area]", "Analyte Intensity [cps]",
   LOWCON_CONDITIONS
 )
@@ -17,7 +17,7 @@ df.filtered <- df[selected_columns]
 df.filtered <- df.filtered %>%
   rename(
     Analyte.Peak.Area = `Analyte Peak Area [area]`,
-    Concentration = !!sym(PKG_ENV$CONCENTRATION),
+    Concentration = !!sym(ENV$CONCENTRATION),
     Analyte.Intensity = `Analyte Intensity [cps]`,
     Internal.Std.Peak.Area = `Internal Std. Peak Area [area]`
   )

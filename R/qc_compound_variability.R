@@ -5,8 +5,8 @@
 # By courtesy of Yoann Gluagoen
 compound_variability_scoring <- function(
   data,
-  target = PKG_ENV$CONCENTRATION,
-  technical = SAMPLE_TYPE_REFERENCE_QC,
+  target = ENV$CONCENTRATION,
+  technical = ENV$SAMPLE_TYPE_REFERENCE_QC,
   biological = SAMPLE_TYPE_BIOLOGICAL,
   result_message = TRUE
 )

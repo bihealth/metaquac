@@ -74,6 +74,7 @@ biocrates$Compound <- factor(biocrates$Compound, levels = compound_levels)
 ```
 
 ```{r, results="asis"}
+# TODO: count per batch?
 # Are there any SAMPLE_TYPE_BIOLOGICAL samples? More than one?
 AVAILABLE_BIOLOGICAL <- SAMPLE_TYPE_BIOLOGICAL %in% biocrates$Sample.Type
 ENOUGH_BIOLOGICAL <- biocrates %>% filter(Sample.Type == SAMPLE_TYPE_BIOLOGICAL) %>%
@@ -88,8 +89,29 @@ ENOUGH_POOLED_QC <- biocrates %>% filter(Sample.Type == SAMPLE_TYPE_POOLED_QC) %
 ```
 
 ```{r, results="asis"}
-# Are there any SAMPLE_TYPE_REFERENCE_QC samples? More than one?
-AVAILABLE_REFERENCE_QC <- SAMPLE_TYPE_REFERENCE_QC %in% biocrates$Sample.Type
-ENOUGH_REFERENCE_QC <- biocrates %>% filter(Sample.Type == SAMPLE_TYPE_REFERENCE_QC) %>%
+# Are there any ENV$SAMPLE_TYPE_REFERENCE_QC samples? More than one?
+AVAILABLE_REFERENCE_QC <- ENV$SAMPLE_TYPE_REFERENCE_QC %in% biocrates$Sample.Type
+ENOUGH_REFERENCE_QC <- biocrates %>% filter(Sample.Type == ENV$SAMPLE_TYPE_REFERENCE_QC) %>%
   select(Sample.Name) %>% distinct() %>% pull(Sample.Name) %>% length() > 1
 ```
+
+```{r, results="asis"}
+# Are there any SAMPLE_TYPE_BLANK samples? More than one?
+AVAILABLE_BLANK <- SAMPLE_TYPE_BLANK %in% biocrates$Sample.Type
+ENOUGH_BLANK <- biocrates %>% filter(Sample.Type == SAMPLE_TYPE_BLANK) %>%
+  select(Sample.Name) %>% distinct() %>% pull(Sample.Name) %>% length() > 1
+```
+
+```{r}
+# Set label type for plots (ordered by preference)
+# TODO: could be a parameter
+label_cols <- c(
+  COLUMN_WELL_POSITION,
+  COLUMN_SEQUENCE_POSITION,
+  COLUMN_WELL_COORDINATES,
+  COLUMN_SAMPLE_NAME
+)
+best_label_col <- which(label_cols %in% names(biocrates))[1]
+assign("PLOT_SAMPLE_LABEL", label_cols[best_label_col], ENV)
+```
+

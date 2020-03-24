@@ -70,12 +70,12 @@ retained:
 **`r paste0(ppparams$statuses_to_keep, collapse = "**, **")`**
 
 Missing **Concentration** values before Biocrates status preprocessing:
-**`r sum(is.na(datasets$original[[PKG_ENV$CONCENTRATION]]))`** of **`r nrow(datasets$original)`**
-(`r round(sum(is.na(datasets$original[[PKG_ENV$CONCENTRATION]])) / nrow(datasets$original) * 100)`%)
+**`r sum(is.na(datasets$original[[ENV$CONCENTRATION]]))`** of **`r nrow(datasets$original)`**
+(`r round(sum(is.na(datasets$original[[ENV$CONCENTRATION]])) / nrow(datasets$original) * 100)`%)
 
 Missing **Concentration** values after Biocrates status preprocessing:
-**`r sum(is.na(datasets$discarded[[PKG_ENV$CONCENTRATION]]))`** of **`r nrow(datasets$discarded)`**
-(`r round(sum(is.na(datasets$discarded[[PKG_ENV$CONCENTRATION]])) / nrow(datasets$discarded) * 100)`%)
+**`r sum(is.na(datasets$discarded[[ENV$CONCENTRATION]]))`** of **`r nrow(datasets$discarded)`**
+(`r round(sum(is.na(datasets$discarded[[ENV$CONCENTRATION]])) / nrow(datasets$discarded) * 100)`%)
 
 ```{r}
 easy_datatable(
@@ -106,7 +106,7 @@ Number of compounds left: **`r length(unique(datasets$filter_compounds_by_qc_mv_
 
 ```{r}
 # 2. Remove unreliable compounds
-#   a. Based on missing values ratio in QCs (samples of type SAMPLE_TYPE_REFERENCE_QC)
+#   a. Based on missing values ratio in QCs (samples of type ENV$SAMPLE_TYPE_REFERENCE_QC)
 #      Valid ratio of NAs is max 0.2 by default
 easy_datatable(
   datasets$filter_compounds_by_qc_mv_removed, show_type = "statistics",

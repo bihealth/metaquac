@@ -8,7 +8,7 @@
 calc_compound_na_variable <- function(
   data,
   compare,
-  target = PKG_ENV$CONCENTRATION,
+  target = ENV$CONCENTRATION,
   sample_type = SAMPLE_TYPE_BIOLOGICAL,
   remove_fully_missing = TRUE,
   add_norm_perc_mvs = TRUE
@@ -52,7 +52,7 @@ calc_compound_na_variable <- function(
 plot_compound_na_variable_bars <- function(
   data,
   compare,
-  target = PKG_ENV$CONCENTRATION,
+  target = ENV$CONCENTRATION,
   sample_type = SAMPLE_TYPE_BIOLOGICAL,
   remove_fully_missing = TRUE,
   add_norm_perc_mvs = TRUE,

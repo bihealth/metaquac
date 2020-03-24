@@ -17,7 +17,7 @@ num_poolqc <- biocrates %>%
   filter(Sample.Type == SAMPLE_TYPE_POOLED_QC) %>% nrow()
 num_refqc <- biocrates %>%
   select(Sample.Name, Sample.Type) %>% unique() %>%
-  filter(Sample.Type == SAMPLE_TYPE_REFERENCE_QC) %>% nrow()
+  filter(Sample.Type == ENV$SAMPLE_TYPE_REFERENCE_QC) %>% nrow()
 num_cal <- biocrates %>%
   select(Sample.Name, Sample.Type) %>% unique() %>%
   filter(startsWith(Sample.Type, "Standard L")) %>% nrow()
@@ -46,7 +46,7 @@ if ("additional_normalization" %in% names(params) &&
     biocrates_normalized <- normalize_pqn(data = biocrates,
                                           target_type = SAMPLE_TYPE_BIOLOGICAL,
                                           reference_type = reference_type,
-                                          target_values = PKG_ENV$CONCENTRATION)
+                                          target_values = ENV$CONCENTRATION)
     biocrates <- biocrates_normalized
     NORMALIZED <- TRUE
   }
@@ -59,7 +59,7 @@ if ("additional_normalization" %in% names(params) &&
     would result in similar relations to the reference (i.e. linear) and
     should apply for most of the samples. Artifacts may occur due to
     missing values, which introduce shifts due to the sorting.\n\n")
-
+  
   cat("### QQ-Plot Before\n")
   print(sample_qqplot(biocrates_unnormalized, scale_log10 = FALSE))
   cat("### QQ-Plot Before (log10)\n")
@@ -83,7 +83,7 @@ Positions indicated for a few data points in low density areas).
 # Scatter plot with number of missing values vs concentration (sum in sample),
 # partly labeled with well position
 plot_sample_na_intens_scatter(data = biocrates, shape = BATCH,
-                              total_of = PKG_ENV$CONCENTRATION,
+                              total_of = ENV$CONCENTRATION,
                               label = "Well.Position")
 ```
 
@@ -96,20 +96,20 @@ study variable groups (if indicated).
 # Histogram of missing values per sample, separately for different sample types
 data_na <- plot_na_histogram(data = biocrates,
                              group = "Sample.Name",
-                             target = PKG_ENV$CONCENTRATION,
+                             target = ENV$CONCENTRATION,
                              compare_key = "Sample.Type",
                              compare_values = c(SAMPLE_TYPE_BIOLOGICAL,
-                                                SAMPLE_TYPE_REFERENCE_QC,
+                                                ENV$SAMPLE_TYPE_REFERENCE_QC,
                                                 SAMPLE_TYPE_POOLED_QC))
 print(data_na$plot)
 
 # Scatter plot with number of missing values vs concentration (sum in sample),
 # partly labeled with well position
 plot_sample_na_intens_scatter(data = biocrates, shape = BATCH,
-                              total_of = PKG_ENV$CONCENTRATION,
+                              total_of = ENV$CONCENTRATION,
                               sample_types = c(SAMPLE_TYPE_BIOLOGICAL,
-                                                SAMPLE_TYPE_REFERENCE_QC,
-                                                SAMPLE_TYPE_POOLED_QC),
+                                               ENV$SAMPLE_TYPE_REFERENCE_QC,
+                                               SAMPLE_TYPE_POOLED_QC),
                               label = "Well.Position")
 
 # Missing values summary
@@ -131,14 +131,14 @@ cat("\n\n##### All samples\n")
 # MV histogram
 data_na <- plot_na_histogram(data = biocrates,
                              group = "Sample.Name",
-                             target = PKG_ENV$CONCENTRATION,
+                             target = ENV$CONCENTRATION,
                              compare_key = BATCH,
                              compare_values = unique(biocrates[[BATCH]]))
 print(data_na$plot)
 
 # Scatter plot mv vs concentration
 plot_sample_na_intens_scatter(data = biocrates, color = BATCH,
-                              total_of = PKG_ENV$CONCENTRATION,
+                              total_of = ENV$CONCENTRATION,
                               sample_types = NULL,
                               label = "Well.Position")
 
@@ -155,17 +155,17 @@ data_na$data %>%
 
 cat("\n\n##### Reference QCs\n")
 # MV histogram
-data_na <- plot_na_histogram(data = biocrates %>% filter(Sample.Type == SAMPLE_TYPE_REFERENCE_QC),
+data_na <- plot_na_histogram(data = biocrates %>% filter(Sample.Type == ENV$SAMPLE_TYPE_REFERENCE_QC),
                              group = "Sample.Name",
-                             target = PKG_ENV$CONCENTRATION,
+                             target = ENV$CONCENTRATION,
                              compare_key = BATCH,
                              compare_values = unique(biocrates[[BATCH]]))
 print(data_na$plot)
 
 # Scatter plot mv vs concentration
 plot_sample_na_intens_scatter(data = biocrates, color = BATCH,
-                              total_of = PKG_ENV$CONCENTRATION,
-                              sample_types = c(SAMPLE_TYPE_REFERENCE_QC),
+                              total_of = ENV$CONCENTRATION,
+                              sample_types = c(ENV$SAMPLE_TYPE_REFERENCE_QC),
                               label = "Well.Position")
 
 # Missing values summary
@@ -183,14 +183,14 @@ cat(paste0("\n\n##### ", SAMPLE_TYPE_POOLED_QC, "s\n"))
 # MV histogram
 data_na <- plot_na_histogram(data = biocrates %>% filter(Sample.Type == SAMPLE_TYPE_POOLED_QC),
                              group = "Sample.Name",
-                             target = PKG_ENV$CONCENTRATION,
+                             target = ENV$CONCENTRATION,
                              compare_key = BATCH,
                              compare_values = unique(biocrates[[BATCH]]))
 print(data_na$plot)
 
 # Scatter plot mv vs concentration
 plot_sample_na_intens_scatter(data = biocrates, color = BATCH,
-                              total_of = PKG_ENV$CONCENTRATION,
+                              total_of = ENV$CONCENTRATION,
                               sample_types = c(SAMPLE_TYPE_POOLED_QC),
                               label = "Well.Position")
 
@@ -209,14 +209,14 @@ cat("\n\n##### Biological sample\n")
 # MV histogram
 data_na <- plot_na_histogram(data = biocrates %>% filter(Sample.Type == SAMPLE_TYPE_BIOLOGICAL),
                              group = "Sample.Name",
-                             target = PKG_ENV$CONCENTRATION,
+                             target = ENV$CONCENTRATION,
                              compare_key = BATCH,
                              compare_values = unique(biocrates[[BATCH]]))
 print(data_na$plot)
 
 # Scatter plot mv vs concentration
 plot_sample_na_intens_scatter(data = biocrates, color = BATCH,
-                              total_of = PKG_ENV$CONCENTRATION,
+                              total_of = ENV$CONCENTRATION,
                               sample_types = c(SAMPLE_TYPE_BIOLOGICAL),
                               label = "Well.Position")
 
@@ -235,22 +235,22 @@ data_na$data %>%
 ```{r qc_mv_samples_variables, results="asis"}
 # Compare sample missing values over different study variable groups
 mv_plots_fun <- function(var, data, info, parent){
-
+  
   # Histogram of missing values per sample,
   # separately for different study variable groups
   data_na <- plot_na_histogram(data = data,
                                group = "Sample.Name",
-                               target = PKG_ENV$CONCENTRATION,
+                               target = ENV$CONCENTRATION,
                                compare_key = var,
                                compare_values = unique(data[[var]]))
-
+  
   # Scatter plot with number of missing values vs total intensity (sum in
   # sample), partly labeled with well position.
   plot2 <- plot_sample_na_intens_scatter(data = data,
-                                         total_of = PKG_ENV$CONCENTRATION,
+                                         total_of = ENV$CONCENTRATION,
                                          color = var, label = "Well.Position",
                                          shape = BATCH)
-
+  
   return(list(
     Header = paste0("\n##### ", info, var, "\n"),
     Plot1 = data_na$plot,
@@ -259,7 +259,7 @@ mv_plots_fun <- function(var, data, info, parent){
 
 if (length(STUDY_VARIABLES) > 0){
   cat("#### Per study variable {.tabset}\n")
-
+  
   var_plots <- recursive_execution(vars = STUDY_VARIABLES,
                                    end_fun = mv_plots_fun,
                                    data = biocrates %>% filter(Sample.Type == SAMPLE_TYPE_BIOLOGICAL))
@@ -284,7 +284,7 @@ or within different study variable groups (if indicated).
 # Histogram of missing values per compound, separately for different sample types
 data_na <- plot_na_histogram(data = biocrates,
                              group = "Compound",
-                             target = PKG_ENV$CONCENTRATION,
+                             target = ENV$CONCENTRATION,
                              compare_key = "Class",
                              compare_values = unique(biocrates[["Class"]]))
 print(data_na$plot)
@@ -296,10 +296,10 @@ print(data_na$plot)
 # Histogram of missing values per compound, separately for different sample types
 data_na <- plot_na_histogram(data = biocrates,
                              group = "Compound",
-                             target = PKG_ENV$CONCENTRATION,
+                             target = ENV$CONCENTRATION,
                              compare_key = "Sample.Type",
                              compare_values = c(SAMPLE_TYPE_BIOLOGICAL,
-                                                SAMPLE_TYPE_REFERENCE_QC,
+                                                ENV$SAMPLE_TYPE_REFERENCE_QC,
                                                 SAMPLE_TYPE_POOLED_QC))
 print(data_na$plot)
 ```
@@ -313,10 +313,10 @@ if (ENOUGH_POOLED_QC&&ENOUGH_REFERENCE_QC){
   compounds_with_mvs <- biocrates %>%
     filter(
       !!sym(COLUMN_SAMPLE_TYPE) %in%
-        c(SAMPLE_TYPE_POOLED_QC, SAMPLE_TYPE_REFERENCE_QC)
+        c(SAMPLE_TYPE_POOLED_QC, ENV$SAMPLE_TYPE_REFERENCE_QC)
     ) %>%
     group_by(Compound) %>%
-    filter(na_percent(UQ(sym(PKG_ENV$CONCENTRATION))) > 0) %>%
+    filter(na_percent(UQ(sym(ENV$CONCENTRATION))) > 0) %>%
     select(Compound) %>%
     distinct()
   fig_width_mv_variable_bars <- max(5, nrow(compounds_with_mvs) * 0.11 + 0.45)
@@ -347,8 +347,8 @@ Only compounds actually featuring missing values are shown in this figure.
 qc_comp_plot <- plot_compound_na_variable_bars(
   data = biocrates,
   compare = COLUMN_SAMPLE_TYPE,
-  target = PKG_ENV$CONCENTRATION,
-  sample_type = c(SAMPLE_TYPE_POOLED_QC, SAMPLE_TYPE_REFERENCE_QC),
+  target = ENV$CONCENTRATION,
+  sample_type = c(SAMPLE_TYPE_POOLED_QC, ENV$SAMPLE_TYPE_REFERENCE_QC),
   add_norm_perc_mvs = FALSE,
   position = "dodge"
 )
@@ -356,8 +356,8 @@ qc_comp_plot <- plot_compound_na_variable_bars(
 qc_comp_data <- calc_compound_na_variable(
   data = biocrates,
   compare = COLUMN_SAMPLE_TYPE,
-  target = PKG_ENV$CONCENTRATION,
-  sample_type = c(SAMPLE_TYPE_POOLED_QC, SAMPLE_TYPE_REFERENCE_QC),
+  target = ENV$CONCENTRATION,
+  sample_type = c(SAMPLE_TYPE_POOLED_QC, ENV$SAMPLE_TYPE_REFERENCE_QC),
   add_norm_perc_mvs = FALSE
 )
 
@@ -377,8 +377,8 @@ cat("\n")
 compounds_with_mvs <- biocrates %>%
   filter(Sample.Type == SAMPLE_TYPE_BIOLOGICAL) %>%
   group_by(Compound) %>%
-  filter(na_percent(UQ(sym(PKG_ENV$CONCENTRATION))) < 100,
-         na_percent(UQ(sym(PKG_ENV$CONCENTRATION))) > 0) %>%
+  filter(na_percent(UQ(sym(ENV$CONCENTRATION))) < 100,
+         na_percent(UQ(sym(ENV$CONCENTRATION))) > 0) %>%
   select(Compound) %>%
   distinct()
 fig_width_mv_variable_bars <- max(5, nrow(compounds_with_mvs) * 0.11 + 0.45)
@@ -387,21 +387,21 @@ fig_width_mv_variable_bars <- max(5, nrow(compounds_with_mvs) * 0.11 + 0.45)
 ```{r qc_mv_compounds_variable_bars, results="asis", fig.height=7, fig.width=fig_width_mv_variable_bars}
 # Compare compound missing values over different study variable groups
 mv_plots_fun <- function(var, data, info, parent){
-
+  
   plot1 <- plot_compound_na_variable_bars(
     data = data,
     compare = var,
-    target = PKG_ENV$CONCENTRATION,
+    target = ENV$CONCENTRATION,
     sample_type = SAMPLE_TYPE_BIOLOGICAL
   )
-
+  
   data1 <- calc_compound_na_variable(
     data = data,
     compare = var,
-    target = PKG_ENV$CONCENTRATION,
+    target = ENV$CONCENTRATION,
     sample_type = SAMPLE_TYPE_BIOLOGICAL
   )
-
+  
   return(list(
     Header = paste0("\n##### ", info, var, "\n"),
     Plot1 = plot1,
@@ -450,7 +450,7 @@ reasonably to justify subsequent joint analysis. In comparison, uncalibrated and
 unnormalized measurements (area and intensity) may feature incomparable fluctuation and
 batch drifts.
 
-```{r, results="asis", eval=params$kit==BIOCRATES_Q500&&params$measurement_type=="LC"}
+```{r, results="asis", eval=params$kit==KIT_BIOCRATES_Q500&&params$measurement_type=="LC"}
 message("**Note**: Many LC compounds in the Biocrates MxP Quant 500 Kit are 1-point calibrated and
 don't feature an external standard. Thus, a high number of missing values is to be expected within
 standard calibration samples after preprocessing according to status (mainly due to \"< LOD\").
@@ -504,7 +504,7 @@ message("**Note**: Expect inferior results for FIA data due to one-point calibra
 ```{r, results="asis", eval=ENOUGH_REFERENCE_QC}
 cat(paste0("\n\n##### Reference QCs {.tabset}\n"))
 cat("\n\n###### Single batches\n")
-easy_datatable(sequence_batch_horizontality(data = biocrates, sample_type = SAMPLE_TYPE_REFERENCE_QC),
+easy_datatable(sequence_batch_horizontality(data = biocrates, sample_type = ENV$SAMPLE_TYPE_REFERENCE_QC),
                caption = "Single batch models coefficients.", show_type = "statistics")
 ```
 
@@ -512,7 +512,7 @@ easy_datatable(sequence_batch_horizontality(data = biocrates, sample_type = SAMP
 cat("\n\n###### Batch comparison\n")
 results <- sequence_batch_conformity(
   data = biocrates,
-  sample_type = SAMPLE_TYPE_REFERENCE_QC
+  sample_type = ENV$SAMPLE_TYPE_REFERENCE_QC
 )
 cat(paste("\n\nKruskal-Wallis p-value:", results$kruskal_pvalue, "\n"))
 cat(paste("\n\nModel fit:", results$r_squared, "\n"))
@@ -522,7 +522,7 @@ easy_datatable(results$coefficients, caption = "Multi batch model coefficients."
 
 ```{r, results="asis", eval=ENOUGH_REFERENCE_QC}
 cat("\n\n###### Auxiliary Figures\n")
-assisting_plots <- sequence_batch_assistant_plots(data = biocrates, sample_type = SAMPLE_TYPE_REFERENCE_QC)
+assisting_plots <- sequence_batch_assistant_plots(data = biocrates, sample_type = ENV$SAMPLE_TYPE_REFERENCE_QC)
 print(assisting_plots$sequence)
 print(assisting_plots$distribution)
 ```
@@ -600,36 +600,36 @@ fig_height_well_plate <- ceiling(length(unique(biocrates$Batch)) / 2) * 3 + 2
 
 #### % Missing Values of Concentration
 ```{r well_plate_mv, fig.height=fig_height_well_plate}
-plot_well_plate_overview_mv(biocrates, target = PKG_ENV$CONCENTRATION)
+plot_well_plate_overview_mv(biocrates, target = ENV$CONCENTRATION)
 ```
 
 #### Total Concentration
 ```{r well_plate_total1, fig.height=fig_height_well_plate}
-plot_well_plate_overview_total(biocrates, target = PKG_ENV$CONCENTRATION)
+plot_well_plate_overview_total(biocrates, target = ENV$CONCENTRATION)
 ```
 
 ```{r well_plate_total2, results="asis", fig.height=fig_height_well_plate}
 if (meas_type == "LC"){
   cat("#### Total Area")
-  plot_well_plate_overview_total(biocrates, target = AREA)
+  plot_well_plate_overview_total(biocrates, target = ENV$AREA)
 }
 ```
 
 #### Total Intensity
 ```{r well_plate_total3, fig.height=fig_height_well_plate}
-plot_well_plate_overview_total(biocrates, target = INTENSITY)
+plot_well_plate_overview_total(biocrates, target = ENV$INTENSITY)
 ```
 
 ```{r well_plate_total4, results="asis", fig.height=fig_height_well_plate}
 if (meas_type == "LC"){
   cat("#### Total Area ISTD")
-  plot_well_plate_overview_total(biocrates, target = ITSD_AREA)
+  plot_well_plate_overview_total(biocrates, target = ENV$ISTD_AREA)
 }
 ```
 
 #### Total Intensity ISTD
 ```{r well_plate_total5, fig.height=fig_height_well_plate}
-plot_well_plate_overview_total(biocrates, target = ITSD_INTENSITY)
+plot_well_plate_overview_total(biocrates, target = ENV$ISTD_INTENSITY)
 ```
 
 
@@ -652,7 +652,7 @@ fig_height_variability_overlap <- min(num_sample_types * num_batches * 0.25 + 1.
 plot_sample_variability_overlapped(biocrates,
                                    targets = DATA_TYPES,
                                    sample_types = c(SAMPLE_TYPE_BIOLOGICAL,
-                                                    SAMPLE_TYPE_REFERENCE_QC,
+                                                    ENV$SAMPLE_TYPE_REFERENCE_QC,
                                                     SAMPLE_TYPE_POOLED_QC,
                                                     paste0("Standard L", 1:7)),
                                    plot_type = "violin",
@@ -665,7 +665,7 @@ plot_sample_variability_overlapped(biocrates,
 plot_sample_variability_overlapped(biocrates,
                                    targets = DATA_TYPES,
                                    sample_types = c(SAMPLE_TYPE_BIOLOGICAL,
-                                                    SAMPLE_TYPE_REFERENCE_QC,
+                                                    ENV$SAMPLE_TYPE_REFERENCE_QC,
                                                     SAMPLE_TYPE_POOLED_QC,
                                                     paste0("Standard L", 1:7)),
                                    plot_type = "boxplot",
@@ -698,7 +698,7 @@ if (!(AVAILABLE_REFERENCE_QC || AVAILABLE_REFERENCE_QC)){
 cat("\n#### Violins\n")
 plot_sample_variability_sequential(biocrates,
                                    targets = DATA_TYPES,
-                                   sample_types = c(SAMPLE_TYPE_REFERENCE_QC,
+                                   sample_types = c(ENV$SAMPLE_TYPE_REFERENCE_QC,
                                                     SAMPLE_TYPE_POOLED_QC),
                                    plot_type = "violin",
                                    log10 = TRUE)
@@ -709,7 +709,7 @@ plot_sample_variability_sequential(biocrates,
 cat("\n#### Boxplot\n")
 plot_sample_variability_sequential(biocrates,
                                    targets = DATA_TYPES,
-                                   sample_types = c(SAMPLE_TYPE_REFERENCE_QC,
+                                   sample_types = c(ENV$SAMPLE_TYPE_REFERENCE_QC,
                                                     SAMPLE_TYPE_POOLED_QC),
                                    plot_type = "boxplot",
                                    log10 = TRUE)

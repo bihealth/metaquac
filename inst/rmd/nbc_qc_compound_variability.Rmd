@@ -38,8 +38,8 @@ if (ENOUGH_REFERENCE_QC){
 ```{r SD_vs_mean_plot, fig.align='center'}
 sd_mean_comp <- plot_compound_sd_vs_mean(
   data = biocrates,
-  target = PKG_ENV$CONCENTRATION,
-  sample_types = c(SAMPLE_TYPE_BIOLOGICAL, SAMPLE_TYPE_REFERENCE_QC),
+  target = ENV$CONCENTRATION,
+  sample_types = c(SAMPLE_TYPE_BIOLOGICAL, ENV$SAMPLE_TYPE_REFERENCE_QC),
   return_with_data = TRUE)
 
 sd_mean_comp$scatterplot
@@ -90,15 +90,15 @@ The results are as follows:
 ```{r, results="asis"}
 # Compare SDs vs Means over different study variable groups
 sd_plots_fun <- function(var, data, info, parent){
-  # Plot compound SDs vs Means of PKG_ENV$CONCENTRATION
+  # Plot compound SDs vs Means of ENV$CONCENTRATION
   plot_sd <- plot_compound_sd_vs_mean(data = data, shape = BATCH,
-                                   target = PKG_ENV$CONCENTRATION,
-                                   sample_types = c(SAMPLE_TYPE_BIOLOGICAL, SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_POOLED_QC),
+                                   target = ENV$CONCENTRATION,
+                                   sample_types = c(SAMPLE_TYPE_BIOLOGICAL, ENV$SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_POOLED_QC),
                                    study_class = var)
 
   plot_rsd <- plot_compound_rsd_vs_mean(data = data, shape = BATCH,
-                                    target = PKG_ENV$CONCENTRATION,
-                                    sample_types = c(SAMPLE_TYPE_BIOLOGICAL, SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_POOLED_QC),
+                                    target = ENV$CONCENTRATION,
+                                    sample_types = c(SAMPLE_TYPE_BIOLOGICAL, ENV$SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_POOLED_QC),
                                     study_class = var)
 
   return(list(
@@ -115,7 +115,7 @@ samples.\n")
   var_plots <- recursive_execution(vars = STUDY_VARIABLES,
                                    end_fun = sd_plots_fun,
                                    data = biocrates,
-                                   keep_sample_types = c(SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_POOLED_QC))
+                                   keep_sample_types = c(ENV$SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_POOLED_QC))
   for (var_plot in var_plots) {
     cat(var_plot$Header)
     print(var_plot$Plot_sd)

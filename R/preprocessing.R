@@ -49,7 +49,7 @@ discard_unreliable_measurements <- function(data,
 
 # Summary stats on missing values per compound
 summarize_missing_values_per_compound <- function(
-  data, target = PKG_ENV$CONCENTRATION, plot = FALSE){
+  data, target = ENV$CONCENTRATION, plot = FALSE){
 
   # Count missing values
   mv_compounds <- data %>%
@@ -89,11 +89,24 @@ summarize_missing_values_per_compound <- function(
 
 # Summary stats on missing values per sample
 summarize_missing_values_per_sample <- function(
-  data, target = PKG_ENV$CONCENTRATION, plot = FALSE){
+  data, target = ENV$CONCENTRATION, plot = FALSE){
+
+  # Check for available sample location variables
+  pos_cols <- c(
+    COLUMN_WELL_POSITION,
+    COLUMN_SEQUENCE_POSITION,
+    COLUMN_WELL_COORDINATES
+  )
+  best_pos_col <- which(pos_cols %in% names(data))[1]
 
   # Count missing values
   mv_samples <- data %>%
-    group_by(Sample.Name, Sample.Type, `Well Coordinates`) %>%
+    group_by(Sample.Name, Sample.Type)
+  if (!is.na(best_pos_col)) {
+    mv_samples <- mv_samples %>%
+      group_by_at(vars(one_of(pos_cols[best_pos_col])), .add = TRUE)
+  }
+  mv_samples <- mv_samples %>%
     summarize(`# Missing Values` = sum(is.na(UQ(sym(target)))),
               `% Missing Values` = sum(is.na(UQ(sym(target)))) / n() * 100,
               `# Total` = n()) %>%
@@ -137,11 +150,11 @@ execute_preprocessing <- function(data, ppparams){
     data = datasets$original, keep = ppparams$statuses_to_keep)
 
   # 2. Remove unreliable compounds
-  #   a. Based on missing values ratio in QCs (samples of type SAMPLE_TYPE_REFERENCE_QC)
+  #   a. Based on missing values ratio in QCs (samples of type ENV$SAMPLE_TYPE_REFERENCE_QC)
   filter_res <- remove_compounds_na(
     data = datasets$discarded,
-    target = PKG_ENV$CONCENTRATION,
-    sample_types = c(SAMPLE_TYPE_REFERENCE_QC),
+    target = ENV$CONCENTRATION,
+    sample_types = c(ENV$SAMPLE_TYPE_REFERENCE_QC),
     max_ratio = ppparams$threshold_2a)
   datasets$filter_compounds_by_qc_mv_kept <- filter_res$data
   datasets$filter_compounds_by_qc_mv_removed <- filter_res$removed
@@ -149,8 +162,8 @@ execute_preprocessing <- function(data, ppparams){
   #   b. Based on %RSD of QCs (default >15%)
   filter_res <- remove_compounds_rsd(
     data = datasets$filter_compounds_by_qc_mv_kept,
-    target = PKG_ENV$CONCENTRATION,
-    sample_types = c(SAMPLE_TYPE_REFERENCE_QC),
+    target = ENV$CONCENTRATION,
+    sample_types = c(ENV$SAMPLE_TYPE_REFERENCE_QC),
     max_rsd = ppparams$threshold_2b)
   datasets$filter_compounds_by_qc_rsd_kept <- filter_res$data
   datasets$filter_compounds_by_qc_rsd_removed <- filter_res$removed
@@ -159,7 +172,7 @@ execute_preprocessing <- function(data, ppparams){
   #   a. Based on missing value ratio over all (!) study samples (>20%)
   filter_res <- remove_compounds_na(
     data = datasets$filter_compounds_by_qc_rsd_kept,
-    target = PKG_ENV$CONCENTRATION,
+    target = ENV$CONCENTRATION,
     sample_types = c(SAMPLE_TYPE_BIOLOGICAL),
     max_ratio = ppparams$threshold_3a)
   datasets$filter_compounds_by_sample_all_mv_kept <- filter_res$data
@@ -168,7 +181,7 @@ execute_preprocessing <- function(data, ppparams){
   #   b. Based on missing value ratio over all (!) study samples (>25%)
   filter_res <- remove_compounds_na(
     data = datasets$filter_compounds_by_sample_all_mv_kept,
-    target = PKG_ENV$CONCENTRATION,
+    target = ENV$CONCENTRATION,
     sample_types = c(SAMPLE_TYPE_BIOLOGICAL),
     max_ratio = ppparams$threshold_3b)
   datasets$filter_compounds_by_sample_mv_kept <- filter_res$data
@@ -177,7 +190,7 @@ execute_preprocessing <- function(data, ppparams){
   #   c. Based on %RSD of biological samples (default <15%)
   filter_res <- remove_compounds_rsd_low(
     data = datasets$filter_compounds_by_sample_mv_kept,
-    target = PKG_ENV$CONCENTRATION,
+    target = ENV$CONCENTRATION,
     sample_type = SAMPLE_TYPE_BIOLOGICAL,
     min_rsd = ppparams$threshold_3c)
   datasets$filter_compounds_by_sample_rsd_kept <- filter_res$data
@@ -187,7 +200,7 @@ execute_preprocessing <- function(data, ppparams){
   #   a. Based on missing value ratio over compounds
   filter_res <- remove_samples_na(
     data = datasets$filter_compounds_by_sample_rsd_kept,
-    target = PKG_ENV$CONCENTRATION,
+    target = ENV$CONCENTRATION,
     max_ratio = ppparams$threshold_4)
   datasets$filter_samples_by_compound_mv_kept <- filter_res$data
   datasets$filter_samples_by_compound_mv_removed <- filter_res$removed

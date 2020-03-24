@@ -5,7 +5,7 @@
 # Sample PCA based on compound values (typically concentration)
 #' @import ggfortify
 plot_pca <- function(data,
-                     target = PKG_ENV$CONCENTRATION,
+                     target = ENV$CONCENTRATION,
                      colour = "Sample.Type",
                      shape = NULL,
                      label = NULL,

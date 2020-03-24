@@ -158,16 +158,16 @@ import_metidq_tables <- function(filename, samples_expected = 96){
     filter(!grepl(pattern = STATUS_PATTERN, x = Compound))
 
   # Save compound info header names
-  assign("COMPOUND_INFO_HEADER", colnames(compound_info), PKG_ENV)
+  assign("COMPOUND_INFO_HEADER", colnames(compound_info), ENV)
 
   # Disabled, as LoD is currently not parsed (see above)
   # # Save LOD header name (starts with "LOD")
   # assign("LOD_HEADER",
-  #        colnames(compound_info)[startsWith(colnames(compound_info), "LOD")], PKG_ENV)
+  #        colnames(compound_info)[startsWith(colnames(compound_info), "LOD")], ENV)
   #
   # # Ensure numeric LOD (calc.)
   # x <- tryCatch({
-  #   compound_info[[PKG_ENV$LOD_HEADER]] <- as.numeric(compound_info[[PKG_ENV$LOD_HEADER]])
+  #   compound_info[[ENV$LOD_HEADER]] <- as.numeric(compound_info[[ENV$LOD_HEADER]])
   # }, warning=function(w) {
   #   message(paste0("Warning: Non-numeric LOD values in file ", filename,
   #                  ": ", conditionMessage(w)))
@@ -504,7 +504,7 @@ complete_missing_compounds <- function(data,
   suppressWarnings(
     data_samples <-
       data %>%
-      select(-one_of(c("Compound", PKG_ENV$COMPOUND_INFO_HEADER, "MetIDQ_Status")),
+      select(-one_of(c("Compound", ENV$COMPOUND_INFO_HEADER, "MetIDQ_Status")),
              -matches(TABLE_TYPES_REGEX_ALL)) %>%
       distinct()
   )
@@ -526,7 +526,7 @@ complete_missing_compounds <- function(data,
   # Separate compound infos
   suppressWarnings(
     data_compounds <- data %>%
-      select(one_of(c("Compound", "Batch", PKG_ENV$COMPOUND_INFO_HEADER))) %>%
+      select(one_of(c("Compound", "Batch", ENV$COMPOUND_INFO_HEADER))) %>%
       distinct()
   )
 
