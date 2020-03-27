@@ -2,6 +2,16 @@
 
 <!-- Most of the restructuring is currently done already during the import of Biocrates data. -->
 
+```{r}
+# Factorize study variables
+# TODO: what about actual numerical variables?
+# studvars <- c(unlist(STUDY_VARIABLES), PROFILING_VARIABLES, REPLICATE_VARIABLES)
+# for (studvar in studvars){
+#   biocrates[[studvar]] <- factor(biocrates[[studvar]])
+# }
+```
+
+
 The imported data was restructured as follows:
 
 * Convert to **long table** (or [molten dataset](http://dx.doi.org/10.18637/jss.v059.i10)). Each row
@@ -9,10 +19,16 @@ includes only one measurement, i.e. the data of one compound in one sample and a
 information.
 * Add **Sample Identification "Blank"** for blank samples, as they are empty when exported from
 MetIDQ.
-* Add **Sample Type "`r SAMPLE_TYPE_POOLED_QC`"** for pooled QC samples. `r SAMPLE_TYPE_POOLED_QC`
-samples are identified by any occurrence of the term "pool" (case-insensitive) in the column
-`r params$pool_indicator` (parameter `pool_indicator`). In contrast, **"Reference QC"** will refer
-to Biocrates' QC Level 2 samples.
+```{r, eval=IS_BIOCRATES, results="asis"}
+cat(paste0(
+  "* Add **Sample Type \"", SAMPLE_TYPE_POOLED_QC,
+  "\"** for pooled QC samples. ", SAMPLE_TYPE_POOLED_QC,
+  " samples are identified by any occurrence of the term \"pool\"
+  (case-insensitive) in the column ", params$pool_indicator,
+  " (parameter `pool_indicator`). In contrast, **\"Reference QC\"** will refer
+  to Biocrates' QC Level 2 samples.\n"
+))
+```
 * Add **Sequence Position**, i.e. sample acquisition order. This position is calculated from
 MetIDQ's Well Position, as this one depicts a position by
 [row-major order](https://en.wikipedia.org/wiki/Row-_and_column-major_order) which does not reflect
@@ -41,6 +57,8 @@ OP.
 * Unify **missing values**, i.e. "" (empty field), "0" (zero) and "NA" (not available) are converted
 to "NA".
 * **Factorize Compounds** with level order based on compound class and compound name.
+<!-- * **Factorize study variables** to make sure that e.g. integer enconding don't -->
+<!-- get intepreted as numeric data. Variables factorized (if any): r studvars -->
 
 
 ```{r filter, results="asis"}
@@ -65,8 +83,12 @@ easy_datatable(removed_samples, caption = "Removed samples", show_type = "statis
 
 ```{r}
 # Factorize compounds ordered by compound class and name
-compound_levels <- biocrates %>%
-  arrange(Class, Compound) %>%
+if ("Class" %in% names(biocrates)) {
+  compound_levels <- biocrates %>% arrange(Class, Compound)
+} else {
+  compound_levels <- biocrates %>% arrange(Compound)
+}
+compound_levels <- compound_levels %>%
   select(Compound) %>%
   distinct() %>%
   pull(Compound)

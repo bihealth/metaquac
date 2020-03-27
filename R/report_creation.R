@@ -210,10 +210,22 @@ create_qc_report <- function(
     "Biocrates AbsoluteIDQ p180 Kit",
     "Biocrates AbsoluteIDQ p400 HR Kit",
     "Biocrates AbsoluteIDQ Stero17 Kit",
-    "Biocrates MxP Quant 500 Kit"
-  )[4],
+    "Biocrates MxP Quant 500 Kit",
+    "Generic Data"
+  )[1],
   measurement_type = c("LC", "FIA")[1],
-  title = "Biocrates QC Report",
+  generic_data_types = c( # TODO: first one has priority
+    CONCENTRATION = "Concentration",
+    AREA = "Area",
+    INTENSITY = NULL,
+    ISTD_AREA = NULL,
+    ISTD_INTENSITY = NULL,
+    STATUS = NULL
+  ),
+  generic_index_first_compound = NULL,
+  title = ifelse(
+    kit %in% KITS_BIOCRATES, "Biocrates QC Report", "Generic Data QC Report"
+  ),
   author = unname(Sys.info()["user"]),
   report_output_name = paste0(format(Sys.time(), "%Y%m%d_%H%M%S"),
                               "_qc_report_",
@@ -263,7 +275,7 @@ create_qc_report <- function(
 ){
 
   # Creates full absolute paths
-  data_files <- lapply(data_files, function(x){unname(R.utils::getAbsolutePath(x))})
+  data_files <- lapply(data_files, function(x){getAbsolutePathWithNames(x)})
   # data_output_dir <- unname(R.utils::getAbsolutePath(data_output_dir))
   if (!is.null(metadata_import)){
     metadata_import <- unname(R.utils::getAbsolutePath(metadata_import))
@@ -281,6 +293,8 @@ create_qc_report <- function(
       data_files = data_files,
       kit = kit,
       measurement_type = measurement_type,
+      generic_data_types = generic_data_types,
+      generic_index_first_compound = generic_index_first_compound,
       title = title,
       author = author,
       pool_indicator = pool_indicator,
@@ -311,4 +325,12 @@ create_qc_report <- function(
       ...
     ),
     clean = TRUE)
+}
+
+
+# Get absolute path, but keep original name instead of original path as name
+getAbsolutePathWithNames <- function(path) {
+  new_path <- R.utils::getAbsolutePath(path)
+  names(new_path) <- names(path)
+  return(new_path)
 }

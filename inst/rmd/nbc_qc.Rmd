@@ -84,7 +84,7 @@ Positions indicated for a few data points in low density areas).
 # partly labeled with well position
 plot_sample_na_intens_scatter(data = biocrates, shape = BATCH,
                               total_of = ENV$CONCENTRATION,
-                              label = "Well.Position")
+                              label = ENV$PLOT_SAMPLE_LABEL)
 ```
 
 Furthermore, missing value counts are summarized by histograms (primarily) including
@@ -110,7 +110,7 @@ plot_sample_na_intens_scatter(data = biocrates, shape = BATCH,
                               sample_types = c(SAMPLE_TYPE_BIOLOGICAL,
                                                ENV$SAMPLE_TYPE_REFERENCE_QC,
                                                SAMPLE_TYPE_POOLED_QC),
-                              label = "Well.Position")
+                              label = ENV$PLOT_SAMPLE_LABEL)
 
 # Missing values summary
 data_na$data %>%
@@ -140,7 +140,7 @@ print(data_na$plot)
 plot_sample_na_intens_scatter(data = biocrates, color = BATCH,
                               total_of = ENV$CONCENTRATION,
                               sample_types = NULL,
-                              label = "Well.Position")
+                              label = ENV$PLOT_SAMPLE_LABEL)
 
 # Missing values summary
 data_na$data %>%
@@ -166,7 +166,7 @@ print(data_na$plot)
 plot_sample_na_intens_scatter(data = biocrates, color = BATCH,
                               total_of = ENV$CONCENTRATION,
                               sample_types = c(ENV$SAMPLE_TYPE_REFERENCE_QC),
-                              label = "Well.Position")
+                              label = ENV$PLOT_SAMPLE_LABEL)
 
 # Missing values summary
 data_na$data %>%
@@ -192,7 +192,7 @@ print(data_na$plot)
 plot_sample_na_intens_scatter(data = biocrates, color = BATCH,
                               total_of = ENV$CONCENTRATION,
                               sample_types = c(SAMPLE_TYPE_POOLED_QC),
-                              label = "Well.Position")
+                              label = ENV$PLOT_SAMPLE_LABEL)
 
 # Missing values summary
 data_na$data %>%
@@ -218,7 +218,7 @@ print(data_na$plot)
 plot_sample_na_intens_scatter(data = biocrates, color = BATCH,
                               total_of = ENV$CONCENTRATION,
                               sample_types = c(SAMPLE_TYPE_BIOLOGICAL),
-                              label = "Well.Position")
+                              label = ENV$PLOT_SAMPLE_LABEL)
 
 # Missing values summary
 data_na$data %>%
@@ -248,7 +248,7 @@ mv_plots_fun <- function(var, data, info, parent){
   # sample), partly labeled with well position.
   plot2 <- plot_sample_na_intens_scatter(data = data,
                                          total_of = ENV$CONCENTRATION,
-                                         color = var, label = "Well.Position",
+                                         color = var, label = ENV$PLOT_SAMPLE_LABEL,
                                          shape = BATCH)
   
   return(list(
@@ -580,7 +580,7 @@ print(assisting_plots$distribution)
 ```
 
 
-#### Missing values overview
+#### MVs
 ```{r sequence_progression_mv, fig.height=fig_height_sequence}
 plot_sequence_overview_mv(biocrates, targets = DATA_TYPES)
 ```
@@ -598,38 +598,55 @@ intensities will vary more than concentrations (as latter are calibrated).
 fig_height_well_plate <- ceiling(length(unique(biocrates$Batch)) / 2) * 3 + 2
 ```
 
-#### % Missing Values of Concentration
-```{r well_plate_mv, fig.height=fig_height_well_plate}
-plot_well_plate_overview_mv(biocrates, target = ENV$CONCENTRATION)
+```{r}
+# Are well plate positions available?
+HAS_WELL_POSITION <- COLUMN_WELL_POSITION %in% names(biocrates)
 ```
 
-#### Total Concentration
-```{r well_plate_total1, fig.height=fig_height_well_plate}
-plot_well_plate_overview_total(biocrates, target = ENV$CONCENTRATION)
+```{r, results="asis", eval=!HAS_WELL_POSITION}
+message("**Note**: Well Position not available.")
 ```
 
-```{r well_plate_total2, results="asis", fig.height=fig_height_well_plate}
-if (meas_type == "LC"){
+```{r well_plate_mv, fig.height=fig_height_well_plate, results="asis", eval=HAS_WELL_POSITION}
+if ("CONCENTRATION" %in% names(DATA_TYPES)){
+  cat("#### % Missing Values of Concentration\n")
+  plot_well_plate_overview_mv(biocrates, target = ENV$CONCENTRATION)
+}
+```
+
+```{r well_plate_total1, fig.height=fig_height_well_plate, results="asis", eval=HAS_WELL_POSITION}
+if ("CONCENTRATION" %in% names(DATA_TYPES)){
+  cat("#### Total Concentration\n")
+  plot_well_plate_overview_total(biocrates, target = ENV$CONCENTRATION)
+}
+```
+
+```{r well_plate_total2, results="asis", fig.height=fig_height_well_plate, results="asis", eval=HAS_WELL_POSITION}
+if ("AREA" %in% names(DATA_TYPES)){
   cat("#### Total Area")
   plot_well_plate_overview_total(biocrates, target = ENV$AREA)
 }
 ```
 
-#### Total Intensity
-```{r well_plate_total3, fig.height=fig_height_well_plate}
-plot_well_plate_overview_total(biocrates, target = ENV$INTENSITY)
+```{r well_plate_total3, fig.height=fig_height_well_plate, results="asis", eval=HAS_WELL_POSITION}
+if ("INTENSITY" %in% names(DATA_TYPES)){
+  cat("#### Total Intensity\n")
+  plot_well_plate_overview_total(biocrates, target = ENV$INTENSITY)
+}
 ```
 
-```{r well_plate_total4, results="asis", fig.height=fig_height_well_plate}
-if (meas_type == "LC"){
-  cat("#### Total Area ISTD")
+```{r well_plate_total4, results="asis", fig.height=fig_height_well_plate, results="asis", eval=HAS_WELL_POSITION}
+if ("ISTD_AREA" %in% names(DATA_TYPES)){
+  cat("\n#### Total Area ISTD\n")
   plot_well_plate_overview_total(biocrates, target = ENV$ISTD_AREA)
 }
 ```
 
-#### Total Intensity ISTD
-```{r well_plate_total5, fig.height=fig_height_well_plate}
-plot_well_plate_overview_total(biocrates, target = ENV$ISTD_INTENSITY)
+```{r well_plate_total5, fig.height=fig_height_well_plate, results="asis", eval=HAS_WELL_POSITION}
+if ("ISTD_INTENSITY" %in% names(DATA_TYPES)){
+  cat("\n#### Total Intensity ISTD\n")
+  plot_well_plate_overview_total(biocrates, target = ENV$ISTD_INTENSITY)
+}
 ```
 
 

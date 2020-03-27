@@ -46,8 +46,8 @@ message(warning_text)
 # Sample info
 biocrates_samples <- biocrates %>%
   select(
-    Sample.Identification, Sample.Type, Well.Position, Sequence.Position,
-    Sample.Name, contains("Batch")) %>%
+    Sample.Identification, Sample.Type, Sequence.Position,
+    Sample.Name, contains("Batch"), contains("Well.Position")) %>%
   unique()
 cat(paste("\n**Number of samples in total:**", nrow(biocrates_samples), "\n"))
 cat("\n**List of all samples:**\n")

@@ -104,27 +104,10 @@ import_metidq_tables <- function(filename, samples_expected = 96){
 
   # Catch duplicate column names and rename them (except for compound names)
   # (MetIDQ and study variables might collide, which would result in merge bugs later on)
-  header_dups <- duplicated(header)
-  header_unique <- make.names(header[1:idx_last_non_compound], unique = TRUE)
-  if (any(header_dups)) {
-    warning_text <- paste0(
-      "Warning: Found and renamed duplicated column names in file:  \n*", filename, "*  \n",
-      "Before:\t", paste(header[header_dups], collapse = ",\t"), "  \n",
-      "After:\t", paste(header_unique[header_dups], collapse = ",\t"))
-    message(warning_text)
-    cat("\n")
-  }
-  header[1:idx_last_non_compound] <- header_unique
+  header <- handle_duplicate_headers(header, idx_last_non_compound + 1, filename)
 
   # Check if typcial columns are available
-  unavailable_columns <- REQUIRED_METIDQ_COLUMNS[!REQUIRED_METIDQ_COLUMNS %in% header]
-  if (length(unavailable_columns) > 0) {
-    warning_text <- paste0(
-      "Warning: Required columns missing in file (report progress likely to fail!):  \n  *",
-      filename, "*  \n", "  Missing:\t", paste(unavailable_columns, collapse = ", "))
-    message(warning_text)
-  }
-
+  check_required_columns(header, REQUIRED_METIDQ_COLUMNS, filename)
 
   # Get additional compound info
   # (all lines after the header starting "empty" ("\t"))

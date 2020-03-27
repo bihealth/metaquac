@@ -7,9 +7,14 @@
 create_qc_report(
   data_files,
   kit = c("Biocrates AbsoluteIDQ p180 Kit", "Biocrates AbsoluteIDQ p400 HR Kit",
-    "Biocrates AbsoluteIDQ Stero17 Kit", "Biocrates MxP Quant 500 Kit")[4],
+    "Biocrates AbsoluteIDQ Stero17 Kit", "Biocrates MxP Quant 500 Kit",
+    "Generic Data")[1],
   measurement_type = c("LC", "FIA")[1],
-  title = "Biocrates QC Report",
+  generic_data_types = c(CONCENTRATION = "Concentration", AREA = "Area", INTENSITY =
+    NULL, ISTD_AREA = NULL, ISTD_INTENSITY = NULL, STATUS = NULL),
+  generic_index_first_compound = NULL,
+  title = ifelse(kit \%in\% KITS_BIOCRATES, "Biocrates QC Report",
+    "Generic Data QC Report"),
   author = unname(Sys.info()["user"]),
   report_output_name = paste0(format(Sys.time(), "\%Y\%m\%d_\%H\%M\%S"), "_qc_report_",
     measurement_type),

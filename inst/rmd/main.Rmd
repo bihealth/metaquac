@@ -119,6 +119,8 @@ params:
   # Whether report rendering should try to continue on errors
   # (not visibly passed via create_report function, switch for debugging only)
   ignore_errors: true
+  generic_data_types:
+  generic_index_first_compound:
 title: "`r params$title`"
 author: "`r params$author`"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
@@ -149,14 +151,20 @@ The data as imported, restructured and preprocessed in this report is available 
 section [Preprocessing](#preprocessing) (via the full data tables provided for each preprocessing
 step).
 
-Before reading and interpreting this QC report, please make sure to be familiar with the Biocrates
-kit used, i.e. familiarize your self with the compounds, sample types, status values, terminology,
-analytical specification, etc.  
-Please refer to Biocrates' manuals and documents provided with the kit used.
-
+```{r eval=IS_BIOCRATES, results='asis'}
+cat("
+Before reading and interpreting this QC report, please make sure to be familiar
+with the Biocrates kit used, i.e. familiarize your self with the compounds,
+sample types, status values, terminology, analytical specification, etc.
+Please refer to Biocrates' manuals and documents provided with the kit used.\n
+")
+```
 
 # Data Preparation
-```{r child="nbc_import.Rmd"}
+```{r child="nbc_import_biocrates.Rmd", eval=IS_BIOCRATES}
+```
+
+```{r child="nbc_import_generic.Rmd", eval=!IS_BIOCRATES}
 ```
 
 ```{r child="nbc_metadata.Rmd", eval=CONTINUE}
@@ -195,7 +203,7 @@ easy_datatable(
 ```{r child="nbc_qc_rsd.Rmd", eval=CONTINUE}
 ```
 
-```{r child="nbc_calibration_scatter.Rmd", eval=CONTINUE}
+```{r child="nbc_calibration_scatter.Rmd", eval=CONTINUE&&IS_BIOCRATES}
 ```
 
 

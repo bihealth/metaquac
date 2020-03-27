@@ -16,7 +16,7 @@ ppparams <- list(
 The following preprocessing procedures are applied on the data in this order:
 
 1. **Status Preprocessing**
-    a. Discard unreliable measurements based on Biocratus status
+    a. Discard unreliable measurements based on status
 2. **Remove unreliable __compounds__** (QC-based filters)
     a. Based on missing values ratio in Reference QCs (**>=`r ppparams$threshold_2a * 100`%**)
     b. Based on %RSD of Reference QCs (**>=`r ppparams$threshold_2b`%**)
@@ -58,26 +58,30 @@ rm(biocrates)
 ## Step **1**
 
 1. **Status Preprocessing**
-    a. Discard unreliable measurements based on Biocratus status
+    a. Discard unreliable measurements based on status
 
-The status preprocessing discards measurements based on Biocrates quality statuses.
+The status preprocessing discards measurements based on quality statuses.
 
-By default, only "Valid" measurements are considered as reliable and are kept
+By default, only "Valid" and "Semi Quant." measurements are considered as reliable and are kept
 for further analysis. Hence, all other statuses including "< LLOQ" and "> ULOQ"
 (out of quantification range / extrapolated calibration), "STD/QC < Limit" and
 "STD/QC > Limit" (insufficient accuracy in STDs and QCs), "ISTD Out of Range"
 (internal standard too high or low) and other statuses are usually considered as
 unreliable and measurements are transformed to missing values (set to NA).
 
+```{r eval=!IS_BIOCRATES, results="asis"}
+cat("Note: Status names may differ in custom generic data.\n")
+```
+
 Based on the parameter `preproc_keep_status`, measurements with the following statuses will be
 retained:
 **`r paste0(ppparams$statuses_to_keep, collapse = "**, **")`**
 
-Missing **Concentration** values before Biocrates status preprocessing:
+Missing **Concentration** values before status preprocessing:
 **`r sum(is.na(datasets$original[[ENV$CONCENTRATION]]))`** of **`r nrow(datasets$original)`**
 (`r round(sum(is.na(datasets$original[[ENV$CONCENTRATION]])) / nrow(datasets$original) * 100)`%)
 
-Missing **Concentration** values after Biocrates status preprocessing:
+Missing **Concentration** values after status preprocessing:
 **`r sum(is.na(datasets$discarded[[ENV$CONCENTRATION]]))`** of **`r nrow(datasets$discarded)`**
 (`r round(sum(is.na(datasets$discarded[[ENV$CONCENTRATION]])) / nrow(datasets$discarded) * 100)`%)
 
