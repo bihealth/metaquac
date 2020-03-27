@@ -168,10 +168,28 @@ execute_preprocessing <- function(data, ppparams){
   datasets$filter_compounds_by_qc_rsd_kept <- filter_res$data
   datasets$filter_compounds_by_qc_rsd_removed <- filter_res$removed
 
+  #   c. Based on missing values ratio in Pooled QCs (samples of type SAMPLE_TYPE_POOLED_QC)
+  filter_res <- remove_compounds_na(
+    data = datasets$filter_compounds_by_qc_rsd_kept,
+    target = ENV$CONCENTRATION,
+    sample_types = c(SAMPLE_TYPE_POOLED_QC),
+    max_ratio = ppparams$threshold_2c)
+  datasets$filter_compounds_by_qc_pool_mv_kept <- filter_res$data
+  datasets$filter_compounds_by_qc_pool_mv_removed <- filter_res$removed
+
+  #   d. Based on %RSD of Pooled QCs (default >15%)
+  filter_res <- remove_compounds_rsd(
+    data = datasets$filter_compounds_by_qc_pool_mv_kept,
+    target = ENV$CONCENTRATION,
+    sample_types = c(SAMPLE_TYPE_POOLED_QC),
+    max_rsd = ppparams$threshold_2d)
+  datasets$filter_compounds_by_qc_pool_rsd_kept <- filter_res$data
+  datasets$filter_compounds_by_qc_pool_rsd_removed <- filter_res$removed
+
   # 3. Remove underrepresented compounds
   #   a. Based on missing value ratio over all (!) study samples (>20%)
   filter_res <- remove_compounds_na(
-    data = datasets$filter_compounds_by_qc_rsd_kept,
+    data = datasets$filter_compounds_by_qc_pool_rsd_kept,
     target = ENV$CONCENTRATION,
     sample_types = c(SAMPLE_TYPE_BIOLOGICAL),
     max_ratio = ppparams$threshold_3a)
