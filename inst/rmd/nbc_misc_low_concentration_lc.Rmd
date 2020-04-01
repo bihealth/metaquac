@@ -1,0 +1,388 @@
+<!-- Author: "Yoann Gloaguen" -->
+<!-- Author: "Mathias Kuhring" -->
+
+
+```{r organise_data, echo=FALSE}
+# Keep only columns (variable) of interest from the biocrates dataframe
+selected_columns <- names(df) %in% c(
+  "Compound", "Sample.Name", "Sample.Identification", "Sample.Type",
+  "Analyte Peak Area [area]", "Concentration [µM]",
+  "Internal Std. Peak Area [area]", "Analyte Intensity [cps]",
+  LOWCON_CONDITIONS
+)
+
+df.filtered <- df[selected_columns]
+
+# Renaming column for consistent naming accross datasets 
+df.filtered <- df.filtered %>%
+  rename(
+    Analyte.Peak.Area = `Analyte Peak Area [area]`,
+    Concentration = `Concentration [µM]`, # TODO: Adapt for different unit!
+    Analyte.Intensity = `Analyte Intensity [cps]`,
+    Internal.Std.Peak.Area = `Internal Std. Peak Area [area]`
+  )
+
+# Here we separate the samples in 3 dataframes:
+# zero_samples: Used for calculating the lower limit to remove background/contaminants from the biological samples 
+# qc_samples: Used to check RSD in QC to see if we reject some metabolites that are too variable
+# filtered: This is the main dataframe where the data for biological samples is kept
+
+# Extract PBS (zero samples) first from the dataframe
+df.zero_samples <- df.filtered[ df.filtered$Sample.Type == "Zero Sample", ]
+# Extract QC 2 samples
+df.qc_samples <- df.filtered[ df.filtered$Sample.Type == "QC Level 2", ]
+# Filter the dataframe to keep only biological samples
+# Since we don't always have an annotation file, we get our sample list directly from the dataframe
+df.filtered <- df.filtered[ df.filtered$Sample.Type == "Sample", ]
+```
+
+## Metabolites RSD in QC samples  
+No filtering is done at this stage and this table is given as infromation only
+
+```{r qc_sample_check, echo=FALSE}
+# QC SAMPLES SECTION
+# Extra step to check whether some metabolites should be removed because they have a large RSD in the QC samples
+
+# Normalise the metabolites in QC samples using internal standards and compute their RSD
+df.qc_samples.summary <- df.qc_samples %>% 
+  mutate(Analyte.Peak.Area.Normalised = Analyte.Peak.Area/Internal.Std.Peak.Area) %>%
+  group_by(Compound) %>%
+  mutate(relative_standard_deviation = rsd(na.omit(Analyte.Peak.Area.Normalised)))
+
+# Display the table of RSD values for every metabolites
+df.qc_samples.summary %>%
+  distinct(Compound, .keep_all = TRUE)  %>%
+  select(Compound,relative_standard_deviation) %>%
+  easy_datatable()
+
+```
+
+```{r zero_sample_threshold, echo=FALSE}
+# ZERO SAMPLES SECTION
+
+
+# Compute the mean, median, highest peak area for every metabolites in the zero samples (we do the same for concentration)
+# Please note that the raw peak area are used and they are not normalised to the internal standard at this stage
+# Only the median peak area will actually be used later on, the rest is only calculated for information purposes
+df.zero_samples <- df.zero_samples %>%
+  group_by(Compound) %>%
+  mutate(mean_peak_area = mean(Analyte.Peak.Area, na.rm = T), median_peak_area = median(Analyte.Peak.Area, na.rm = T), highest_peak_area = max(Analyte.Peak.Area, na.rm = TRUE), mean_concentration = mean(Concentration, na.rm = T), median_concentration = median(Concentration, na.rm = T), highest_concentration = max(Concentration, na.rm = TRUE))
+
+# Replace "NaN" values by NA
+df.zero_samples[sapply(df.zero_samples, is.nan)] <- NA
+# Replace "-Inf" values created by max() by NA
+df.zero_samples[df.zero_samples=="-Inf"] <- NA
+
+# Remove all the duplicates to the every compound appearing once with the required values (mean and median)
+df.zero_sample_summary <- df.zero_samples %>%
+  group_by(Compound) %>%
+  select(Compound, mean_concentration,mean_peak_area,median_peak_area) %>%
+  distinct(Compound, .keep_all = T)
+
+# Add this information to the main dataframe so we can perform some filtering using the zero samples values
+df.filtered <- left_join(df.filtered,df.zero_sample_summary[,c("Compound","mean_concentration","mean_peak_area", "median_peak_area")], by="Compound")
+```
+
+## Number of samples above zero samples 3*mean peak area threshold
+
+```{r sample_threshold_calculation, echo=FALSE}
+
+# Create new columns in the main dataframe that contain whether a metabolite peak area (or concentration) is above 3 times the zero sample value
+# Please note that only the median peak area is used later on for filtering (The rest is ignored and calculated for tests only)
+df.filtered <- df.filtered %>%
+  mutate(above_3concentration = ifelse(Concentration >= mean_concentration*3, TRUE, FALSE), above_3mean_peak_area = ifelse(Analyte.Peak.Area >= mean_peak_area*3, TRUE, FALSE), above_3median_peak_area = ifelse(Analyte.Peak.Area >= median_peak_area*3, TRUE, FALSE))
+
+```
+
+```{r sample_summary_table, echo=FALSE}
+
+# Create a summary table showing how many samples have the metabolites above or below the 3 median zero sample threshold
+# Please note that if the zero sample value is NA, NA will be reported in the table
+df.filtered %>%
+  group_by(Compound) %>%
+  summarise(Number_sample_above = sum(above_3median_peak_area == TRUE, na.rm = T), Number_sample_below = sum(above_3median_peak_area == FALSE, na.rm = T), Number_NA = sum(is.na(above_3median_peak_area))) %>% 
+  easy_datatable()
+
+```
+
+## Number of metabolites per condition kept for analysis (after intensity and zero samples filters)
+```{r condition_summary_table, echo=FALSE}
+# First we set to NA all values below the threshold to discard them
+df.filtered$Analyte.Peak.Area[ which(df.filtered$above_3median_peak_area == FALSE)] = NA
+
+# THIS THE 20000 intensity (not peak area) filter, this should be switch with LOD values that we will calculate for every metabolites
+# Since we don't have this information yet we use this threshold (Ela has generated the data to compute the values)
+df.filtered <- df.filtered %>%
+  mutate(Above.LOD = ifelse(Analyte.Intensity > 20000, TRUE, FALSE))
+
+# Set all metabolites under this threshold to NA to discard them from further analysis
+df.filtered$Analyte.Peak.Area[ which(df.filtered$Above.LOD == FALSE)] = NA
+
+# Normalise all remaning metabolites using their internal standard
+# Here we only perform a simple scaling (other approach may be considered but this works fine)
+df.filtered <- df.filtered %>%
+  mutate(Analyte.Peak.Area.Normalised = Analyte.Peak.Area/Internal.Std.Peak.Area)
+
+# Compute the number of replicate left for each metabolite PER BIOLOGICAL CONDITION (IMPORTANT)
+# THIS IS ALSO SPECIFIC TO MULLER DATA, WE KEEP A METABOLITE IF IT PRESENT IN AT LEAST ONE SAMPLE BUT IT IS USELESS (THE THRESHOLD SHOULD BE CHANGED)
+condition_summary <- df.filtered %>%
+  group_by_at(vars(Compound, one_of(LOWCON_CONDITIONS))) %>%
+  summarise(Number_values = sum(!is.na(Analyte.Peak.Area)), Number_NA = sum(is.na(Analyte.Peak.Area))) %>%
+  mutate(Keep = ifelse(Number_values >=1, TRUE,FALSE))
+
+# Create a table that shows how many metabolites are kept PER BIOLOGICAL CONDITION
+condition_summary %>%
+  group_by_at(vars(one_of(LOWCON_CONDITIONS))) %>%
+  summarise(Number_of_metabolite = sum(Keep == TRUE)) %>%
+  easy_datatable()
+
+
+
+```
+
+## Total peak area per sample
+```{r total_peak_area_per_sample_HOS, echo=FALSE}
+
+# Compute the total peak area per sample using the only the metabolites that remain (that passed all the filtering steps)
+df.tot_area_HOS <- df.filtered %>%
+  group_by(Sample.Name) %>%
+  mutate(
+    total_area = sum(Analyte.Peak.Area, na.rm = T),
+    total_area_normalised = sum(Analyte.Peak.Area.Normalised, na.rm = T)
+  ) %>%
+  distinct(Sample.Name, .keep_all = TRUE) %>%
+  ungroup()
+
+# We also create a column that contain the "biological condition" so we don't have to change the factors everytime to group the samples by condition
+df.tot_area_HOS$condition <- df.tot_area_HOS %>%
+  select(one_of(LOWCON_CONDITIONS)) %>%
+  purrr::imap(.f = ~ paste(.y, .x, sep=" ")) %>%
+  as_tibble %>%
+  tidyr::unite(condition, LOWCON_CONDITIONS, sep=" | ") %>%
+  pull(condition)
+
+# Set the conditions as factor
+df.tot_area_HOS$condition <- factor(df.tot_area_HOS$condition)
+
+# Simply plot the total peak area per samples (BEFORE normalisation to internal standards) and group them by biological condition (color)
+ggplot(data=df.tot_area_HOS, aes(x=reorder(Sample.Identification, as.numeric(condition)), y=total_area, fill=condition)) +
+  geom_bar(stat="identity")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Sample name", y = " Total peak area")
+
+```
+
+## Total peak area per sample after normalisation to internal standards
+```{r normalised_total_peak_area_per_sample_HOS, echo=FALSE}
+
+# Simply plot the total peak area per samples (AFTER normalisation to internal standards) and group them by biological condition (color)
+ggplot(data=df.tot_area_HOS, aes(x=reorder(Sample.Identification, as.numeric(condition)), y=total_area_normalised, fill=condition)) +
+  geom_bar(stat="identity")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Sample name", y = " Total peak area")
+
+```
+
+## Outlier detection on normalised total peak area using a 1.5 standard deviation cutoff
+
+```{r standard_deviation_outlier_detection_HOS, fig.height=5, out.width = "80%", echo=FALSE}
+
+# Calculate 1.5 standard deviation per BIOLOGICAL CONDITION (This can be changed to 2, but usually even 1.5 does not reject any sample)
+df.tot_area_HOS <- df.tot_area_HOS %>%
+  group_by(condition) %>%
+  mutate(tot_area_2_sd_low = mean(total_area_normalised)-1.5*sd(total_area_normalised),tot_area_2_sd_high = mean(total_area_normalised)+1.5*sd(total_area_normalised)) 
+
+# Check if the samples are within the 1.5 std range
+df.tot_area_HOS <- df.tot_area_HOS %>%
+  mutate(inside_range = ifelse(total_area_normalised>tot_area_2_sd_low & total_area_normalised<tot_area_2_sd_high, TRUE, FALSE))
+
+# Plot the same as before with the addition of whether a sample is inside or outside the 1.5 std range
+ggplot(data=df.tot_area_HOS, aes(x=reorder(Sample.Identification, as.numeric(condition)), y=total_area_normalised, fill=condition)) +
+  geom_bar(stat="identity", aes(colour=inside_range))+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Sample name", y = " Total peak area")
+
+```
+
+```{r removing_outlier_HOS, echo=FALSE}
+# Remove outlier samples from the data (We just reject every sample that are outside the range)
+
+df.tot_area_HOS$total_area_normalised[ which(df.tot_area_HOS$inside_range == FALSE)] = NA
+
+
+```
+
+## Mean peak area per condition (with standard deviation)
+
+```{r mean_peak_area_per_condition_HOS, fig.height=5, out.width = "80%", echo=FALSE}
+
+# Here we group the samples by biological condition and compute the standard deviation for the total peak area (normalised)
+df.summary_HOS <- df.tot_area_HOS %>%
+  group_by(condition) %>%
+  mutate(mean_peak_area = mean(total_area_normalised, na.rm = T), standard_deviation = sd(total_area_normalised, na.rm = T)) %>%
+  summarise(mean_peak_area = unique(mean_peak_area), standard_deviation = unique(standard_deviation))
+
+# And we plot it
+# Please note that samples that have been rejected are not considered in the SD calculation
+ggplot(df.summary_HOS, aes(x=condition, y=mean_peak_area, fill=condition)) +
+  geom_bar(position=position_dodge(), stat="identity") +
+  geom_errorbar(aes(ymin=mean_peak_area-standard_deviation, ymax=mean_peak_area+standard_deviation),
+                width=.2,                    # Width of the error bars
+                position=position_dodge(.9)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "condition", y = "Mean peak area")
+
+```
+
+## Summary RSD of total peak area
+
+```{r summary_rsd_peak_area_HOS, echo=FALSE}
+
+# Compute an RSD of the total peak area per biological condition 
+summary_rsd_HOS <- df.tot_area_HOS %>%
+  group_by(condition) %>%
+  mutate(mean_peak_area = mean(total_area_normalised, na.rm = T), rsd = rsd(na.omit(total_area_normalised))) %>%
+  summarise(mean_peak_area = unique(mean_peak_area), relative_standard_deviation = unique(rsd))
+
+# Show it in a table
+colnames(summary_rsd_HOS) <- c("condition", "Mean peak area", "Relative Standard deviation (%)")
+summary_rsd_HOS %>%
+  easy_datatable()
+
+```
+
+## Metabolite RSD per condition
+
+A minimum number of 2 values is required for the RSD to be reported in the table. Any condition having a metabolite in only one samples is set to NA.  
+
+```{r metabolite_rsd_peak_area_HOS, echo=FALSE}
+
+# We go back on using a prior main dataframe so we need to bring some data were computed in between (condition and inside the 1.5 SD range) 
+# Bring condition names and inside range value to the main dataframe
+df.filtered.condition.HOS <- left_join(df.filtered,df.tot_area_HOS[,c("Sample.Name","condition","inside_range")], by="Sample.Name")
+
+# Remove outlier samples found to be outside 1.5 standard deviation
+df.filtered.condition.HOS$Analyte.Peak.Area.Normalised[ which(df.filtered.condition.HOS$inside_range == FALSE)] = NA
+
+# Compute the RSD for every single compound per BIOLOGICAL CONDITION
+# A MINIMUM OF 2 REPLICATES IS OBVIOUSLY NECESSARY
+df.filtered.condition.HOS <- df.filtered.condition.HOS %>%
+  group_by(condition, Compound) %>%
+  mutate(relative_standard_deviation = rsd(na.omit(Analyte.Peak.Area.Normalised)), metabolite_mean_peak_area = mean(Analyte.Peak.Area.Normalised, na.rm = T), number_values=sum(!is.na(Analyte.Peak.Area.Normalised), na.rm = T)) %>%
+  distinct(Compound, condition, .keep_all = TRUE) %>%
+  mutate(relative_standard_deviation = ifelse(number_values >= 2, relative_standard_deviation, NA),metabolite_mean_peak_area = ifelse(number_values >= 2, metabolite_mean_peak_area, NA))
+
+# Restructure the dataframe so we can display the RSD per metabolite per condtion in a table
+df.metabolite_rsd_HOS <- df.filtered.condition.HOS %>%
+  select(Compound, condition, relative_standard_deviation) %>%
+  spread(Compound, relative_standard_deviation)
+
+df.metabolite_rsd_HOS %>%
+  easy_datatable()
+
+```
+
+## Scatter plot of metabolites per condition (with standard error) {.tabset}
+
+```{r HOS_scatter_plot, results="asis", echo=FALSE, fig.height=50, out.width = "100%"}
+# THIS IS THE LAST PART WHERE WE SHOW 1 SCATTER PLOTS FOR EVERY METABOLITE PER CONDITON 
+# THE MULLER DATA CONTAINS 3 DIFFERENT EXPERIMENT (FLUID, HUMAN AND MOUSE) SO WE REPEAT THIS STAGE 3 TIMES
+# HOWEVER, ONLY ONE EXPERIMENT AT A TIME SHOULD RUN SO THIS SPLIT SHOULD NOT NORMALY BE NECESSARY
+# i.e. Fluid, human, and mouse samples should splited before running this script and analysed separately (Ela wanted it like because it is easier for her to look at)
+
+# We create a new dataframe from trhe main one (This is due to some legacy code and I don't think that it is actually necessary)
+# Bring condition names and inside range value to the main dataframe
+df.filtered.condition.HOS.jitter.all <- left_join(df.filtered,df.tot_area_HOS[,c("Sample.Name","condition","inside_range")], by="Sample.Name")
+
+if (is.null(LOWCON_SCATTER_SUB_GROUPS)){
+  sub_groups <- "KEEP_ALL"
+} else {
+  sub_groups <- LOWCON_SCATTER_SUB_GROUPS
+}
+
+for (i in seq_along(sub_groups)) {
+  if (sub_groups[i] == "KEEP_ALL") {
+    df.filtered.condition.HOS.jitter <- df.filtered.condition.HOS.jitter.all
+  } else {
+    df.filtered.condition.HOS.jitter <- df.filtered.condition.HOS.jitter.all %>%
+      filter(!!sym(names(sub_groups[i])) == sub_groups[i])
+    cat(paste("\n###", names(sub_groups[i]), sub_groups[i], "\n"))
+  }
+  
+  # # Subsample for testing
+  # df.filtered.condition.HOS.jitter <- df.filtered.condition.HOS.jitter %>%
+  #   filter(Compound %in% sample(unique(Compound),10))
+  
+  # Remove outlier samples found to be outside 1.5 standard deviation
+  df.filtered.condition.HOS.jitter$Analyte.Peak.Area.Normalised[ which(df.filtered.condition.HOS.jitter$inside_range == FALSE)] = NA
+  
+  # We recompute everything (SD, RSD etc... for every metabolites)
+  df.filtered.condition.HOS.jitter <- df.filtered.condition.HOS.jitter %>%
+    group_by(condition, Compound) %>%
+    mutate(relative_standard_deviation = rsd(na.omit(Analyte.Peak.Area.Normalised)),standard_deviation = sd(Analyte.Peak.Area.Normalised, na.rm = T), metabolite_mean_peak_area = mean(Analyte.Peak.Area.Normalised, na.rm = T), standard_error= sd(Analyte.Peak.Area.Normalised, na.rm = T)/sqrt(length(na.omit(Analyte.Peak.Area.Normalised))), number_values=sum(!is.na(Analyte.Peak.Area.Normalised), na.rm = T)) %>%
+    mutate(Analyte.Peak.Area.Normalised = ifelse(number_values >= 2, Analyte.Peak.Area.Normalised, NA), standard_error = ifelse(number_values >= 2, standard_error, NA), relative_standard_deviation = ifelse(number_values >= 2, relative_standard_deviation, NA))
+  
+  # Get the total number of values (in samples) we have per compound
+  df.filtered.condition.HOS.jitter <- df.filtered.condition.HOS.jitter %>%
+    group_by(Compound) %>%
+    mutate(total_number_value_available = sum(!is.na(Analyte.Peak.Area.Normalised), na.rm = T))
+  
+  # Remove all compounds with no value at all (Again this filter is specific to MULLER, we keep metabolites even if they appear in 1 sample, threshold needs to be changed)
+  df.filtered.condition.HOS.jitter <- df.filtered.condition.HOS.jitter %>%
+    filter(total_number_value_available > 0)
+  
+  # Factorize variables
+  df.filtered.condition.HOS.jitter[[LOWCON_SCATTER_X]] <-
+    factor(df.filtered.condition.HOS.jitter[[LOWCON_SCATTER_X]])
+  if (!is.null(LOWCON_SCATTER_COLOR)){
+    df.filtered.condition.HOS.jitter[[LOWCON_SCATTER_COLOR]] <-
+      factor(df.filtered.condition.HOS.jitter[[LOWCON_SCATTER_COLOR]])
+  } else {
+    LOWCON_SCATTER_COLOR <- LOWCON_SCATTER_X
+  }
+  
+  # Create the error bars for the plot
+  df.filtered.condition.HOS.jitter.error_bar <- df.filtered.condition.HOS.jitter %>%
+    distinct(Compound, condition, .keep_all = TRUE)
+  
+  # Create the plots
+  # Please note that these plots can get very big if a lot of metabolites are conserved (passed the filter)
+  
+  g <- ggplot(
+    mapping = aes_string(
+      x = paste0("`", LOWCON_SCATTER_X, "`"),
+      y = "Analyte.Peak.Area.Normalised",
+      color = paste0("`", LOWCON_SCATTER_COLOR, "`"),
+      fill = paste0("`", LOWCON_SCATTER_COLOR, "`")
+    )
+  ) +
+    geom_jitter(
+      data = df.filtered.condition.HOS.jitter,
+      position = position_jitterdodge(jitter.width = 0.5, dodge.width = 0.9),
+      cex = 1
+    ) +
+    geom_errorbar(
+      data = df.filtered.condition.HOS.jitter.error_bar,
+      mapping = aes(
+        ymin = metabolite_mean_peak_area-standard_error,
+        ymax = metabolite_mean_peak_area+standard_error
+      ),
+      position = position_dodge(width = 0.8),
+      width = 0.5, size = 0.25, color = "black"
+    ) +
+    facet_wrap(~ Compound, ncol = 4, scale = "free") +
+    ggtitle("Peak area distribution per metabolite/condtion") +
+    ylab("Peak area") +
+    xlab(LOWCON_SCATTER_X) +
+    theme(
+      panel.grid.minor=element_blank(),
+      panel.grid.major=element_blank(),
+      panel.background=element_blank(),
+      axis.line=element_line(),
+      legend.position = "top"
+    )
+  
+  print(g)
+}
+
+```

@@ -1,4 +1,69 @@
-```{r}
+```{r metadata, results='asis', eval=ANY_METADATA_MODS}
+
+cat("## Metadata modifications\n")
+
+# Original metadata name modifications (i.e. renaming colums)
+if (!is.null(params$metadata_name_mods_org)) {
+  cat("Changed column names as defined by `metadata_name_mods_org`:\n\n")
+  cat(paste(
+    paste("*", names(params$metadata_name_mods_org)),
+    params$metadata_name_mods_org,
+    sep = " > ", collapse = "\n")
+  )
+  biocrates <- modify_metadata_names(
+    data = biocrates,
+    mapping = params$metadata_name_mods_org
+  )
+  cat("\n\n")
+}
+
+# Metadata import
+if (!is.null(params$metadata_import)){
+  cat(paste0(
+    "Merged additional metadata from file **", params$metadata_import,
+    "** with overlaps handling option '**", params$metadata_import_overlap,
+    "**'. "
+  ))
+  biocrates <- import_metadata(
+    data = biocrates,
+    metadata_file = params$metadata_import,
+    column_duplicates = params$metadata_import_overlap
+  )
+  cat("\n\n")
+}
+
+# Additional metadata name modifications (i.e. renaming colums)
+if (!is.null(params$metadata_name_mods_add)) {
+  cat("Changed column names as defined by `metadata_name_mods_add`:\n\n")
+  cat(paste(
+    paste("*", names(params$metadata_name_mods_add)),
+    params$metadata_name_mods_add,
+    sep = " > ", collapse = "\n")
+  )
+  biocrates <- modify_metadata_names(
+    data = biocrates,
+    mapping = params$metadata_name_mods_add
+  )
+  cat("\n\n")
+}
+
+# Metadata value modifications (e.g. renaming samples, groups, ...)
+if (!is.null(params$metadata_value_mods)) {
+  cat("Changed values as defined by `metadata_value_mods`:\n\n")
+  mods <- params$metadata_value_mods
+  for (col in names(mods)){
+    cat(paste0("* ", col, ": "))
+    cat(paste(names(mods[[col]]), mods[[col]], sep = " > ", collapse = ", "))
+    cat("\n")
+  }
+  biocrates <- modify_metadata_values(
+    data = biocrates,
+    mapping = params$metadata_value_mods
+  )
+  cat("\n\n")
+}
+
+# Metadata extraction (experimental)
 for (set in params$metadata_extraction){
   biocrates <- extract_metadata(
     data = biocrates,

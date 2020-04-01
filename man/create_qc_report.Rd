@@ -4,22 +4,40 @@
 \alias{create_qc_report}
 \title{Create a MeTaQuaC QC report based on Biocrates data (as exported by MetIDQ).}
 \usage{
-create_qc_report(data_files, kit = c("Biocrates AbsoluteIDQ p400 HR Kit",
-  "Biocrates AbsoluteIDQ Stero17 Kit", "Biocrates MxP Quant 500 Kit", )[1],
-  measurement_type = c("LC", "FIA")[1], title = "Biocrates QC Report",
+create_qc_report(
+  data_files,
+  kit = c("Biocrates AbsoluteIDQ p400 HR Kit", "Biocrates AbsoluteIDQ Stero17 Kit",
+    "Biocrates MxP Quant 500 Kit")[1],
+  measurement_type = c("LC", "FIA")[1],
+  title = "Biocrates QC Report",
   author = unname(Sys.info()["user"]),
-  report_output_name = paste0(format(Sys.time(), "\%Y\%m\%d_\%H\%M\%S"),
-  "_qc_report_", measurement_type), report_output_dir = "reports",
-  pool_indicator = "Sample.Identification", profiling_variables = NULL,
-  study_variables = NULL, replicate_variables = NULL,
-  preproc_keep_status = c("Valid", "Smaller Zero", "< LOD", "< LLOQ",
-  "> ULOQ", "No Intercept", "Missing Measurement", "ISTD Out of Range",
-  "STD/QC < Limit", "STD/QC > Limit", "Invalid", "Incomplete",
-  "Blank Out of Range")[1], filter_compound_qc_max_mv_ratio = 0.3,
+  report_output_name = paste0(format(Sys.time(), "\%Y\%m\%d_\%H\%M\%S"), "_qc_report_",
+    measurement_type),
+  report_output_dir = "reports",
+  pool_indicator = "Sample.Identification",
+  profiling_variables = NULL,
+  study_variables = NULL,
+  replicate_variables = NULL,
+  preproc_keep_status = c("Valid", "Smaller Zero", "< LOD", "< LLOQ", "> ULOQ",
+    "No Intercept", "Missing Measurement", "ISTD Out of Range", "STD/QC < Limit",
+    "STD/QC > Limit", "Invalid", "Incomplete", "Blank Out of Range")[1],
+  filter_compound_qc_max_mv_ratio = 0.3,
   filter_compound_qc_max_rsd = 15,
   filter_compound_bs_max_mv_ratio = 0.3,
-  filter_compound_bs_min_rsd = 15, filter_sample_max_mv_ratio = 0.2,
-  data_tables = c("all", "stats", "none")[1], ...)
+  filter_compound_bs_min_rsd = 15,
+  filter_sample_max_mv_ratio = 0.2,
+  data_tables = c("all", "stats", "none")[1],
+  metadata_import = NULL,
+  metadata_import_overlap = c("rename", "replace", "omit")[1],
+  metadata_name_mods_org = NULL,
+  metadata_name_mods_add = NULL,
+  metadata_value_mods = NULL,
+  lowcon_conditions = NULL,
+  lowcon_scatter_x = NULL,
+  lowcon_scatter_color = NULL,
+  lowcon_scatter_sub_groups = NULL,
+  ...
+)
 }
 \arguments{
 \item{data_files}{Data files as exported by MetIDQ (txt), indicated as an R list providing the
@@ -91,6 +109,56 @@ implemented data tables (with vcs export buttons). "stats" will only show tables
 data (such as countings, %RSDs, etc.), but not the actual measurements (neither original nor
 pre-processed). "none" will show no data tables at all, i.e. the report is mainly limited to
 visualizations.}
+
+\item{metadata_import}{Indicate a text file (csv or tsv) with additional
+metadata/annotations to import and merge (by column "Sample Identification").}
+
+\item{metadata_import_overlap}{Specify the handling of overlaping columns.
+"rename" (default) will extend duplicate column names in the metadata import
+with ".D" to make them unique, where D is an increasing number according to
+the occurance of the same name. Keep this in mind when indicating variables.
+"replace" will replace original columns with new metadata columns.
+"omit" will keep original columns and ignore new metadata columns.}
+
+\item{metadata_name_mods_org}{Rename columns in the original data.
+This is applied **before** the import the of additional metadata, if any.
+Consider that non-unique column names are modified in general. Names not in
+the data are ignored. Use a named vector to indicate columns to rename, e.g.:
+c(oldname1 = "newname1", oldname2 = "newname2", ...)}
+
+\item{metadata_name_mods_add}{Rename columns in original and added metadata.
+This is applied **after** the import of additional metadata, if any. Consider
+that non-unique column names are modified in general. Names not in the data
+are ignored. Use a named vector to indicate columns to rename, e.g.:
+c(oldname1 = "newname1", oldname2 = "newname2", ...)}
+
+\item{metadata_value_mods}{Batch change values in the data, e.g. to correct
+sample identifiers, groups, etc. This is applied after metadata import and
+renaming, if any. Indicated columns and values not in the data are ignored.
+Use a named list, with names indicating the columns and named vectors
+indicate the changes to apply, e.g.:
+list("columnX" = c("oldvalueA" = "newvalueA", "oldvalueB" = "newvalueB"),}
+
+\item{lowcon_conditions}{Indicate a vector of study variables of interest
+which will be applied to additional reproducibility analysis designed for low
+concentration data below the limit of quantification. Hence, this analysis
+is performed on completely unfiltered data using area (LC) or intensity
+(FIA), resp.}
+
+\item{lowcon_scatter_x}{Indiciate one study variable to be used for the
+x-axis in the scatter plot of the additional reproducibility analysis.
+This variable must be available in the conditions. If none is given,
+the first study variable in the conditions}
+
+\item{lowcon_scatter_color}{Indiciate one study variable to be used for
+coloring samples in the response scatter plot of the additional
+reproducibility analysis. This variable must be available in the conditions.
+If none is given, the first study variable in the conditions}
+
+\item{lowcon_scatter_sub_groups}{Indicate pairs of study variables and
+corresponding groups in a named vector to be used for separate response
+scatter plots (e.g. if experiments havn't been separated before). By default,
+the scatter plot is not separated.}
 
 \item{...}{Masked parameters for development and testing only.}
 }

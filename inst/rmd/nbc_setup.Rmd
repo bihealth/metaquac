@@ -3,35 +3,35 @@
 # Prettify warnings etc. in notebook
 # Source: https://selbydavid.com/2017/06/18/rmarkdown-alerts/
 knitr::knit_hooks$set(
-   error = function(x, options) {
-     paste('\n\n<div class="alert alert-danger">',
-           gsub('##', '\n', gsub('^#*\ *Error', '**Error:**', x)),
-           '</div>', sep = '\n')
-   },
-   warning = function(x, options) {
-     paste('\n\n<div class="alert alert-warning">',
-           gsub('##', '\n', gsub('^#*\ *Warning:', '**Warning:**', x)),
-           '</div>', sep = '\n')
-   },
-   message = function(x, options) {
-     if (grepl(pattern = '^#*\ *Error:', x = x)){
-       paste('\n\n<div class="alert alert-danger">',
-             gsub('##', '\n', gsub('^#*\ *Error', '**Error:**', x)),
-             '</div>', sep = '\n')
-     } else if (grepl(pattern = '^#*\ *Warning:', x = x)){
-       paste('\n\n<div class="alert alert-warning">',
-             gsub('##', '\n', gsub('^#*\ *Warning:', '**Warning:**', x)),
-             '</div>', sep = '\n')
-     } else if (grepl(pattern = '^#*\ *Success:', x = x)){
-       paste('\n\n<div class="alert alert-success">',
-             gsub('##', '\n', gsub('^#*\ *Success:', '', x)),
-             '</div>', sep = '\n')
-     } else {
-       paste('\n\n<div class="alert alert-info">',
-             gsub('##', '\n', x),
-             '</div>', sep = '\n')
-     }
-   }
+  error = function(x, options) {
+    paste('\n\n<div class="alert alert-danger">',
+          gsub('##', '\n', gsub('^#*\ *Error', '**Error:**', x)),
+          '</div>', sep = '\n')
+  },
+  warning = function(x, options) {
+    paste('\n\n<div class="alert alert-warning">',
+          gsub('##', '\n', gsub('^#*\ *Warning:', '**Warning:**', x)),
+          '</div>', sep = '\n')
+  },
+  message = function(x, options) {
+    if (grepl(pattern = '^#*\ *Error:', x = x)){
+      paste('\n\n<div class="alert alert-danger">',
+            gsub('##', '\n', gsub('^#*\ *Error', '**Error:**', x)),
+            '</div>', sep = '\n')
+    } else if (grepl(pattern = '^#*\ *Warning:', x = x)){
+      paste('\n\n<div class="alert alert-warning">',
+            gsub('##', '\n', gsub('^#*\ *Warning:', '**Warning:**', x)),
+            '</div>', sep = '\n')
+    } else if (grepl(pattern = '^#*\ *Success:', x = x)){
+      paste('\n\n<div class="alert alert-success">',
+            gsub('##', '\n', gsub('^#*\ *Success:', '', x)),
+            '</div>', sep = '\n')
+    } else {
+      paste('\n\n<div class="alert alert-info">',
+            gsub('##', '\n', x),
+            '</div>', sep = '\n')
+    }
+  }
 )
 
 
@@ -105,8 +105,8 @@ if ("kit" %in% names(params)){
   assert_that(params$kit %in% KITS)
 } else {
   stop(paste0(
-        "No kit selected. Currently supported: '",
-        paste(KITS, collapse = "', '"), "'"))
+    "No kit selected. Currently supported: '",
+    paste(KITS, collapse = "', '"), "'"))
 }
 
 # MetIDQ statuses
@@ -139,5 +139,83 @@ if (!is.null(params$filter_sample_max_mv_ratio)) {
 if (!is.null(params$data_tables)) {
   assertthat::assert_that(params$data_tables %in% c("all", "stats", "none"))
   assign("TABLE_DISPLAY", params$data_tables, PKG_ENV)
+}
+
+# Optional metadata import and modifications
+ANY_METADATA_MODS <- FALSE
+if (!is.null(params$metadata_import)) {
+  assertthat::assert_that(file.exists(params$metadata_import))
+  ANY_METADATA_MODS <- TRUE
+}
+assertthat::assert_that(length(params$metadata_import_overlap) == 1)
+assertthat::assert_that(
+  params$metadata_import_overlap %in% c("rename", "replace", "omit")
+)
+if (!is.null(params$metadata_name_mods_org)) {
+  assertthat::assert_that(length(params$metadata_name_mods_org) > 0)
+  assertthat::assert_that(class(params$metadata_name_mods_org) == "character")
+  assertthat::assert_that(!is.null(names(params$metadata_name_mods_org)))
+  assertthat::assert_that(!any(is.na(names(params$metadata_name_mods_org))))
+  ANY_METADATA_MODS <- TRUE
+}
+if (!is.null(params$metadata_name_mods_add)) {
+  assertthat::assert_that(length(params$metadata_name_mods_add) > 0)
+  assertthat::assert_that(class(params$metadata_name_mods_add) == "character")
+  assertthat::assert_that(!is.null(names(params$metadata_name_mods_add)))
+  assertthat::assert_that(!any(is.na(names(params$metadata_name_mods_add))))
+  ANY_METADATA_MODS <- TRUE
+}
+if (!is.null(params$metadata_value_mods)) {
+  assertthat::assert_that(length(params$metadata_value_mods) > 0)
+  assertthat::assert_that(is.list(params$metadata_value_mods))
+  assertthat::assert_that(!is.null(names(params$metadata_value_mods)))
+  assertthat::assert_that(!any(is.na(names(params$metadata_value_mods))))
+  for (value_mods in params$metadata_value_mods){
+    assertthat::assert_that(length(value_mods) > 0)
+    assertthat::assert_that(!is.null(names(value_mods)))
+    assertthat::assert_that(!any(is.na(names(value_mods))))
+    assertthat::assert_that(
+      class(value_mods) %in% c("character", "complex", "integer", "logical", "numeric")
+    )
+  }
+  ANY_METADATA_MODS <- TRUE
+}
+
+# Optional low concentration analysis
+LOWCON <- FALSE
+LOWCON_CONDITIONS <- params$lowcon_conditions
+LOWCON_SCATTER_X <- params$lowcon_scatter_x
+LOWCON_SCATTER_COLOR <- params$lowcon_scatter_color
+LOWCON_SCATTER_SUB_GROUPS <- params$lowcon_scatter_sub_groups
+if (!is.null(LOWCON_CONDITIONS)){
+  assertthat::assert_that(length(LOWCON_CONDITIONS) > 0)
+  assertthat::assert_that(class(LOWCON_CONDITIONS) == "character")
+  assertthat::assert_that(!any(is.na(LOWCON_CONDITIONS)))
+  
+  if (is.null(LOWCON_SCATTER_X)){
+    LOWCON_SCATTER_X <- LOWCON_CONDITIONS[1]
+  } else {
+    assertthat::assert_that(length(LOWCON_SCATTER_X) == 1)
+    assertthat::assert_that(class(LOWCON_SCATTER_X) == "character")
+    assertthat::assert_that(LOWCON_SCATTER_X %in% LOWCON_CONDITIONS)
+  }
+  if (is.null(LOWCON_SCATTER_COLOR)){
+    LOWCON_SCATTER_X <- LOWCON_CONDITIONS[1]
+  } else {
+    assertthat::assert_that(length(LOWCON_SCATTER_COLOR) == 1)
+    assertthat::assert_that(class(LOWCON_SCATTER_COLOR) == "character")
+    assertthat::assert_that(LOWCON_SCATTER_COLOR %in% LOWCON_CONDITIONS)
+  }
+  if (!is.null(LOWCON_SCATTER_SUB_GROUPS)){
+    assertthat::assert_that(length(LOWCON_SCATTER_SUB_GROUPS) > 0)
+    assertthat::assert_that(class(LOWCON_SCATTER_SUB_GROUPS) == "character")
+    assertthat::assert_that(!any(is.na(LOWCON_SCATTER_SUB_GROUPS)))
+    assertthat::assert_that(!is.null(names(LOWCON_SCATTER_SUB_GROUPS)))
+    assertthat::assert_that(!any(is.na(names(LOWCON_SCATTER_SUB_GROUPS))))
+    assertthat::assert_that(
+      all(names(LOWCON_SCATTER_SUB_GROUPS) %in% LOWCON_CONDITIONS)
+    )
+  }
+  LOWCON <- TRUE
 }
 ```

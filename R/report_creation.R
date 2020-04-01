@@ -56,6 +56,48 @@
 #' data (such as countings, %RSDs, etc.), but not the actual measurements (neither original nor
 #' pre-processed). "none" will show no data tables at all, i.e. the report is mainly limited to
 #' visualizations.
+#' @param metadata_import Indicate a text file (csv or tsv) with additional
+#' metadata/annotations to import and merge (by column "Sample Identification").
+#' @param metadata_import_overlap Specify the handling of overlaping columns.
+#' "rename" (default) will extend duplicate column names in the metadata import
+#' with ".D" to make them unique, where D is an increasing number according to
+#' the occurance of the same name. Keep this in mind when indicating variables.
+#' "replace" will replace original columns with new metadata columns.
+#' "omit" will keep original columns and ignore new metadata columns.
+#' @param metadata_name_mods_org Rename columns in the original data.
+#' This is applied **before** the import the of additional metadata, if any.
+#' Consider that non-unique column names are modified in general. Names not in
+#' the data are ignored. Use a named vector to indicate columns to rename, e.g.:
+#' c(oldname1 = "newname1", oldname2 = "newname2", ...)
+#' @param metadata_name_mods_add Rename columns in original and added metadata.
+#' This is applied **after** the import of additional metadata, if any. Consider
+#' that non-unique column names are modified in general. Names not in the data
+#' are ignored. Use a named vector to indicate columns to rename, e.g.:
+#' c(oldname1 = "newname1", oldname2 = "newname2", ...)
+#' @param metadata_value_mods Batch change values in the data, e.g. to correct
+#' sample identifiers, groups, etc. This is applied after metadata import and
+#' renaming, if any. Indicated columns and values not in the data are ignored.
+#' Use a named list, with names indicating the columns and named vectors
+#' indicate the changes to apply, e.g.:
+#' list("columnX" = c("oldvalueA" = "newvalueA", "oldvalueB" = "newvalueB"),
+#       "columnY" = c("1" = 5, "3" = 6, ...), ...)
+#' @param lowcon_conditions Indicate a vector of study variables of interest
+#' which will be applied to additional reproducibility analysis designed for low
+#' concentration data below the limit of quantification. Hence, this analysis
+#' is performed on completely unfiltered data using area (LC) or intensity
+#' (FIA), resp.
+#' @param lowcon_scatter_x Indiciate one study variable to be used for the
+#' x-axis in the scatter plot of the additional reproducibility analysis.
+#' This variable must be available in the conditions. If none is given,
+#' the first study variable in the conditions
+#' @param lowcon_scatter_color Indiciate one study variable to be used for
+#' coloring samples in the response scatter plot of the additional
+#' reproducibility analysis. This variable must be available in the conditions.
+#' If none is given, the first study variable in the conditions
+#' @param lowcon_scatter_sub_groups Indicate pairs of study variables and
+#' corresponding groups in a named vector to be used for separate response
+#' scatter plots (e.g. if experiments havn't been separated before). By default,
+#' the scatter plot is not separated.
 #' @param ... Masked parameters for development and testing only.
 #'
 #' @export
@@ -190,12 +232,24 @@ create_qc_report <- function(
   filter_compound_bs_min_rsd = 15,
   filter_sample_max_mv_ratio = 0.2,
   data_tables = c("all", "stats", "none")[1],
+  metadata_import = NULL,
+  metadata_import_overlap = c("rename", "replace", "omit")[1],
+  metadata_name_mods_org = NULL,
+  metadata_name_mods_add = NULL,
+  metadata_value_mods = NULL,
+  lowcon_conditions = NULL,
+  lowcon_scatter_x = NULL,
+  lowcon_scatter_color = NULL,
+  lowcon_scatter_sub_groups = NULL,
   ...
 ){
 
   # Creates full absolute paths
   data_files <- lapply(data_files, function(x){unname(R.utils::getAbsolutePath(x))})
   # data_output_dir <- unname(R.utils::getAbsolutePath(data_output_dir))
+  if (!is.null(metadata_import)){
+    metadata_import <- unname(R.utils::getAbsolutePath(metadata_import))
+  }
 
   # Markdown rendering
   rmarkdown::render(
@@ -222,6 +276,15 @@ create_qc_report <- function(
       filter_compound_bs_min_rsd = filter_compound_bs_min_rsd,
       filter_sample_max_mv_ratio = filter_sample_max_mv_ratio,
       data_tables = data_tables,
+      metadata_import = metadata_import,
+      metadata_import_overlap = metadata_import_overlap,
+      metadata_name_mods_org = metadata_name_mods_org,
+      metadata_name_mods_add = metadata_name_mods_add,
+      metadata_value_mods = metadata_value_mods,
+      lowcon_conditions = lowcon_conditions,
+      lowcon_scatter_x = lowcon_scatter_x,
+      lowcon_scatter_color = lowcon_scatter_color,
+      lowcon_scatter_sub_groups = lowcon_scatter_sub_groups,
       ...
     ),
     clean = TRUE)

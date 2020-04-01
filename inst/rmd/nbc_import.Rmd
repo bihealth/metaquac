@@ -17,7 +17,7 @@ num_batches <- length(params$data_files)
 imports <- vector(mode = "list", length = num_batches)
 conc_col_name <- vector(mode ="character", length = num_batches)
 for (i in seq_len(num_batches)){
-  cat(paste0("\nImporting batch `", names(params$data_files)[i], "`...\n"))
+  cat(paste0("\n\nImporting batch `", names(params$data_files)[i], "`... "))
   import <- import_biocrates_unit(data_files = params$data_files[[i]],
                                   zero2na = params$zero2na,
                                   measurement_type = meas_type,
