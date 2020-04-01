@@ -150,3 +150,12 @@ easy_datatable <- function(
 
   return(table_out)
 }
+
+
+# Extract extension from a file path string and return it lowercase
+get_file_extension <- function(filepath, to_lowercase = TRUE) {
+  splits <- strsplit(x = filepath, split = ".", fixed = TRUE)[[1]]
+  extension <- splits[length(splits)]
+  if (to_lowercase) extension <- tolower(extension)
+  return(extension)
+}

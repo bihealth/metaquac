@@ -93,8 +93,15 @@ params:
   # [WIP] A regex string to filter/exclude samples directly after import
   sample_filter: ""
 
-  # [WIP] Optional meta data preprocessing
-  # Extraction of meta data from a character column
+  # Optional meta data preprocessing
+  # Import and merge additional metadata (via "Sample Idenitification")
+  metadata_import:
+  metadata_import_overlap:
+  # Variable name and value modifications
+  metadata_name_mods_org:
+  metadata_name_mods_add:
+  metadata_value_mods:
+  # [WIP] Extraction of meta data from a character column
   # (not visibly passed via create_report function, yet)
   metadata_extraction:
 
@@ -161,6 +168,12 @@ Please refer to Biocrates' manuals and documents provided with the kit used.
 ```{r child="nbc_data_restructuring.Rmd", eval=CONTINUE}
 ```
 
+## Table
+```{r, eval=CONTINUE}
+easy_datatable(
+  data = biocrates, caption = paste0("Full data before preprocessing")
+)
+```
 
 # Overview
 ```{r child="nbc_import_info.Rmd", eval=CONTINUE}

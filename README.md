@@ -244,7 +244,7 @@ samples (Biocrates' QC Level 2) (default = 15\%, exclusive, disable with NULL).
 * `filter_compound_bs_max_mv_ratio` Set maximum ratio of missing values allowed for compounds
 in biological samples (Biocrates' Sample) (default = 0.3, exclusive, disable with NULL).
 * `filter_compound_bs_min_rsd` Set minimum \%RSD allowed for compounds in biological samples
-#' (default = 15\%, exclusive, disable with NULL).
+(default = 15\%, exclusive, disable with NULL).
 * `filter_sample_max_mv_ratio` Set maximum ratio of missing values allowed per biological
 sample (Biocrates' Sample) (default < 0.2, exclusive, disable with NULL).
 * `data_tables` Control data tables availability in reports. "all" (default) will show all
@@ -252,6 +252,32 @@ implemented data tables (with vcs export buttons). "stats" will only show tables
 data (such as countings, %RSDs, etc.), but not the actual measurements (neither original nor
 pre-processed). "none" will show no data tables at all, i.e. the report is mainly limited to
 visualizations.
+* `metadata_import` Indicate a tab-separated text file with additional
+metadata/annotations to import and merge (by column "Sample Identification").
+* `metadata_import_overlap` Specify the handling of overlaping columns.
+"rename" (default) will extend duplicate column names in the metadata import
+with ".D" to make them unique, where D is an increasing number according to the
+occurance of the same name. Keep this in mind when indicating variables.
+"replace" will replace original columns with new metadata columns.
+"omit" will keep original columns and ignore new metadata columns.
+* `metadata_name_mods_org` Rename columns in the original data.
+This is applied **before** the import the of additional metadata, if any.
+Consider that non-unique column names are modified in general. Names not in
+the data are ignored. Use a named vector to indicate columns to rename, e.g.:
+c(oldname1 = "newname1", oldname2 = "newname2", ...)
+* `metadata_name_mods_add` Rename columns in original and added metadata.
+This is applied **after** the import of additional metadata, if any. Consider
+that non-unique column names are modified in general. Names not in the data
+are ignored. Use a named vector to indicate columns to rename, e.g.:
+c(oldname1 = "newname1", oldname2 = "newname2", ...)
+* `metadata_value_mods` Batch change values in the data, e.g. to correct
+sample identifiers, groups, etc. This is applied after metadata import and
+renaming, if any. Indicated columns and values not in the data are ignored.
+Use a named list, with names indicating the columns and named vectors
+indicate the changes to apply, e.g.:
+list("columnX" = c("oldvalueA" = "newvalueA", "oldvalueB" = "newvalueB"),
+"columnY" = c("1" = 5, "3" = 6, ...), ...)
+
 
 ## General Notes on Biocrates Data
 

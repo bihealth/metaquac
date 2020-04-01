@@ -88,7 +88,12 @@ import_metidq_tables <- function(filename, samples_expected = 96){
   assert_that(file.exists(filename))
 
   # Read lines to enable own transformations
-  lines <- readLines(filename, encoding = "latin1")
+  encoding <- readr::guess_encoding(file = filename)
+  cat(paste0("Guessed encoding ", encoding[[1,1]], ". "))
+  lines <- readr::read_lines(
+    file = filename,
+    locale = readr::locale(encoding = encoding[[1,1]])
+  )
 
   # Get header
   header <- stringr::str_split(lines[2], "\t")[[1]]
@@ -126,9 +131,13 @@ import_metidq_tables <- function(filename, samples_expected = 96){
   lines_compound_info_end <-
     which(!startsWith(lines, "\t")[3:length(lines)])[1] - 1 + 2
   lines_compound_info <- lines[2:lines_compound_info_end]
-  compound_info <- read.delim(text = lines_compound_info, header = TRUE,
-                              stringsAsFactors = FALSE,
-                              check.names=FALSE)
+  compound_info <- read.delim(
+    text = lines_compound_info,
+    header = TRUE,
+    stringsAsFactors = FALSE,
+    check.names=FALSE,
+    encoding = "UTF-8"
+  )
   col_names <- as.character(compound_info[["Measurement Time"]])
   idx <- which(names(compound_info) == "Measurement Time")
   compound_info[1:idx] <- NULL
@@ -187,9 +196,13 @@ import_metidq_tables <- function(filename, samples_expected = 96){
   # unknown_tables <- 0
   for (i in 1:num_tables){
     # Parse table, but without the description (hence +1)
-    table_wide <- read.delim(text = lines[(idx_start[i]+1):idx_end[i]],
-                             header = FALSE, stringsAsFactors = FALSE,
-                             colClasses = "character")
+    table_wide <- read.delim(
+      text = lines[(idx_start[i]+1):idx_end[i]],
+      header = FALSE,
+      stringsAsFactors = FALSE,
+      colClasses = "character",
+      encoding = "UTF-8"
+    )
     colnames(table_wide) <- header
 
     # Identify table/value type from description

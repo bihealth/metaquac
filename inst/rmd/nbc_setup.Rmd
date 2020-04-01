@@ -140,4 +140,44 @@ if (!is.null(params$data_tables)) {
   assertthat::assert_that(params$data_tables %in% c("all", "stats", "none"))
   assign("TABLE_DISPLAY", params$data_tables, PKG_ENV)
 }
+
+# Optional metadata import and modifications
+ANY_METADATA_MODS <- FALSE
+if (!is.null(params$metadata_import)) {
+  assertthat::assert_that(file.exists(params$metadata_import))
+  ANY_METADATA_MODS <- TRUE
+}
+assertthat::assert_that(length(params$metadata_import_overlap) == 1)
+assertthat::assert_that(
+  params$metadata_import_overlap %in% c("rename", "replace", "omit")
+)
+if (!is.null(params$metadata_name_mods_org)) {
+  assertthat::assert_that(length(params$metadata_name_mods_org) > 0)
+  assertthat::assert_that(class(params$metadata_name_mods_org) == "character")
+  assertthat::assert_that(!is.null(names(params$metadata_name_mods_org)))
+  assertthat::assert_that(!any(is.na(names(params$metadata_name_mods_org))))
+  ANY_METADATA_MODS <- TRUE
+}
+if (!is.null(params$metadata_name_mods_add)) {
+  assertthat::assert_that(length(params$metadata_name_mods_add) > 0)
+  assertthat::assert_that(class(params$metadata_name_mods_add) == "character")
+  assertthat::assert_that(!is.null(names(params$metadata_name_mods_add)))
+  assertthat::assert_that(!any(is.na(names(params$metadata_name_mods_add))))
+  ANY_METADATA_MODS <- TRUE
+}
+if (!is.null(params$metadata_value_mods)) {
+  assertthat::assert_that(length(params$metadata_value_mods) > 0)
+  assertthat::assert_that(is.list(params$metadata_value_mods))
+  assertthat::assert_that(!is.null(names(params$metadata_value_mods)))
+  assertthat::assert_that(!any(is.na(names(params$metadata_value_mods))))
+  for (value_mods in params$metadata_value_mods){
+    assertthat::assert_that(length(value_mods) > 0)
+    assertthat::assert_that(!is.null(names(value_mods)))
+    assertthat::assert_that(!any(is.na(names(value_mods))))
+    assertthat::assert_that(
+      class(value_mods) %in% c("character", "complex", "integer", "logical", "numeric")
+    )
+  }
+  ANY_METADATA_MODS <- TRUE
+}
 ```
