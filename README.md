@@ -277,6 +277,23 @@ Use a named list, with names indicating the columns and named vectors
 indicate the changes to apply, e.g.:
 list("columnX" = c("oldvalueA" = "newvalueA", "oldvalueB" = "newvalueB"),
 "columnY" = c("1" = 5, "3" = 6, ...), ...)
+* `lowcon_conditions` Indicate a vector of study variables of interest
+which will be applied to additional reproducibility analysis designed for low
+concentration data below the limit of quantification. Hence, this analysis
+is performed on completely unfiltered data using area (LC) or intensity (FIA),
+resp.
+* `lowcon_scatter_x` Indiciate one study variable to be used for the
+x-axis in the scatter plot of the additional reproducibility analysis.
+This variable must be available in the conditions. If none is given,
+the first study variable in the conditions
+* `lowcon_scatter_color` Indiciate one study variable to be used for
+coloring samples in the response scatter plot of the additional
+reproducibility analysis. This variable must be available in the conditions.
+If none is given, the first study variable in the conditions
+* `lowcon_scatter_sub_groups` Indicate pairs of study variables and
+corresponding groups in a named vector to be used for separate response
+scatter plots (e.g. if experiments havn't been separated before). By default,
+the scatter plot is not separated.
 
 
 ## General Notes on Biocrates Data

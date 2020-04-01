@@ -81,6 +81,23 @@
 #' indicate the changes to apply, e.g.:
 #' list("columnX" = c("oldvalueA" = "newvalueA", "oldvalueB" = "newvalueB"),
 #       "columnY" = c("1" = 5, "3" = 6, ...), ...)
+#' @param lowcon_conditions Indicate a vector of study variables of interest
+#' which will be applied to additional reproducibility analysis designed for low
+#' concentration data below the limit of quantification. Hence, this analysis
+#' is performed on completely unfiltered data using area (LC) or intensity
+#' (FIA), resp.
+#' @param lowcon_scatter_x Indiciate one study variable to be used for the
+#' x-axis in the scatter plot of the additional reproducibility analysis.
+#' This variable must be available in the conditions. If none is given,
+#' the first study variable in the conditions
+#' @param lowcon_scatter_color Indiciate one study variable to be used for
+#' coloring samples in the response scatter plot of the additional
+#' reproducibility analysis. This variable must be available in the conditions.
+#' If none is given, the first study variable in the conditions
+#' @param lowcon_scatter_sub_groups Indicate pairs of study variables and
+#' corresponding groups in a named vector to be used for separate response
+#' scatter plots (e.g. if experiments havn't been separated before). By default,
+#' the scatter plot is not separated.
 #' @param ... Masked parameters for development and testing only.
 #'
 #' @export
@@ -220,6 +237,10 @@ create_qc_report <- function(
   metadata_name_mods_org = NULL,
   metadata_name_mods_add = NULL,
   metadata_value_mods = NULL,
+  lowcon_conditions = NULL,
+  lowcon_scatter_x = NULL,
+  lowcon_scatter_color = NULL,
+  lowcon_scatter_sub_groups = NULL,
   ...
 ){
 
@@ -260,6 +281,10 @@ create_qc_report <- function(
       metadata_name_mods_org = metadata_name_mods_org,
       metadata_name_mods_add = metadata_name_mods_add,
       metadata_value_mods = metadata_value_mods,
+      lowcon_conditions = lowcon_conditions,
+      lowcon_scatter_x = lowcon_scatter_x,
+      lowcon_scatter_color = lowcon_scatter_color,
+      lowcon_scatter_sub_groups = lowcon_scatter_sub_groups,
       ...
     ),
     clean = TRUE)

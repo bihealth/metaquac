@@ -1,0 +1,30 @@
+# Low Concentration Analysis
+
+This analysis is based on the unprocessed dataset (original).
+
+```{r load_data, echo=FALSE}
+# Select completely unfiltered biocrates data
+df = datasets$original
+```
+
+```{r message=FALSE, include=FALSE}
+# Parameters
+assertthat::assert_that(all(LOWCON_CONDITIONS %in% names(df)))
+assertthat::assert_that(LOWCON_SCATTER_X %in% LOWCON_CONDITIONS)
+assertthat::assert_that(LOWCON_SCATTER_COLOR %in% LOWCON_CONDITIONS)
+assertthat::assert_that(all(names(LOWCON_SCATTER_SUB_GROUPS) %in% LOWCON_CONDITIONS))
+for (i in seq_along(LOWCON_SCATTER_SUB_GROUPS)){
+  assertthat::assert_that(
+    LOWCON_SCATTER_SUB_GROUPS[i] %in% df[[names(LOWCON_SCATTER_SUB_GROUPS)[i]]]
+  )
+}
+```
+
+<!-- TODO: merge LC and FIA in one script -->
+<!-- Why is concentration not used wit FIA? -->
+
+```{r child="nbc_misc_low_concentration_lc.Rmd", eval=params$measurement_type=="LC"}
+```
+
+```{r child="nbc_misc_low_concentration_fia.Rmd", eval=params$measurement_type=="FIA"}
+```

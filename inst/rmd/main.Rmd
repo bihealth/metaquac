@@ -105,6 +105,12 @@ params:
   # (not visibly passed via create_report function, yet)
   metadata_extraction:
 
+  # Optional low concentration analysis on unfiltered data
+  lowcon_conditions:
+  lowcon_scatter_x:
+  lowcon_scatter_color:
+  lowcon_scatter_sub_groups:
+
   # Whether zeros in the data should be treated as missing values
   # (not visibly passed via create_report function, yet)
   zero2na: true
@@ -204,6 +210,11 @@ easy_datatable(
 
 # Multivariate Visualization
 ```{r child="nbc_multivariate_visualization.Rmd", eval=CONTINUE}
+```
+
+
+<!-- Low Concentration Analysis (optional) -->
+```{r child="nbc_misc_low_concentration.Rmd", eval=CONTINUE&&LOWCON}
 ```
 
 
