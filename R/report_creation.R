@@ -98,6 +98,9 @@
 #' corresponding groups in a named vector to be used for separate response
 #' scatter plots (e.g. if experiments havn't been separated before). By default,
 #' the scatter plot is not separated.
+#' @param lowcon_export_path Indicate a path for exporting normalized
+#' areas (LC) or intensities (FIA) and RSDs of additional low concentration
+#' analysis (per scatter sub group, if indicated, else completely).
 #' @param ... Masked parameters for development and testing only.
 #'
 #' @export
@@ -241,6 +244,7 @@ create_qc_report <- function(
   lowcon_scatter_x = NULL,
   lowcon_scatter_color = NULL,
   lowcon_scatter_sub_groups = NULL,
+  lowcon_export_path = NULL,
   ...
 ){
 
@@ -249,6 +253,9 @@ create_qc_report <- function(
   # data_output_dir <- unname(R.utils::getAbsolutePath(data_output_dir))
   if (!is.null(metadata_import)){
     metadata_import <- unname(R.utils::getAbsolutePath(metadata_import))
+  }
+  if (!is.null(lowcon_export_path)){
+    lowcon_export_path <- unname(R.utils::getAbsolutePath(lowcon_export_path))
   }
 
   # Markdown rendering
@@ -285,6 +292,7 @@ create_qc_report <- function(
       lowcon_scatter_x = lowcon_scatter_x,
       lowcon_scatter_color = lowcon_scatter_color,
       lowcon_scatter_sub_groups = lowcon_scatter_sub_groups,
+      lowcon_export_path = lowcon_export_path,
       ...
     ),
     clean = TRUE)

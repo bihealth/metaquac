@@ -294,6 +294,9 @@ If none is given, the first study variable in the conditions
 corresponding groups in a named vector to be used for separate response
 scatter plots (e.g. if experiments havn't been separated before). By default,
 the scatter plot is not separated.
+* `lowcon_export_path` Indicate a path for exporting normalized
+areas (LC) or intensities (FIA) and RSDs of additional low concentration
+analysis (per scatter sub group, if indicated, else completely).
 
 
 ## General Notes on Biocrates Data

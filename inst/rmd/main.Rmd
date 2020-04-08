@@ -110,6 +110,7 @@ params:
   lowcon_scatter_x:
   lowcon_scatter_color:
   lowcon_scatter_sub_groups:
+  lowcon_export_path:
 
   # Whether zeros in the data should be treated as missing values
   # (not visibly passed via create_report function, yet)
