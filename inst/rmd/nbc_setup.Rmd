@@ -145,12 +145,12 @@ if (!is.null(params$data_tables)) {
 ANY_METADATA_MODS <- FALSE
 if (!is.null(params$metadata_import)) {
   assertthat::assert_that(file.exists(params$metadata_import))
+  assertthat::assert_that(length(params$metadata_import_overlap) == 1)
+  assertthat::assert_that(
+    params$metadata_import_overlap %in% c("rename", "replace", "omit")
+  )
   ANY_METADATA_MODS <- TRUE
 }
-assertthat::assert_that(length(params$metadata_import_overlap) == 1)
-assertthat::assert_that(
-  params$metadata_import_overlap %in% c("rename", "replace", "omit")
-)
 if (!is.null(params$metadata_name_mods_org)) {
   assertthat::assert_that(length(params$metadata_name_mods_org) > 0)
   assertthat::assert_that(class(params$metadata_name_mods_org) == "character")

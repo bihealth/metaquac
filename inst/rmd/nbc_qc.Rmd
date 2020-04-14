@@ -290,6 +290,7 @@ data_na <- plot_na_histogram(data = biocrates,
 print(data_na$plot)
 ```
 
+
 #### Per sample type
 ```{r qc_mv_compounds_hist_type}
 # Histogram of missing values per compound, separately for different sample types
@@ -304,6 +305,70 @@ print(data_na$plot)
 ```
 
 
+<!-- #### Reference QC vs Pooled QC -->
+```{r, eval=AVAILABLE_POOLED_QC&&AVAILABLE_REFERENCE_QC}
+compounds_with_mvs <- biocrates %>%
+  filter(
+    !!sym(COLUMN_SAMPLE_TYPE) %in%
+      c(SAMPLE_TYPE_POOLED_QC, SAMPLE_TYPE_REFERENCE_QC)
+  ) %>%
+  group_by(Compound) %>%
+  filter(na_percent(UQ(sym(PKG_ENV$CONCENTRATION))) > 0) %>%
+  select(Compound) %>%
+  distinct()
+fig_width_mv_variable_bars <- max(5, nrow(compounds_with_mvs) * 0.11 + 0.45)
+```
+
+```{r qc_mv_comparison, results="asis", fig.height=4, fig.width=fig_width_mv_variable_bars, eval=AVAILABLE_POOLED_QC&&AVAILABLE_REFERENCE_QC}
+
+cat("\n#### Per QC type \n")
+
+cat("
+The following figure compares the absolute and relative numbers of missing
+values (MVs) per compound for reference and pooled QC samples. This comparison
+can serve as a basic global indicator whether the origin of a missing value is
+of technical or biological nature.
+Low numbers of MVs in reference QC samples indicate technically measurable
+compounds. In this case, a high number of MVs in pooled QC samples suggests that
+a compound is biologically missing. However, it must be noted that MVs in pool
+and biological samples could also be a result of sample treatment and
+extraction. In the case of high numbers of MVs in reference QC samples, no
+assumption can be made about MVs in pool and biological samples. They might only
+result from technical difficulties in the assay (such as with the MVs in the
+reference QC samples), but could also have been missing before (either
+biologically or due to treatment and extraction).
+Only compounds actually featuring missing values are shown in this figure.
+    ")
+
+qc_comp_plot <- plot_compound_na_variable_bars(
+  data = biocrates,
+  compare = COLUMN_SAMPLE_TYPE,
+  target = PKG_ENV$CONCENTRATION,
+  sample_type = c(SAMPLE_TYPE_POOLED_QC, SAMPLE_TYPE_REFERENCE_QC),
+  add_norm_perc_mvs = FALSE,
+  position = "dodge"
+)
+
+qc_comp_data <- calc_compound_na_variable(
+  data = biocrates,
+  compare = COLUMN_SAMPLE_TYPE,
+  target = PKG_ENV$CONCENTRATION,
+  sample_type = c(SAMPLE_TYPE_POOLED_QC, SAMPLE_TYPE_REFERENCE_QC),
+  add_norm_perc_mvs = FALSE
+)
+
+print(qc_comp_plot)
+cat("\n")
+easy_datatable(
+  qc_comp_data,
+  caption = "Comparison of Pooled and Reference MVs.",
+  show_type = "statistics"
+)
+cat("\n")
+```
+
+
+<!-- #### Per study variable -->
 ```{r}
 compounds_with_mvs <- biocrates %>%
   filter(Sample.Type == SAMPLE_TYPE_BIOLOGICAL) %>%
