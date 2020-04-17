@@ -74,7 +74,7 @@ biocrates <- datasets$discarded
 
 ```{r}
 rep_variables <- c("Sample.Name")
-sample_types <- c(SAMPLE_TYPE_REFERENCE_QC) # just need to indicate one type
+sample_types <- c(SAMPLE_TYPE_BIOLOGICAL) # just need to indicate one type
 # Calculate figure sizes
 fig_sizes_points <- calc_fig_sizes_rep_rsd(
   biocrates, rep_variables, sample_types, "Compound", num_combinations = 1)
@@ -83,13 +83,13 @@ fig_sizes_box <- calc_fig_sizes_rep_rsd(
 ```
 
 
-#### Reference QCs
-```{r, fig.height=fig_sizes_points$h, fig.width=fig_sizes_points$w}
+```{r, fig.height=fig_sizes_points$h, fig.width=fig_sizes_points$w, eval=AVAILABLE_REFERENCE_QC, results="asis"}
+cat(paste0("\n#### Reference QCs\n"))
 plot_sample_profiles_points(
   bcdata = biocrates, target = PKG_ENV$CONCENTRATION, sample_types = SAMPLE_TYPE_REFERENCE_QC)
 ```
 
-```{r, fig.height=fig_sizes_box$h, fig.width=fig_sizes_box$w}
+```{r, fig.height=fig_sizes_box$h, fig.width=fig_sizes_box$w, eval=AVAILABLE_REFERENCE_QC}
 plot_sample_profiles_box(
   bcdata = biocrates, target = PKG_ENV$CONCENTRATION, sample_types = SAMPLE_TYPE_REFERENCE_QC)
 ```

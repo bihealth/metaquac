@@ -306,20 +306,24 @@ print(data_na$plot)
 
 
 <!-- #### Reference QC vs Pooled QC -->
-```{r, eval=AVAILABLE_POOLED_QC&&AVAILABLE_REFERENCE_QC}
-compounds_with_mvs <- biocrates %>%
-  filter(
-    !!sym(COLUMN_SAMPLE_TYPE) %in%
-      c(SAMPLE_TYPE_POOLED_QC, SAMPLE_TYPE_REFERENCE_QC)
-  ) %>%
-  group_by(Compound) %>%
-  filter(na_percent(UQ(sym(PKG_ENV$CONCENTRATION))) > 0) %>%
-  select(Compound) %>%
-  distinct()
-fig_width_mv_variable_bars <- max(5, nrow(compounds_with_mvs) * 0.11 + 0.45)
+
+```{r}
+fig_width_mv_variable_bars <- 7
+if (ENOUGH_POOLED_QC&&ENOUGH_REFERENCE_QC){
+  compounds_with_mvs <- biocrates %>%
+    filter(
+      !!sym(COLUMN_SAMPLE_TYPE) %in%
+        c(SAMPLE_TYPE_POOLED_QC, SAMPLE_TYPE_REFERENCE_QC)
+    ) %>%
+    group_by(Compound) %>%
+    filter(na_percent(UQ(sym(PKG_ENV$CONCENTRATION))) > 0) %>%
+    select(Compound) %>%
+    distinct()
+  fig_width_mv_variable_bars <- max(5, nrow(compounds_with_mvs) * 0.11 + 0.45)
+}
 ```
 
-```{r qc_mv_comparison, results="asis", fig.height=4, fig.width=fig_width_mv_variable_bars, eval=AVAILABLE_POOLED_QC&&AVAILABLE_REFERENCE_QC}
+```{r qc_mv_comparison, eval=ENOUGH_POOLED_QC&&ENOUGH_REFERENCE_QC, results="asis", fig.height=4, fig.width=fig_width_mv_variable_bars}
 
 cat("\n#### Per QC type \n")
 
@@ -496,14 +500,15 @@ message("**Note**: Expect inferior results for FIA data due to one-point calibra
 ```
 
 
-##### Reference QCs {.tabset}
-```{r, results="asis"}
+<!-- Reference QCs -->
+```{r, results="asis", eval=ENOUGH_REFERENCE_QC}
+cat(paste0("\n\n##### Reference QCs {.tabset}\n"))
 cat("\n\n###### Single batches\n")
 easy_datatable(sequence_batch_horizontality(data = biocrates, sample_type = SAMPLE_TYPE_REFERENCE_QC),
                caption = "Single batch models coefficients.", show_type = "statistics")
 ```
 
-```{r, results="asis", eval=MULTIBATCH}
+```{r, results="asis", eval=ENOUGH_REFERENCE_QC&&MULTIBATCH}
 cat("\n\n###### Batch comparison\n")
 results <- sequence_batch_conformity(
   data = biocrates,
@@ -515,7 +520,7 @@ easy_datatable(results$coefficients, caption = "Multi batch model coefficients."
                show_type = "statistics")
 ```
 
-```{r, results="asis"}
+```{r, results="asis", eval=ENOUGH_REFERENCE_QC}
 cat("\n\n###### Auxiliary Figures\n")
 assisting_plots <- sequence_batch_assistant_plots(data = biocrates, sample_type = SAMPLE_TYPE_REFERENCE_QC)
 print(assisting_plots$sequence)
@@ -523,6 +528,7 @@ print(assisting_plots$distribution)
 ```
 
 
+<!-- Pooled QCs -->
 ```{r, results="asis", eval=ENOUGH_POOLED_QC}
 cat(paste0("\n\n##### ", SAMPLE_TYPE_POOLED_QC, "s {.tabset}\n"))
 cat("\n\n###### Single batches\n")
@@ -667,21 +673,29 @@ plot_sample_variability_overlapped(biocrates,
 ```
 
 
-### Samples ordered by aquisition {.tabset}
+### QC samples ordered by aquisition {.tabset}
 Violin and box plots summarize compound measurements per replicate sample, grouped per sample
 type and ordered according to acquisition sequence. This allows a quick overview of
-variability progression of replicate samples such as QCs or Pool samples over the batch
+variability progression of replicate samples such as Reference or Pooled QC samples over the batch
 (e.g. to indicate batch drift), while the parallel view on the different data types
 illustrates the effect of calibration/normalization (i.e. replicate sample concentration
 profiles should line up rather well).
 
 ```{r}
 fig_height_variability_ordered <- length(unique(biocrates$Batch)) * 2 + 1
+
+if (!(AVAILABLE_REFERENCE_QC || AVAILABLE_REFERENCE_QC)){
+  warn_text <- paste0(
+    "Warning: No QC samples available (Reference or Pooled QC)."
+  )
+  message(warn_text)
+}
 ```
 
-#### Violins
-```{r variability_ordered_violin, fig.height=fig_height_variability_ordered}
+
+```{r variability_ordered_violin, eval=AVAILABLE_REFERENCE_QC||AVAILABLE_REFERENCE_QC, fig.height=fig_height_variability_ordered, results="asis"}
 # Measurement violins per sample, overlapping per sample type
+cat("\n#### Violins\n")
 plot_sample_variability_sequential(biocrates,
                                    targets = DATA_TYPES,
                                    sample_types = c(SAMPLE_TYPE_REFERENCE_QC,
@@ -690,9 +704,9 @@ plot_sample_variability_sequential(biocrates,
                                    log10 = TRUE)
 ```
 
-#### Boxplot
-```{r variability_ordered_box, fig.height=fig_height_variability_ordered}
+```{r variability_ordered_box, eval=AVAILABLE_REFERENCE_QC||AVAILABLE_REFERENCE_QC, fig.height=fig_height_variability_ordered, results="asis"}
 # Measurement boxplots per sample, overlapping per sample type
+cat("\n#### Boxplot\n")
 plot_sample_variability_sequential(biocrates,
                                    targets = DATA_TYPES,
                                    sample_types = c(SAMPLE_TYPE_REFERENCE_QC,

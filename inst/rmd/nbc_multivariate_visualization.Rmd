@@ -89,9 +89,9 @@ plot_sample_heatmap(data = biocrates,
                     ))
 ```
 
-#### QC samples {.tabset}
-
-```{r clust_heatmap_pearson_rep_01, results="asis", fig.height=fig_height_heatmap_compounds, fig.width=fig_width_heatmap_qcrep}
+<!-- #### QC samples {.tabset} -->
+```{r clust_heatmap_pearson_rep_01, results="asis", fig.height=fig_height_heatmap_compounds, fig.width=fig_width_heatmap_qcrep, eval=AVAILABLE_REFERENCE_QC&&AVAILABLE_POOLED_QC}
+cat(paste0("\n#### QC samples {.tabset}\n"))
 if (!is.null(BATCH)){
   cat("##### Batch-colored labels\n")
   # Heatmap for concentration in samples of type SAMPLE_TYPE_REFERENCE_QC and SAMPLE_TYPE_POOLED_QC
@@ -107,8 +107,9 @@ if (!is.null(BATCH)){
 }
 ```
 
-##### Type-colored labels
-```{r clust_heatmap_pearson_rep_02, fig.height=fig_height_heatmap_compounds, fig.width=fig_width_heatmap_qcrep}
+<!-- ##### Type-colored labels -->
+```{r clust_heatmap_pearson_rep_02, fig.height=fig_height_heatmap_compounds, fig.width=fig_width_heatmap_qcrep, eval=AVAILABLE_REFERENCE_QC&&AVAILABLE_POOLED_QC}
+cat(paste0("\n##### Type-colored labels\n"))
 # Heatmap for concentration in samples of type SAMPLE_TYPE_REFERENCE_QC and SAMPLE_TYPE_POOLED_QC
 plot_sample_heatmap(data = biocrates,
                     target = PKG_ENV$CONCENTRATION,
@@ -194,8 +195,9 @@ plot_sample_heatmap(data = biocrates,
                     dist_fun = stats::dist)
 ```
 
-#### QC samples {.tabset}
-```{r clust_heatmap_euclidian_rep_01, results="asis", fig.height=fig_height_heatmap_compounds, fig.width=fig_width_heatmap_qcrep}
+<!-- #### QC samples {.tabset} -->
+```{r clust_heatmap_euclidian_rep_01, results="asis", fig.height=fig_height_heatmap_compounds, fig.width=fig_width_heatmap_qcrep, eval=AVAILABLE_REFERENCE_QC&&AVAILABLE_POOLED_QC}
+cat(paste0("\n#### QC samples {.tabset}\n"))
 if (!is.null(BATCH)){
   cat("##### Batch-colored labels\n")
   # Heatmap for concentration in samples of type SAMPLE_TYPE_REFERENCE_QC and SAMPLE_TYPE_POOLED_QC
@@ -208,8 +210,9 @@ if (!is.null(BATCH)){
 }
 ```
 
-##### Type-colored labels
-```{r clust_heatmap_euclidian_rep_02, fig.height=fig_height_heatmap_compounds, fig.width=fig_width_heatmap_qcrep}
+<!-- ##### Type-colored labels -->
+```{r clust_heatmap_euclidian_rep_02, fig.height=fig_height_heatmap_compounds, fig.width=fig_width_heatmap_qcrep, eval=AVAILABLE_REFERENCE_QC&&AVAILABLE_POOLED_QC}
+cat(paste0("\n##### Type-colored labels\n"))
 # Heatmap for concentration in samples of type SAMPLE_TYPE_REFERENCE_QC and SAMPLE_TYPE_POOLED_QC
 plot_sample_heatmap(data = biocrates,
                     target = PKG_ENV$CONCENTRATION,
@@ -221,7 +224,7 @@ plot_sample_heatmap(data = biocrates,
 
 ```{r,  results="asis"}
 if (!is.null(BATCH) || length(STUDY_VARIABLES) > 0){
-  cat("#### Study samples {.tabset}\n")
+  cat("#### Biological samples {.tabset}\n")
 }
 ```
 
@@ -294,9 +297,10 @@ group (i.e. the last sample in a matrix is the first sample in the next matrix).
 
 This analysis is based on the imputed dataset 4.
 
-### Reference QCs {.tabset}
-```{r, results="asis", fig.height=7, fig.width=7, dpi=150}
+<!-- ### QCs -->
+```{r, results="asis", fig.height=7, fig.width=7, dpi=150, eval=ENOUGH_REFERENCE_QC}
 # Matrix for Reference QCs
+cat(paste0("\n### Reference QCs {.tabset}\n"))
 plot_sample_scatter_matrix(biocrates_imputed,
                            sample_types = SAMPLE_TYPE_REFERENCE_QC,
                            cat_header = "#### ")
@@ -348,8 +352,24 @@ biocrates_imputed_sample <- subset(biocrates_imputed,
 
 # Samples PCAs colored by different study variables
 pca_fun <- function(var, data, info, parent){
+  infos <- c()
+  no_var <- data %>%
+    group_by(Compound) %>%
+    summarize(zero_variance = var(!!sym(PKG_ENV$CONCENTRATION), na.rm = TRUE)) %>%
+    filter(zero_variance == 0) %>%
+    pull(Compound)
+  if(length(no_var) > 0){
+    infos <- c(
+      infos,
+      paste0("Removed compounds with zero variance: ",
+             paste0(no_var, collapse = ", "))
+    )
+    data <- data %>%
+      filter(!Compound %in% no_var)
+  }
   return(list(
     Header = paste0("\n#### ", info, var, "\n"),
+    Infos = infos,
     Plot = plot_pca(data = data, target = PKG_ENV$CONCENTRATION,
                     colour = var, label = "Well.Position", shape = BATCH)))
 }
@@ -361,6 +381,7 @@ if (length(STUDY_VARIABLES) > 0){
                               data = biocrates_imputed_sample)
   for (pca in pcas){
     cat(pca$Header)
+    for(info in pca$Infos) {cat(paste0(info, "\n"))}
     print(pca$Plot)
   }
 }

@@ -16,11 +16,24 @@ A linear regression analysis is used to attempt to separate the technical and bi
 variability. The outputs of the models are used to score and assess this separation, and can be used
 as indicator for data quality.
 
-```{r SD_vs_mean_model, fig.align='center'}
-compound_var_stats <- compound_variability_scoring(biocrates)
+```{r SD_vs_mean_model, results='asis', fig.align='center'}
+if (ENOUGH_REFERENCE_QC){
+  compound_var_stats <- compound_variability_scoring(biocrates)
+  cat("Please see the details and the plot below for more information.")
+} else {
+  message("Error: Not enough QC replicates for comparative analysis.")
+  compound_var_stats = list(
+    r_squared = NA,
+    qc_slope = NA,
+    delta_slope = NA,
+    delta_slope_pvalue = NA,
+    delta_intercept = NA,
+    delta_intercept_pvalue = NA,
+    # wilcox_pvalue = NA,
+    k = NA
+  )
+}
 ```
-
-Please see the details and the plot below for more information.
 
 ```{r SD_vs_mean_plot, fig.align='center'}
 sd_mean_comp <- plot_compound_sd_vs_mean(
