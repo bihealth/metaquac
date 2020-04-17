@@ -3,14 +3,16 @@
 
 
 # Supported kits
+BIOCRATES_P180 <- "Biocrates AbsoluteIDQ p180 Kit"
 BIOCRATES_P400 <- "Biocrates AbsoluteIDQ p400 HR Kit"
 BIOCRATES_Q500 <- "Biocrates MxP Quant 500 Kit"
 BIOCRATES_STERO17 <- "Biocrates AbsoluteIDQ Stero17 Kit"
-KITS <- c(BIOCRATES_P400, BIOCRATES_Q500, BIOCRATES_STERO17)
+KITS <- c(BIOCRATES_P180, BIOCRATES_P400, BIOCRATES_Q500, BIOCRATES_STERO17)
 
 # Allowed MetIDQ status values
 METIDQ_STATUSES <- c(
   "Valid",
+  "Semi Quant.", # Is this an official status?
   "Smaller Zero",
   "< LOD",
   "< LLOQ",

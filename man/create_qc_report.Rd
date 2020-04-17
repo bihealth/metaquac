@@ -6,8 +6,8 @@
 \usage{
 create_qc_report(
   data_files,
-  kit = c("Biocrates AbsoluteIDQ p400 HR Kit", "Biocrates AbsoluteIDQ Stero17 Kit",
-    "Biocrates MxP Quant 500 Kit")[1],
+  kit = c("Biocrates AbsoluteIDQ p180 Kit", "Biocrates AbsoluteIDQ p400 HR Kit",
+    "Biocrates AbsoluteIDQ Stero17 Kit", "Biocrates MxP Quant 500 Kit")[4],
   measurement_type = c("LC", "FIA")[1],
   title = "Biocrates QC Report",
   author = unname(Sys.info()["user"]),
@@ -18,9 +18,10 @@ create_qc_report(
   profiling_variables = NULL,
   study_variables = NULL,
   replicate_variables = NULL,
-  preproc_keep_status = c("Valid", "Smaller Zero", "< LOD", "< LLOQ", "> ULOQ",
-    "No Intercept", "Missing Measurement", "ISTD Out of Range", "STD/QC < Limit",
-    "STD/QC > Limit", "Invalid", "Incomplete", "Blank Out of Range")[1],
+  preproc_keep_status = c("Valid", "Semi Quant.", "Smaller Zero", "< LOD", "< LLOQ",
+    "> ULOQ", "No Intercept", "Missing Measurement", "ISTD Out of Range",
+    "STD/QC < Limit", "STD/QC > Limit", "Invalid", "Incomplete",
+    "Blank Out of Range")[1:2],
   filter_compound_qc_max_mv_ratio = 0.3,
   filter_compound_qc_max_rsd = 15,
   filter_compound_bs_max_mv_ratio = 0.3,
@@ -46,9 +47,13 @@ create_qc_report(
 files per batch via named vectors. E.g. list(Batch1 = c("Batch1_LC1.txt", "Batch1_LC2.txt"),
 Batch2 = c("Batch2_LC1.txt","Batch2_LC2.txt")).}
 
-\item{kit}{The Biocrates Kit used to create the data to import. Currently supported are
-"Biocrates AbsoluteIDQ p400 HR Kit", "Biocrates MxP Quant 500 Kit" and
-"Biocrates AbsoluteIDQ Stero17 Kit" (default = "Biocrates AbsoluteIDQ p400 HR Kit").}
+\item{kit}{The Biocrates Kit used to create the data to import.
+Currently supported are
+"Biocrates AbsoluteIDQ p180 Kit",
+"Biocrates AbsoluteIDQ p400 HR Kit",
+"Biocrates MxP Quant 500 Kit" and
+"Biocrates AbsoluteIDQ Stero17 Kit"
+(default = "Biocrates AbsoluteIDQ p400 HR Kit").}
 
 \item{measurement_type}{The measurement type (i.e. injection type) of the data to import, i.e.
 either "LC" or "FIA" (default = "LC").}
@@ -107,7 +112,7 @@ in biological samples (Biocrates' Sample) (default = 0.3, exclusive, disable wit
 sample (Biocrates' Sample) (default < 0.2, exclusive, disable with NULL).}
 
 \item{data_tables}{Control data tables availability in reports. "all" (default) will show all
-implemented data tables (with vcs export buttons). "stats" will only show tables of summarized
+implemented data tables (with csv export buttons). "stats" will only show tables of summarized
 data (such as countings, %RSDs, etc.), but not the actual measurements (neither original nor
 pre-processed). "none" will show no data tables at all, i.e. the report is mainly limited to
 visualizations.}

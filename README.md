@@ -11,6 +11,7 @@ Please refer to our article to learn more about the underlying ideas of MeTaQuaC
 
 MeTaQuaC supports the following Biocrates Kits (for the present):
 
+* Biocrates AbsoluteIDQ p180 Kit
 * Biocrates AbsoluteIDQ p400 HR Kit
 * Biocrates AbsoluteIDQ Stero17 Kit
 * Biocrates MxP Quant 500 Kit
@@ -204,9 +205,13 @@ Currently, QC report creation is controlled by the one main function of the MeTa
 * `data_files` Data files as exported by MetIDQ (txt), indicated as an R list providing the
 files per batch via named vectors. E.g. list(Batch1 = c("Batch1_LC1.txt", "Batch1_LC2.txt"),
 Batch2 = c("Batch2_LC1.txt","Batch2_LC2.txt")).
-* `kit` The Biocrates Kit used to create the data to import. Currently supported are
-"Biocrates AbsoluteIDQ p400 HR Kit", "Biocrates MxP Quant 500 Kit" and
-"Biocrates AbsoluteIDQ Stero17 Kit" (default = "Biocrates AbsoluteIDQ p400 HR Kit").
+* `kit` The Biocrates Kit used to create the data to import.
+Currently supported are
+"Biocrates AbsoluteIDQ p180 Kit",
+"Biocrates AbsoluteIDQ p400 HR Kit",
+"Biocrates MxP Quant 500 Kit" and
+"Biocrates AbsoluteIDQ Stero17 Kit"
+(default = "Biocrates AbsoluteIDQ p400 HR Kit").
 * `measurement_type` The measurement type (i.e. injection type) of the data to import, i.e.
 either "LC" or "FIA" (default = "LC").
 * `title` Custom title for report (default = "Biocrates QC Report").
@@ -248,7 +253,7 @@ in biological samples (Biocrates' Sample) (default = 0.3, exclusive, disable wit
 * `filter_sample_max_mv_ratio` Set maximum ratio of missing values allowed per biological
 sample (Biocrates' Sample) (default < 0.2, exclusive, disable with NULL).
 * `data_tables` Control data tables availability in reports. "all" (default) will show all
-implemented data tables (with vcs export buttons). "stats" will only show tables of summarized
+implemented data tables (with csv export buttons). "stats" will only show tables of summarized
 data (such as countings, %RSDs, etc.), but not the actual measurements (neither original nor
 pre-processed). "none" will show no data tables at all, i.e. the report is mainly limited to
 visualizations.
