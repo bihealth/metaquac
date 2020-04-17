@@ -304,8 +304,13 @@ import_metidq_tables <- function(filename, samples_expected = 96){
 
   # Show missing tables
   if (num_tables < 8){
-    message(paste0("Warning: Missing tables in file ", filename, ":"))
-    print(TABLE_TYPES[!TABLE_TYPES %in% tables_found_regex])
+    message(paste0(
+      "Warning: Typical MetIDQ tables not available in file ", filename, ":"
+    ))
+    print(gsub(
+      pattern = "\\", replacement = "", fixed = TRUE,
+      TABLE_TYPES[!TABLE_TYPES %in% tables_found_regex]
+    ))
   }
 
   return(single_table)
@@ -348,13 +353,15 @@ preprocess_metidq_tables <- function(values, pool_indicator = NULL){
     mutate_at(vars(Well.Position, Sequence.Position), funs(as.integer)) %>%
     mutate_at(vars(Sample.Volume,
                    matches(TABLE_TYPES[1]), # i.e. "Concentration [.*?]"
-                   `Analyte Intensity [cps]`,
-                   `Internal Std. Intensity [cps]`,
-                   `Accuracy [%]`,
-                   `Analyte Peak Area [area]`,
-                   `Internal Std. Peak Area [area]`,
-                   `Analyte Retention Time [min]`,
-                   `Internal Std. Retention Time [min]`),
+                   one_of(
+                     "Analyte Intensity [cps]",
+                     "Internal Std. Intensity [cps]",
+                     "Accuracy [%]",
+                     "Analyte Peak Area [area]",
+                     "Internal Std. Peak Area [area]",
+                     "Analyte Retention Time [min]",
+                     "Internal Std. Retention Time [min]"
+                   )),
               funs(as.numeric))
 
   # Remove technical/method columns to ensure sample related columns are unique.
@@ -390,18 +397,17 @@ zero_to_na <- function(values){
 # Convert zeros to NA to have one common missing value type
 unify_missing_values <- function(data){
   data <- data %>%
-    mutate_at(vars(matches(TABLE_TYPES[1])), # i.e. "Concentration [.*?]"
-              funs(zero_to_na))
-  # data$`Concentration` <-
-  #   zero_to_na(data$`Concentration`)
-  data$`Analyte Intensity [cps]` <-
-    zero_to_na(data$`Analyte Intensity [cps]`)
-  data$`Internal Std. Intensity [cps]` <-
-    zero_to_na(data$`Internal Std. Intensity [cps]`)
-  data$`Analyte Peak Area [area]` <-
-    zero_to_na(data$`Analyte Peak Area [area]`)
-  data$`Internal Std. Peak Area [area]` <-
-    zero_to_na(data$`Internal Std. Peak Area [area]`)
+    mutate_at(
+      vars(
+        matches(TABLE_TYPES[1]),  # i.e. "Concentration [.*?]"
+        one_of(
+          "Analyte Intensity [cps]",
+          "Internal Std. Intensity [cps]",
+          "Analyte Peak Area [area]",
+          "Internal Std. Peak Area [area]"
+        )
+      ),
+      funs(zero_to_na))
   return(data)
 }
 
