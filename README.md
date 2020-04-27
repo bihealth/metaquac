@@ -282,6 +282,11 @@ which will be applied to additional reproducibility analysis designed for low
 concentration data below the limit of quantification. Hence, this analysis
 is performed on completely unfiltered data using area (LC) or intensity (FIA),
 resp.
+* `lowcon_sd_outlier_removal` If set to TRUE, data of sample groups with
+same conditions (i.e. combination of indicated study variables) is removed if
+SD is higher than 1.5 or not available (e.g. when group consists of only one
+sample). This is ment to reject unreliable technical replicates and not
+recommended to apply on actual study samples and thus biological variance.
 * `lowcon_scatter_x` Indiciate one study variable to be used for the
 x-axis in the scatter plot of the additional reproducibility analysis.
 This variable must be available in the conditions. If none is given,

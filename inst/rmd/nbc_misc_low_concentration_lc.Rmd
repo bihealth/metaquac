@@ -187,6 +187,8 @@ ggplot(data=df.tot_area_HOS, aes(x=reorder(Sample.Identification, as.numeric(con
 
 ## Outlier detection on normalised total peak area using a 1.5 standard deviation cutoff
 
+Remove SD outliers (i.e. set values to NA): `r LOWCON_SD_OUTLIER_REM` (according
+to parameter lowcon_sd_outlier_removal)
 ```{r standard_deviation_outlier_detection_HOS, fig.height=7}
 
 # Calculate 1.5 standard deviation per BIOLOGICAL CONDITION (This can be changed to 2, but usually even 1.5 does not reject any sample)
@@ -209,10 +211,9 @@ ggplot(data=df.tot_area_HOS, aes(x=reorder(Sample.Identification, as.numeric(con
 
 ```{r removing_outlier_HOS, echo=FALSE}
 # Remove outlier samples from the data (We just reject every sample that are outside the range)
-
-df.tot_area_HOS$total_area_normalised[ which(df.tot_area_HOS$inside_range == FALSE)] = NA
-
-
+if (LOWCON_SD_OUTLIER_REM){
+  df.tot_area_HOS$total_area_normalised[ which(df.tot_area_HOS$inside_range == FALSE)] = NA
+}
 ```
 
 ## Mean peak area per condition (with standard deviation)
@@ -266,7 +267,9 @@ A minimum number of 2 values is required for the RSD to be reported in the table
 df.filtered.condition.HOS <- left_join(df.filtered,df.tot_area_HOS[,c("Sample.Name","condition","inside_range")], by="Sample.Name")
 
 # Remove outlier samples found to be outside 1.5 standard deviation
-df.filtered.condition.HOS$Analyte.Peak.Area.Normalised[ which(df.filtered.condition.HOS$inside_range == FALSE)] = NA
+if (LOWCON_SD_OUTLIER_REM){
+  df.filtered.condition.HOS$Analyte.Peak.Area.Normalised[ which(df.filtered.condition.HOS$inside_range == FALSE)] = NA
+}
 
 # Compute the RSD for every single compound per BIOLOGICAL CONDITION
 # A MINIMUM OF 2 REPLICATES IS OBVIOUSLY NECESSARY
@@ -318,7 +321,9 @@ for (i in seq_along(sub_groups)) {
   #   filter(Compound %in% sample(unique(Compound),10))
   
   # Remove outlier samples found to be outside 1.5 standard deviation
-  df.filtered.condition.HOS.jitter$Analyte.Peak.Area.Normalised[ which(df.filtered.condition.HOS.jitter$inside_range == FALSE)] = NA
+  if (LOWCON_SD_OUTLIER_REM){
+    df.filtered.condition.HOS.jitter$Analyte.Peak.Area.Normalised[ which(df.filtered.condition.HOS.jitter$inside_range == FALSE)] = NA
+  }
   
   # We recompute everything (SD, RSD etc... for every metabolites)
   df.filtered.condition.HOS.jitter <- df.filtered.condition.HOS.jitter %>%

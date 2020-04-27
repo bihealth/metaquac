@@ -86,6 +86,11 @@
 #' concentration data below the limit of quantification. Hence, this analysis
 #' is performed on completely unfiltered data using area (LC) or intensity
 #' (FIA), resp.
+#' @param lowcon_sd_outlier_removal If set to TRUE, data of sample groups with
+#' same conditions (i.e. combination of indicated study variables) is removed if
+#' SD is higher than 1.5 or not available (e.g. when group consists of only one
+#' sample). This is ment to reject unreliable technical replicates and not
+#' recommended to apply on actual study samples and thus biological variance.
 #' @param lowcon_scatter_x Indiciate one study variable to be used for the
 #' x-axis in the scatter plot of the additional reproducibility analysis.
 #' This variable must be available in the conditions. If none is given,
@@ -241,6 +246,7 @@ create_qc_report <- function(
   metadata_name_mods_add = NULL,
   metadata_value_mods = NULL,
   lowcon_conditions = NULL,
+  lowcon_sd_outlier_removal = FALSE,
   lowcon_scatter_x = NULL,
   lowcon_scatter_color = NULL,
   lowcon_scatter_sub_groups = NULL,
@@ -289,6 +295,7 @@ create_qc_report <- function(
       metadata_name_mods_add = metadata_name_mods_add,
       metadata_value_mods = metadata_value_mods,
       lowcon_conditions = lowcon_conditions,
+      lowcon_sd_outlier_removal = lowcon_sd_outlier_removal,
       lowcon_scatter_x = lowcon_scatter_x,
       lowcon_scatter_color = lowcon_scatter_color,
       lowcon_scatter_sub_groups = lowcon_scatter_sub_groups,
