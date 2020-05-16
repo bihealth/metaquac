@@ -122,7 +122,7 @@ test_that("report works for generic data, batches included", {
     report_output_name = "generic_qc_lc",
     report_output_dir = "generic_test_01",
     data_files = list(
-      AllBatches = c(
+      c(
         "Concentration [ng/ml]" =
           test_files(c("generic_test_01/random_matrix_conc.tsv")),
         "Area" =
@@ -149,7 +149,7 @@ test_that("report works for generic data, batches included", {
     report_output_name = "generic_qc_lc",
     report_output_dir = "generic_test_03",
     data_files = list(
-      AllBatches = c(
+      c(
         "Concentration [ng/ml]" =
           test_files(c("generic_test_03/Batch1_conc.csv")),
         "Area" =

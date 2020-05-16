@@ -8,75 +8,35 @@ output:
     number_sections: true  
     df_print: paged
 params:
-  # Data files as exported by MetIDQ (txt), indicated as an R list providing the
-  # files per batch via named vectors. E.g. list(Batch1 = c("Batch1_LC1.txt", "Batch1_LC2.txt"),
-  # Batch2 = c("Batch2_LC1.txt","Batch2_LC2.txt")).
   data_files:
-  # The Biocrates Kit used to create the data to import. Currently supported are
-  # "Biocrates AbsoluteIDQ p400 HR Kit", "Biocrates MxP Quant 500 Kit" and
-  # "Biocrates AbsoluteIDQ Stero17 Kit" (default = "Biocrates AbsoluteIDQ p400 HR Kit").
   kit: Biocrates AbsoluteIDQ p400 HR Kit
-  # The measurement type (i.e. injection type) of the data to import, i.e.
-  # either "LC" or "FIA" (default = "LC").
   measurement_type: LC
-  # Custom title for report (default = "Biocrates QC Report").
+  generic_data_types:
+  generic_index_first_compound:
   title: Biocrates QC Report
-  # Name of the person responsible for creating the report.
   author: Unknown
-
-  # Indicate a vector of study variables which will be used for profiling group sizes (i.e. number
-  # of samples) within a variable, but also the size of group intersections between these variables.
-  # It is recommended to keep the variables limited to factors of primary interest (for instance
-  # disease status or treatment and sex), otherwise intersection might turn out really small.
   profiling_variables:
-
-  # Indicate a list of study variables of interest. These will be used to create
-  # colored versions of some plots to illustrate group differences. Nested
-  # variables are possible by including named sublists, whereby plots will be
-  # created based on data filtered by groups of the list-naming variable.
   study_variables:
-
-  # Indicate a vector of study variables which donate the unique grouping of
-  # samples (could be as simple as a patient identifier or several conditions).
-  # Samples with the same characteristic in these variables are considered as
-  # replicates for compound and class %RSD analysis plots. If the data contains
-  # "BR" and "TR" columns these plots will be extended for technical replicates.
   replicate_variables:
-
-  # Provide a column/variable name which should be scanned for pooled QC samples.
-  # All samples with "pool" (case insensitive) in this column a transformed to
-  # Sample.Type = "Pooled QC". Default column is "Sample.Identification"
-  # Note: Replace spaces (" ") with dots (".") in the column name.
   pool_indicator: Sample.Identification
-
-  # Indicate which values are acceptable for processing with
-  # respect to Biocrates statuses. The default includes only "Valid" measurements, the rest
-  # is discarded as missing values (i.e. set to NA). Possible statuses to select from
-  # include "Valid", "Smaller Zero", "< LOD", "< LLOQ", "> ULOQ", "No Intercept",
-  # "Missing Measurement", "ISTD Out of Range", "STD/QC < Limit", "STD/QC > Limit",
-  # "Invalid", "Incomplete" and "Blank Out of Range".
   preproc_keep_status: "Valid"
-
-  # Set thresholds for maximum ratio of missing values allowed for compounds in reference QC
-  # samples (Biocrates' QC Level 2) (default 0.3, exclusive, disable with NULL), maximum %RSD
-  # allowed for compounds in reference QC samples (Biocrates' QC Level 2) (default 15, exclusive,
-  # disable with NULL), maximum ratio of missing values allowed for compounds in biological samples
-  # (Biocrates' Sample) (default 0.3, exclusive, disable with NULL), minimum \%RSD allowed for
-  # compounds in biological samples (default = 15\%, exclusive, disable with NULL) and maximum ratio
-  # of missing values allowed per biological sample (Biocrates' Sample) (default 0.2, exclusive,
-  # disable with NULL).
   filter_compound_qc_max_mv_ratio: 0.3
   filter_compound_qc_max_rsd: 15
   filter_compound_bs_max_mv_ratio: 0.3
   filter_compound_bs_min_rsd: 15
   filter_sample_max_mv_ratio: 0.2
-
-  # Control data tables availability in reports. "all" (default) will show all
-  # implemented data tables (with vcs export buttons). "stats" will only show tables of summarized
-  # data (such as countings, %RSDs, etc.), but not the actual measurements (neither original nor
-  # pre-processed). "none" will show no data tables at all, i.e. the report is mainly limited to
-  # visualizations.
   data_tables: all
+  metadata_import:
+  metadata_import_overlap:
+  metadata_name_mods_org:
+  metadata_name_mods_add:
+  metadata_value_mods:
+  lowcon_conditions:
+  lowcon_sd_outlier_removal:
+  lowcon_scatter_x:
+  lowcon_scatter_color:
+  lowcon_scatter_sub_groups:
+  lowcon_export_path:
 
   # [WIP] Optional additional normalization for biological samples (CURRENTLY DISABLED)
   # Currently either PQN or None
@@ -93,34 +53,18 @@ params:
   # [WIP] A regex string to filter/exclude samples directly after import
   sample_filter: ""
 
-  # Optional meta data preprocessing
-  # Import and merge additional metadata (via "Sample Idenitification")
-  metadata_import:
-  metadata_import_overlap:
-  # Variable name and value modifications
-  metadata_name_mods_org:
-  metadata_name_mods_add:
-  metadata_value_mods:
   # [WIP] Extraction of meta data from a character column
   # (not visibly passed via create_report function, yet)
   metadata_extraction:
 
-  # Optional low concentration analysis on unfiltered data
-  lowcon_conditions:
-  lowcon_sd_outlier_removal:
-  lowcon_scatter_x:
-  lowcon_scatter_color:
-  lowcon_scatter_sub_groups:
-  lowcon_export_path:
-
   # Whether zeros in the data should be treated as missing values
   # (not visibly passed via create_report function, yet)
   zero2na: true
+  
   # Whether report rendering should try to continue on errors
   # (not visibly passed via create_report function, switch for debugging only)
   ignore_errors: true
-  generic_data_types:
-  generic_index_first_compound:
+  
 title: "`r params$title`"
 author: "`r params$author`"
 date: "`r format(Sys.time(), '%B %d, %Y')`"

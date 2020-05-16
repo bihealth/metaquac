@@ -48,20 +48,42 @@ create_qc_report(
 )
 }
 \arguments{
-\item{data_files}{Data files as exported by MetIDQ (txt), indicated as an R list providing the
-files per batch via named vectors. E.g. list(Batch1 = c("Batch1_LC1.txt", "Batch1_LC2.txt"),
-Batch2 = c("Batch2_LC1.txt","Batch2_LC2.txt")).}
+\item{data_files}{Data files to import. List MetIDQ data (txt), as an R list providing the
+files per batch via named vectors. E.g.
+list(Batch1 = c("Batch1_LC1.txt", "Batch1_LC2.txt"),
+Batch2 = c("Batch2_LC1.txt","Batch2_LC2.txt")).
+For generic data, use only one list element, but name the data types within
+the vector (to be mapped via generic_data_types). E.g.
+list(c("Concentration [ng/ml]" = "data_conc.tsv", "Area" = "data_area.tsv",
+"Status" = "data_status.tsv")).
+Listing batches via different files is currently not support for generic
+data, but can be indicated via a "Batch" column within the data.}
 
 \item{kit}{The Biocrates Kit used to create the data to import.
 Currently supported are
 "Biocrates AbsoluteIDQ p180 Kit",
 "Biocrates AbsoluteIDQ p400 HR Kit",
-"Biocrates MxP Quant 500 Kit" and
-"Biocrates AbsoluteIDQ Stero17 Kit"
+"Biocrates MxP Quant 500 Kit",
+"Biocrates AbsoluteIDQ Stero17 Kit" and
+"Generic Data"
 (default = "Biocrates AbsoluteIDQ p400 HR Kit").}
 
-\item{measurement_type}{The measurement type (i.e. injection type) of the data to import, i.e.
-either "LC" or "FIA" (default = "LC").}
+\item{measurement_type}{The measurement type (i.e. injection type) of the
+data to import, i.e. either "LC" or "FIA" (default = "LC").
+Only relevant for Biocrates data.}
+
+\item{generic_data_types}{For generic data, indicate which file contains which data using the names
+defined in data_files. This way MeTaQuaC knows which type of data is
+available and allows for custom naming in the report (e.g. to include units).
+E.g.
+c(CONCENTRATION = "Concentration [ng/ml]", AREA = "Area", STATUS = "Status").
+Currently supported data type mappings are
+CONCENTRATION, AREA, INTENSITY, ISTD_AREA, ISTD_INTENSITY, STATUS}
+
+\item{generic_index_first_compound}{For generic data, indicate which columns contains the first compound after
+the sample annotation columns (i.e. the beginning of the data matrix).
+Note: Please double check this parameter, as with a wrong selection data
+transformation and merging will fail.}
 
 \item{title}{Custom title for report (default = "Biocrates QC Report").}
 

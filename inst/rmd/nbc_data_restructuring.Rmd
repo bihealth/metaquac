@@ -14,21 +14,27 @@
 
 The imported data was restructured as follows:
 
+```{r, results="asis"}
+text <- "
 * Convert to **long table** (or [molten dataset](http://dx.doi.org/10.18637/jss.v059.i10)). Each row
 includes only one measurement, i.e. the data of one compound in one sample and all corresponding
 information.
-* Add **Sample Identification "Blank"** for blank samples, as they are empty when exported from
-MetIDQ.
-```{r, eval=IS_BIOCRATES, results="asis"}
-cat(paste0(
-  "* Add **Sample Type \"", SAMPLE_TYPE_POOLED_QC,
-  "\"** for pooled QC samples. ", SAMPLE_TYPE_POOLED_QC,
-  " samples are identified by any occurrence of the term \"pool\"
-  (case-insensitive) in the column ", params$pool_indicator,
-  " (parameter `pool_indicator`). In contrast, **\"Reference QC\"** will refer
-  to Biocrates' QC Level 2 samples.\n"
-))
-```
+* Add **Sample Identification \"Blank\"** for blank samples, as they are empty when exported from
+MetIDQ."
+
+if (IS_BIOCRATES){
+  text <- paste0(text, sprintf("
+* Add **Sample Type \"%s\"** for pooled QC samples. %s samples are identified by
+any occurrence of the term \"pool\" (case-insensitive) in the column %s
+(parameter `pool_indicator`). In contrast, **\"Reference QC\"** will refer to
+Biocrates' QC Level 2 samples.",
+SAMPLE_TYPE_POOLED_QC,
+SAMPLE_TYPE_POOLED_QC,
+params$pool_indicator
+  ))
+}
+
+text <- paste0(text, "
 * Add **Sequence Position**, i.e. sample acquisition order. This position is calculated from
 MetIDQ's Well Position, as this one depicts a position by
 [row-major order](https://en.wikipedia.org/wiki/Row-_and_column-major_order) which does not reflect
@@ -54,9 +60,14 @@ Sample Description,
 Collection Date,
 Org. Info and
 OP.
-* Unify **missing values**, i.e. "" (empty field), "0" (zero) and "NA" (not available) are converted
-to "NA".
-* **Factorize Compounds** with level order based on compound class and compound name.
+* Unify **missing values**, i.e. \"\" (empty field), \"0\" (zero) and \"NA\" (not available) are converted
+to \"NA\".
+* **Factorize Compounds** with level order based on compound class and compound name."
+)
+
+cat(text)
+```
+
 <!-- * **Factorize study variables** to make sure that e.g. integer enconding don't -->
 <!-- get intepreted as numeric data. Variables factorized (if any): r studvars -->
 
@@ -73,7 +84,7 @@ if ("filter_regex" %in% names(params) && params$filter_regex != "") {
     select(Sample.Identification, Batch) %>%
     unique() %>%
     arrange(Batch, Sample.Identification)
-
+  
   # Remove samples
   biocrates <- biocrates %>%
     filter(!grepl(params$filter_regex, Sample.Identification))

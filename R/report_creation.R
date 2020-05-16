@@ -4,27 +4,53 @@
 
 #' Create a MeTaQuaC QC report based on Biocrates data (as exported by MetIDQ).
 #'
-#' @param data_files Data files as exported by MetIDQ (txt), indicated as an R list providing the
-#' files per batch via named vectors. E.g. list(Batch1 = c("Batch1_LC1.txt", "Batch1_LC2.txt"),
+#' @param data_files
+#' Data files to import. List MetIDQ data (txt), as an R list providing the
+#' files per batch via named vectors. E.g.
+#' list(Batch1 = c("Batch1_LC1.txt", "Batch1_LC2.txt"),
 #' Batch2 = c("Batch2_LC1.txt","Batch2_LC2.txt")).
+#' For generic data, use only one list element, but name the data types within
+#' the vector (to be mapped via generic_data_types). E.g.
+#' list(c("Concentration [ng/ml]" = "data_conc.tsv", "Area" = "data_area.tsv",
+#' "Status" = "data_status.tsv")).
+#' Listing batches via different files is currently not support for generic
+#' data, but can be indicated via a "Batch" column within the data.
 #' @param kit The Biocrates Kit used to create the data to import.
 #' Currently supported are
 #' "Biocrates AbsoluteIDQ p180 Kit",
 #' "Biocrates AbsoluteIDQ p400 HR Kit",
-#' "Biocrates MxP Quant 500 Kit" and
-#' "Biocrates AbsoluteIDQ Stero17 Kit"
+#' "Biocrates MxP Quant 500 Kit",
+#' "Biocrates AbsoluteIDQ Stero17 Kit" and
+#' "Generic Data"
 #' (default = "Biocrates AbsoluteIDQ p400 HR Kit").
-#' @param measurement_type The measurement type (i.e. injection type) of the data to import, i.e.
-#' either "LC" or "FIA" (default = "LC").
+#' @param measurement_type The measurement type (i.e. injection type) of the
+#' data to import, i.e. either "LC" or "FIA" (default = "LC").
+#' Only relevant for Biocrates data.
+#' @param generic_data_types
+#' For generic data, indicate which file contains which data using the names
+#' defined in data_files. This way MeTaQuaC knows which type of data is
+#' available and allows for custom naming in the report (e.g. to include units).
+#' E.g.
+#' c(CONCENTRATION = "Concentration [ng/ml]", AREA = "Area", STATUS = "Status").
+#' Currently supported data type mappings are
+#' CONCENTRATION, AREA, INTENSITY, ISTD_AREA, ISTD_INTENSITY, STATUS
+#' @param generic_index_first_compound
+#' For generic data, indicate which columns contains the first compound after
+#' the sample annotation columns (i.e. the beginning of the data matrix).
+#' Note: Please double check this parameter, as with a wrong selection data
+#' transformation and merging will fail.
 #' @param title Custom title for report (default = "Biocrates QC Report").
 #' @param author Name of the person responsible for creating the report (default = system user).
 #' @param report_output_name Custom name of report file (default =
 #' "YYYYMMDD_HHMMSS_qc_report_\{LC|FIA\}").
 #' @param report_output_dir Custom path of an output directory (default = "reports").
-#' @param pool_indicator Indicate a column/variable name which should be scanned for pooled QC
-#' samples. (default = "Sample Identification", set NULL to disable). All samples containing "pool"
-#' (case insensitive) anywhere in this variable's values are transformed to Sample Type = "Pooled
-#' QC".
+#' @param pool_indicator
+#' Indicate a column/variable name which should be scanned for pooled QC samples
+#' (Biocrates only). (default = "Sample Identification", set NULL to disable).
+#' All samples containing "pool" (case insensitive) anywhere in this variable's
+#' values are transformed to Sample Type = "Pooled QC". For generic data, please
+#' indicate pooled samples within the data using value "Pooled QC" in column
+#' "Sample Type".
 #' @param profiling_variables Indicate a vector of study variables of interest which will be
 #' used for profiling group sizes (i.e. number of samples) within a variable but also the size of
 #' group intersections between these variables. It is recommended to keep the variables limited to
@@ -39,22 +65,32 @@
 #' Samples with the same characteristic in these variables are considered as replicates
 #' for compound and class \%RSD analysis plots. If the data contains "BR" and "TR" columns
 #' these plots will be extended for technical replicates.
-#' @param preproc_keep_status Indicate which values are acceptable for processing with
-#' respect to Biocrates statuses. The default includes only "Valid" measurements, the rest
-#' is discarded (i.e. transformed to missing values, set to NA). Possible statuses to select from
-#' include "Valid", "Smaller Zero", "< LOD", "< LLOQ", "> ULOQ", "No Intercept",
-#' "Missing Measurement", "ISTD Out of Range", "STD/QC < Limit", "STD/QC > Limit",
-#' "Invalid", "Incomplete" and "Blank Out of Range".
-#' @param filter_compound_qc_max_mv_ratio Set maximum ratio of missing values allowed for compounds
-#' in reference QC samples (Biocrates' QC Level 2) (default = 0.3, exclusive, disable with NULL).
-#' @param filter_compound_qc_max_rsd Set maximum \%RSD allowed for compounds in reference QC
-#' samples (Biocrates' QC Level 2) (default = 15\%, exclusive, disable with NULL).
-#' @param filter_compound_bs_max_mv_ratio Set maximum ratio of missing values allowed for compounds
-#' in biological samples (Biocrates' Sample) (default = 0.3, exclusive, disable with NULL).
-#' @param filter_compound_bs_min_rsd Set minimum \%RSD allowed for compounds in biological samples
+#' @param preproc_keep_status
+#' Indicate which values are acceptable for processing with respect to
+#' (Biocrates) statuses. The default includes only "Valid" and "Semi Quant."
+#' measurements, the rest is discarded (i.e. transformed to missing values, set
+#' to NA). For Biocrates, possible statuses to select from include "Valid",
+#' "Semi Quant.", "Smaller Zero", "< LOD", "< LLOQ", "> ULOQ", "No Intercept",
+#' "Missing Measurement", "ISTD Out of Range", "STD/QC < Limit",
+#' "STD/QC > Limit", "Invalid", "Incomplete" and "Blank Out of Range".
+#' For generic data, status values may differ depending on the software used.
+#' @param filter_compound_qc_max_mv_ratio
+#' Set maximum ratio of missing values allowed for compounds in QC samples
+#' (Biocrates' QC Level 2, Reference QC or Pooled QC)
+#' (default = 0.3, exclusive, disable with NULL).
+#' @param filter_compound_qc_max_rsd
+#' Set maximum \%RSD allowed for compounds in QC samples
+#' (Biocrates' QC Level 2, Reference QC or Pooled QC)
 #' (default = 15\%, exclusive, disable with NULL).
-#' @param filter_sample_max_mv_ratio Set maximum ratio of missing values allowed per biological
-#' sample (Biocrates' Sample) (default < 0.2, exclusive, disable with NULL).
+#' @param filter_compound_bs_max_mv_ratio
+#' Set maximum ratio of missing values allowed for compounds in biological
+#' samples (Sample) (default = 0.3, exclusive, disable with NULL).
+#' @param filter_compound_bs_min_rsd
+#' Set minimum \%RSD allowed for compounds in biological samples (Sample)
+#' (default = 15\%, exclusive, disable with NULL).
+#' @param filter_sample_max_mv_ratio
+#' Set maximum ratio of missing values allowed per biological sample (Sample)
+#' (default < 0.2, exclusive, disable with NULL).
 #' @param data_tables Control data tables availability in reports. "all" (default) will show all
 #' implemented data tables (with csv export buttons). "stats" will only show tables of summarized
 #' data (such as countings, %RSDs, etc.), but not the actual measurements (neither original nor
