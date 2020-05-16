@@ -27,10 +27,10 @@ na_percent <- function(values){
 # Create table with missing value counts and ratios
 table_na <- function(data,
                      group = "Compound",
-                     target = PKG_ENV$CONCENTRATION,
+                     target = ENV$CONCENTRATION,
                      compare_key = "Sample.Type",
                      compare_values = c(SAMPLE_TYPE_BIOLOGICAL,
-                                        SAMPLE_TYPE_REFERENCE_QC,
+                                        ENV$SAMPLE_TYPE_REFERENCE_QC,
                                         SAMPLE_TYPE_POOLED_QC)){
 
   data_na <- data %>%
@@ -47,10 +47,10 @@ table_na <- function(data,
 # Plot histogram of ratio of NAs
 plot_na_histogram <- function(data,
                               group = "Compound",
-                              target = PKG_ENV$CONCENTRATION,
+                              target = ENV$CONCENTRATION,
                               compare_key = "Sample.Type",
                               compare_values = c(SAMPLE_TYPE_BIOLOGICAL,
-                                                 SAMPLE_TYPE_REFERENCE_QC,
+                                                 ENV$SAMPLE_TYPE_REFERENCE_QC,
                                                  SAMPLE_TYPE_POOLED_QC),
                               max_ratio = NULL){
 
@@ -95,7 +95,7 @@ plot_na_histogram <- function(data,
 # with comparison based on variable with two factors/classes
 plot_compound_na_scatter <- function(data,
                                      compare,
-                                     target = PKG_ENV$CONCENTRATION,
+                                     target = ENV$CONCENTRATION,
                                      sample_type = SAMPLE_TYPE_BIOLOGICAL,
                                      color = NULL, # NULL means total NA ratio
                                      max_ratio = 0.2,
@@ -187,7 +187,7 @@ plot_sample_na_intens_scatter <- function(data,
                                           sample_types = NULL,
                                           color = "Sample.Type",
                                           shape = NULL,
-                                          missing_values_in = PKG_ENV$CONCENTRATION,
+                                          missing_values_in = ENV$CONCENTRATION,
                                           total_of = "Analyte Intensity [cps]"){
 
   # Filtering
@@ -245,8 +245,8 @@ plot_sample_na_intens_scatter <- function(data,
 # Remove compounds with too many missing values within at least one of the
 # groups of samples of the specified types
 remove_compounds_na <- function(data,
-                                target = PKG_ENV$CONCENTRATION,
-                                sample_types = c(SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_BIOLOGICAL),
+                                target = ENV$CONCENTRATION,
+                                sample_types = c(ENV$SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_BIOLOGICAL),
                                 max_ratio = 0.2){
 
   # Identify compound with too many missing values
@@ -272,7 +272,7 @@ remove_compounds_na <- function(data,
 # of type SAMPLE_TYPE_BIOLOGICAL.
 remove_compounds_na_class <- function(data,
                                       variable,
-                                      target = PKG_ENV$CONCENTRATION,
+                                      target = ENV$CONCENTRATION,
                                       max_ratio = 0.2){
 
   # Identify compound with to many missing values
@@ -299,8 +299,8 @@ remove_compounds_na_class <- function(data,
 # Remove compounds with insufficient %RSD within at least one of the
 # groups of samples of the specified types (replicates)
 remove_compounds_rsd <- function(data,
-                                 target = PKG_ENV$CONCENTRATION,
-                                 sample_types = c(SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_POOLED_QC),
+                                 target = ENV$CONCENTRATION,
+                                 sample_types = c(ENV$SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_POOLED_QC),
                                  max_rsd = 15){
 
   # Identify compounds with insufficient %RSDs
@@ -325,7 +325,7 @@ remove_compounds_rsd <- function(data,
 # This is usually applied to biological samples to remove biologically invariable/stable compounds.
 remove_compounds_rsd_low <- function(
   data,
-  target = PKG_ENV$CONCENTRATION,
+  target = ENV$CONCENTRATION,
   sample_type = SAMPLE_TYPE_BIOLOGICAL,
   min_rsd = 15
 ){
@@ -349,7 +349,7 @@ remove_compounds_rsd_low <- function(
 
 # Remove samples with to many missing values
 remove_samples_na <- function(data,
-                              target = PKG_ENV$CONCENTRATION,
+                              target = ENV$CONCENTRATION,
                               max_ratio = 0.2,
                               max_mode = c("exclusive", "inclusive")[1]){
 

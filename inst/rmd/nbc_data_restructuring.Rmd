@@ -2,17 +2,39 @@
 
 <!-- Most of the restructuring is currently done already during the import of Biocrates data. -->
 
+```{r}
+# Factorize study variables
+# TODO: what about actual numerical variables?
+# studvars <- c(unlist(STUDY_VARIABLES), PROFILING_VARIABLES, REPLICATE_VARIABLES)
+# for (studvar in studvars){
+#   biocrates[[studvar]] <- factor(biocrates[[studvar]])
+# }
+```
+
+
 The imported data was restructured as follows:
 
+```{r, results="asis"}
+text <- "
 * Convert to **long table** (or [molten dataset](http://dx.doi.org/10.18637/jss.v059.i10)). Each row
 includes only one measurement, i.e. the data of one compound in one sample and all corresponding
 information.
-* Add **Sample Identification "Blank"** for blank samples, as they are empty when exported from
-MetIDQ.
-* Add **Sample Type "`r SAMPLE_TYPE_POOLED_QC`"** for pooled QC samples. `r SAMPLE_TYPE_POOLED_QC`
-samples are identified by any occurrence of the term "pool" (case-insensitive) in the column
-`r params$pool_indicator` (parameter `pool_indicator`). In contrast, **"Reference QC"** will refer
-to Biocrates' QC Level 2 samples.
+* Add **Sample Identification \"Blank\"** for blank samples, as they are empty when exported from
+MetIDQ."
+
+if (IS_BIOCRATES){
+  text <- paste0(text, sprintf("
+* Add **Sample Type \"%s\"** for pooled QC samples. %s samples are identified by
+any occurrence of the term \"pool\" (case-insensitive) in the column %s
+(parameter `pool_indicator`). In contrast, **\"Reference QC\"** will refer to
+Biocrates' QC Level 2 samples.",
+SAMPLE_TYPE_POOLED_QC,
+SAMPLE_TYPE_POOLED_QC,
+params$pool_indicator
+  ))
+}
+
+text <- paste0(text, "
 * Add **Sequence Position**, i.e. sample acquisition order. This position is calculated from
 MetIDQ's Well Position, as this one depicts a position by
 [row-major order](https://en.wikipedia.org/wiki/Row-_and_column-major_order) which does not reflect
@@ -38,9 +60,16 @@ Sample Description,
 Collection Date,
 Org. Info and
 OP.
-* Unify **missing values**, i.e. "" (empty field), "0" (zero) and "NA" (not available) are converted
-to "NA".
-* **Factorize Compounds** with level order based on compound class and compound name.
+* Unify **missing values**, i.e. \"\" (empty field), \"0\" (zero) and \"NA\" (not available) are converted
+to \"NA\".
+* **Factorize Compounds** with level order based on compound class and compound name."
+)
+
+cat(text)
+```
+
+<!-- * **Factorize study variables** to make sure that e.g. integer enconding don't -->
+<!-- get intepreted as numeric data. Variables factorized (if any): r studvars -->
 
 
 ```{r filter, results="asis"}
@@ -55,7 +84,7 @@ if ("filter_regex" %in% names(params) && params$filter_regex != "") {
     select(Sample.Identification, Batch) %>%
     unique() %>%
     arrange(Batch, Sample.Identification)
-
+  
   # Remove samples
   biocrates <- biocrates %>%
     filter(!grepl(params$filter_regex, Sample.Identification))
@@ -65,8 +94,12 @@ easy_datatable(removed_samples, caption = "Removed samples", show_type = "statis
 
 ```{r}
 # Factorize compounds ordered by compound class and name
-compound_levels <- biocrates %>%
-  arrange(Class, Compound) %>%
+if ("Class" %in% names(biocrates)) {
+  compound_levels <- biocrates %>% arrange(Class, Compound)
+} else {
+  compound_levels <- biocrates %>% arrange(Compound)
+}
+compound_levels <- compound_levels %>%
   select(Compound) %>%
   distinct() %>%
   pull(Compound)
@@ -74,6 +107,7 @@ biocrates$Compound <- factor(biocrates$Compound, levels = compound_levels)
 ```
 
 ```{r, results="asis"}
+# TODO: count per batch?
 # Are there any SAMPLE_TYPE_BIOLOGICAL samples? More than one?
 AVAILABLE_BIOLOGICAL <- SAMPLE_TYPE_BIOLOGICAL %in% biocrates$Sample.Type
 ENOUGH_BIOLOGICAL <- biocrates %>% filter(Sample.Type == SAMPLE_TYPE_BIOLOGICAL) %>%
@@ -88,8 +122,29 @@ ENOUGH_POOLED_QC <- biocrates %>% filter(Sample.Type == SAMPLE_TYPE_POOLED_QC) %
 ```
 
 ```{r, results="asis"}
-# Are there any SAMPLE_TYPE_REFERENCE_QC samples? More than one?
-AVAILABLE_REFERENCE_QC <- SAMPLE_TYPE_REFERENCE_QC %in% biocrates$Sample.Type
-ENOUGH_REFERENCE_QC <- biocrates %>% filter(Sample.Type == SAMPLE_TYPE_REFERENCE_QC) %>%
+# Are there any ENV$SAMPLE_TYPE_REFERENCE_QC samples? More than one?
+AVAILABLE_REFERENCE_QC <- ENV$SAMPLE_TYPE_REFERENCE_QC %in% biocrates$Sample.Type
+ENOUGH_REFERENCE_QC <- biocrates %>% filter(Sample.Type == ENV$SAMPLE_TYPE_REFERENCE_QC) %>%
   select(Sample.Name) %>% distinct() %>% pull(Sample.Name) %>% length() > 1
 ```
+
+```{r, results="asis"}
+# Are there any SAMPLE_TYPE_BLANK samples? More than one?
+AVAILABLE_BLANK <- SAMPLE_TYPE_BLANK %in% biocrates$Sample.Type
+ENOUGH_BLANK <- biocrates %>% filter(Sample.Type == SAMPLE_TYPE_BLANK) %>%
+  select(Sample.Name) %>% distinct() %>% pull(Sample.Name) %>% length() > 1
+```
+
+```{r}
+# Set label type for plots (ordered by preference)
+# TODO: could be a parameter
+label_cols <- c(
+  COLUMN_WELL_POSITION,
+  COLUMN_SEQUENCE_POSITION,
+  COLUMN_WELL_COORDINATES,
+  COLUMN_SAMPLE_NAME
+)
+best_label_col <- which(label_cols %in% names(biocrates))[1]
+assign("PLOT_SAMPLE_LABEL", label_cols[best_label_col], ENV)
+```
+

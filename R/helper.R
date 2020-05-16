@@ -103,8 +103,9 @@ easy_datatable <- function(
     scrollX = TRUE,
     dom = "Bfrtip",
     buttons = c("csv")),
+  # TODO: make stats default, so meas. has to be configured consciously
   show_type = c("measurements", "statistics")[1],
-  show = PKG_ENV$TABLE_DISPLAY,
+  show = ENV$TABLE_DISPLAY,
   ...
 ){
 

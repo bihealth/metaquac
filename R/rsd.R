@@ -14,7 +14,7 @@ rsd <- function(x, na.rm = TRUE) {
 # replicates of the same samples with expected target values to be similar.
 # Default are set for Biocrates/MetIDQ data.
 plot_rsd_points <- function(data,
-                            target = PKG_ENV$CONCENTRATION,
+                            target = ENV$CONCENTRATION,
                             grouping1 = "Compound",
                             grouping2 = NULL,
                             title = NULL){
@@ -75,8 +75,8 @@ plot_rsd_points <- function(data,
 # Plot compound %RSD of biological samples vs qc samples
 plot_rsd_versus <- function(
   data,
-  target = PKG_ENV$CONCENTRATION,
-  qc_type = SAMPLE_TYPE_REFERENCE_QC,
+  target = ENV$CONCENTRATION,
+  qc_type = ENV$SAMPLE_TYPE_REFERENCE_QC,
   threshold_bs = 15,
   threshold_qc = 15,
   label = "Compound",

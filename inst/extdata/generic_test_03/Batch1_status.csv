@@ -1,0 +1,22 @@
+Sample Type	Sample Identification	Sex	Well Position	Ala	Arg	Asn	Asp	Cys	Gln	Glu	Gly	His	Ile	Leu	Lys	Met	Phe	Pro	Ser	Thr	Trp	Tyr	Val
+Standard L4	Quant 500_Cal4		85	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid
+Standard L7	Quant 500_Cal7		26	Valid	Valid	Valid	Valid	< LOD	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid
+Sample	5	Male	74	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid
+Sample	3	Female	3	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid
+Pooled QC	0	Pool	27	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid
+Standard L5	Quant 500_Cal5		2	Valid	Valid	Valid	Valid	< LOD	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid
+Standard L2	Quant 500_Cal2		61	Valid	Valid	Valid	Valid	< LOD	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid
+Reference QC	Quant 500_QC2		50	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid
+Reference QC	Quant 500_QC2		87	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid
+Standard L3	Quant 500_Cal3		73	Valid	Valid	Valid	Valid	< LOD	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid
+Standard L6	Quant 500_Cal6		14	Valid	Valid	Valid	Valid	< LOD	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid
+Sample	4	Male	15	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid
+Sample	1	Female	39	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid
+Sample	6	Male	75	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid
+Zero Sample	PBS		13	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD
+Zero Sample	PBS		25	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD
+Zero Sample	PBS		37	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD	< LOD
+Sample	7	Male	51	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid
+Sample	2	Female	86	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid
+Sample	8	Female	63	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid
+Standard L1	Quant 500_Cal1		49	Valid	Valid	Valid	Valid	< LOD	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid	Valid

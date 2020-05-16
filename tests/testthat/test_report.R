@@ -113,3 +113,94 @@ test_that("report works for Biocrates MxP Quant 500 Kit FIA data", {
     kit = "Biocrates MxP Quant 500 Kit"
   )
 })
+
+
+### Tests data with random generic data ########################################
+test_that("report works for generic data, batches included", {
+  # Create generic report
+  metaquac::create_qc_report(
+    report_output_name = "generic_qc_lc",
+    report_output_dir = "generic_test_01",
+    data_files = list(
+      c(
+        "Concentration [ng/ml]" =
+          test_files(c("generic_test_01/random_matrix_conc.tsv")),
+        "Area" =
+          test_files(c("generic_test_01/random_matrix_area.tsv"))
+      )
+    ),
+    kit = "Generic Data",
+    generic_data_types = c(
+      CONCENTRATION = "Concentration [ng/ml]",
+      AREA = "Area"
+    ),
+    generic_index_first_compound = 6,
+    measurement_type = "LC",
+    profiling_variables = c('Group'),
+    study_variables = list('Group'),
+    replicate_variables = c('Group')
+  )
+})
+
+
+test_that("report works for generic data, batches included", {
+  # Create generic report
+  metaquac::create_qc_report(
+    report_output_name = "generic_qc_lc",
+    report_output_dir = "generic_test_03",
+    data_files = list(
+      c(
+        "Concentration [ng/ml]" =
+          test_files(c("generic_test_03/Batch1_conc.csv")),
+        "Area" =
+          test_files(c("generic_test_03/Batch1_area.csv")),
+        "Status" =
+          test_files(c("generic_test_03/Batch1_status.csv"))
+      )
+    ),
+    kit = "Generic Data",
+    generic_data_types = c(
+      CONCENTRATION = "Concentration [ng/ml]",
+      AREA = "Area",
+      STATUS = "Status"
+    ),
+    generic_index_first_compound = 5,
+    profiling_variables = c('Sex'),
+    study_variables = list('Sex'),
+    replicate_variables = c('Sex')
+  )
+})
+
+
+# # Separated batches not yet supported for generic data
+# test_that("report works for generic data, batches separately", {
+#   # Create generic report
+#   metaquac::create_qc_report(
+#     report_output_name = "generic_qc_lc",
+#     report_output_dir = "generic_test_02",
+#     data_files = list(
+#       Batch1 = c(
+#         Concentration =
+#           test_files(c("generic_test_02/random_matrix_conc_batch1.tsv")),
+#         Area =
+#           test_files(c("generic_test_02/random_matrix_area_batch1.tsv"))
+#       ),
+#       Batch2 = c(
+#         Concentration =
+#           test_files(c("generic_test_02/random_matrix_conc_batch2.tsv")),
+#         Area =
+#           test_files(c("generic_test_02/random_matrix_area_batch2.tsv"))
+#       )
+#     ),
+#     kit = "Generic Data",
+#     generic_data_types = c(
+#       CONCENTRATION = "Concentration [ng/ml]",
+#       AREA = "Area"
+#     ),
+#     generic_index_first_compound = 5,
+#     measurement_type = "LC",
+#     profiling_variables = c('Group'),
+#     study_variables = list('Group'),
+#     replicate_variables = c('Group')
+#   )
+# })

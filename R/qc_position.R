@@ -78,7 +78,7 @@ plot_well_plate_overview <- function(data,
 
 # Count missing values per sample and plot percentage on well plate heatmap.
 plot_well_plate_overview_mv <- function(data,
-                                        target = PKG_ENV$CONCENTRATION){
+                                        target = ENV$CONCENTRATION){
 
   data_plot <- data
 
@@ -99,7 +99,7 @@ plot_well_plate_overview_mv <- function(data,
 
 # Plot total sum of target per sample as well plate heatmap.
 plot_well_plate_overview_total <- function(data,
-                                           target = PKG_ENV$CONCENTRATION){
+                                           target = ENV$CONCENTRATION){
 
   data_plot <- data
 
@@ -133,7 +133,7 @@ calc_sequence_x_breaks <- function(data){
 plot_sequence_overview <- function(data,
                                    summary_name,
                                    sample_types = c(SAMPLE_TYPE_BIOLOGICAL,
-                                                    SAMPLE_TYPE_REFERENCE_QC,
+                                                    ENV$SAMPLE_TYPE_REFERENCE_QC,
                                                     SAMPLE_TYPE_POOLED_QC),
                                    facet = "Target",
                                    ncol = 1){
@@ -174,12 +174,12 @@ plot_sequence_overview <- function(data,
 
 
 # Plot total sum of targets per sample as points over sequence.
-plot_sequence_overview_total <- function(data,
-                                         targets = c(PKG_ENV$CONCENTRATION, AREA, INTENSITY),
-                                         sample_types = NULL,
-                                         ncol = 1){
-
-
+plot_sequence_overview_total <- function(
+  data,
+  targets = c(ENV$CONCENTRATION, ENV$AREA, ENV$INTENSITY),
+  sample_types = NULL,
+  ncol = 1
+){
   data_plot <- data
 
   data_plot <- data_plot %>%
@@ -200,7 +200,7 @@ plot_sequence_overview_total <- function(data,
 
 # Plot % MVs of targets per sample as points over sequence.
 plot_sequence_overview_mv <- function(data,
-                                      targets = c(PKG_ENV$CONCENTRATION, AREA, INTENSITY),
+                                      targets = c(ENV$CONCENTRATION, ENV$AREA, ENV$INTENSITY),
                                       sample_types = NULL){
 
   data_plot <- data %>%
@@ -221,8 +221,8 @@ plot_sequence_overview_mv <- function(data,
 # type and batch. Each box/violin represents all compounds in one sample.
 plot_sample_variability_sequential <- function(
   data,
-  targets = c(PKG_ENV$CONCENTRATION, AREA, INTENSITY),
-  sample_types = c(SAMPLE_TYPE_REFERENCE_QC,
+  targets = c(ENV$CONCENTRATION, ENV$AREA, ENV$INTENSITY),
+  sample_types = c(ENV$SAMPLE_TYPE_REFERENCE_QC,
                    SAMPLE_TYPE_POOLED_QC),
   plot_type = c("boxplot", "violing")[1],
   log10 = TRUE){

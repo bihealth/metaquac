@@ -16,17 +16,30 @@ A linear regression analysis is used to attempt to separate the technical and bi
 variability. The outputs of the models are used to score and assess this separation, and can be used
 as indicator for data quality.
 
-```{r SD_vs_mean_model, fig.align='center'}
-compound_var_stats <- compound_variability_scoring(biocrates)
+```{r SD_vs_mean_model, results='asis', fig.align='center'}
+if (ENOUGH_REFERENCE_QC){
+  compound_var_stats <- compound_variability_scoring(biocrates)
+  cat("Please see the details and the plot below for more information.")
+} else {
+  message("Error: Not enough QC replicates for comparative analysis.")
+  compound_var_stats = list(
+    r_squared = NA,
+    qc_slope = NA,
+    delta_slope = NA,
+    delta_slope_pvalue = NA,
+    delta_intercept = NA,
+    delta_intercept_pvalue = NA,
+    # wilcox_pvalue = NA,
+    k = NA
+  )
+}
 ```
-
-Please see the details and the plot below for more information.
 
 ```{r SD_vs_mean_plot, fig.align='center'}
 sd_mean_comp <- plot_compound_sd_vs_mean(
   data = biocrates,
-  target = PKG_ENV$CONCENTRATION,
-  sample_types = c(SAMPLE_TYPE_BIOLOGICAL, SAMPLE_TYPE_REFERENCE_QC),
+  target = ENV$CONCENTRATION,
+  sample_types = c(SAMPLE_TYPE_BIOLOGICAL, ENV$SAMPLE_TYPE_REFERENCE_QC),
   return_with_data = TRUE)
 
 sd_mean_comp$scatterplot
@@ -77,15 +90,15 @@ The results are as follows:
 ```{r, results="asis"}
 # Compare SDs vs Means over different study variable groups
 sd_plots_fun <- function(var, data, info, parent){
-  # Plot compound SDs vs Means of PKG_ENV$CONCENTRATION
+  # Plot compound SDs vs Means of ENV$CONCENTRATION
   plot_sd <- plot_compound_sd_vs_mean(data = data, shape = BATCH,
-                                   target = PKG_ENV$CONCENTRATION,
-                                   sample_types = c(SAMPLE_TYPE_BIOLOGICAL, SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_POOLED_QC),
+                                   target = ENV$CONCENTRATION,
+                                   sample_types = c(SAMPLE_TYPE_BIOLOGICAL, ENV$SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_POOLED_QC),
                                    study_class = var)
 
   plot_rsd <- plot_compound_rsd_vs_mean(data = data, shape = BATCH,
-                                    target = PKG_ENV$CONCENTRATION,
-                                    sample_types = c(SAMPLE_TYPE_BIOLOGICAL, SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_POOLED_QC),
+                                    target = ENV$CONCENTRATION,
+                                    sample_types = c(SAMPLE_TYPE_BIOLOGICAL, ENV$SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_POOLED_QC),
                                     study_class = var)
 
   return(list(
@@ -102,7 +115,7 @@ samples.\n")
   var_plots <- recursive_execution(vars = STUDY_VARIABLES,
                                    end_fun = sd_plots_fun,
                                    data = biocrates,
-                                   keep_sample_types = c(SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_POOLED_QC))
+                                   keep_sample_types = c(ENV$SAMPLE_TYPE_REFERENCE_QC, SAMPLE_TYPE_POOLED_QC))
   for (var_plot in var_plots) {
     cat(var_plot$Header)
     print(var_plot$Plot_sd)

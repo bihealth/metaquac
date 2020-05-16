@@ -20,11 +20,11 @@ compound_figure_height <- ceiling(num_compounds / num_columns) * 1 + 1
 if (meas_type == "LC"){
   cat("\n### Concentration vs peak area\n")
   plot_compound_scatter(data = biocrates,
-                        x = PKG_ENV$CONCENTRATION,
+                        x = ENV$CONCENTRATION,
                         y = "Analyte Peak Area [area]",
                         y_istd = "Internal Std. Peak Area [area]",
                         sample_types = c(SAMPLE_TYPE_BIOLOGICAL,
-                                         SAMPLE_TYPE_REFERENCE_QC,
+                                         ENV$SAMPLE_TYPE_REFERENCE_QC,
                                          SAMPLE_TYPE_POOLED_QC,
                                          paste0("Standard L", 1:7)),
                         aspect = FALSE,
@@ -36,11 +36,11 @@ if (meas_type == "LC"){
 ### Concentration vs intensity
 ```{r fig.height=compound_figure_height}
 plot_compound_scatter(data = biocrates,
-                      x = PKG_ENV$CONCENTRATION,
+                      x = ENV$CONCENTRATION,
                       y = "Analyte Intensity [cps]",
                       y_istd = "Internal Std. Intensity [cps]",
                       sample_types = c(SAMPLE_TYPE_BIOLOGICAL,
-                                       SAMPLE_TYPE_REFERENCE_QC,
+                                       ENV$SAMPLE_TYPE_REFERENCE_QC,
                                        SAMPLE_TYPE_POOLED_QC,
                                        paste0("Standard L", 1:7)),
                       aspect = FALSE,

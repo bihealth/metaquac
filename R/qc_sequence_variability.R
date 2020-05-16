@@ -7,8 +7,8 @@
 # due to internal standard normalization and external standard calibration).
 sequence_batch_horizontality <- function(
   data = biocrates,
-  target = PKG_ENV$CONCENTRATION,
-  sample_type = SAMPLE_TYPE_REFERENCE_QC,
+  target = ENV$CONCENTRATION,
+  sample_type = ENV$SAMPLE_TYPE_REFERENCE_QC,
   result_message = TRUE,
   alpha = 0.01
 )
@@ -85,8 +85,8 @@ sequence_batch_horizontality <- function(
 # used to verify batch conformity (no significant differences in target totals).
 sequence_batch_conformity <- function(
   data = biocrates,
-  target = PKG_ENV$CONCENTRATION,
-  sample_type = SAMPLE_TYPE_REFERENCE_QC,
+  target = ENV$CONCENTRATION,
+  sample_type = ENV$SAMPLE_TYPE_REFERENCE_QC,
   result_message = TRUE,
   alpha = 0.01
 )
@@ -161,8 +161,8 @@ sequence_batch_conformity <- function(
 # Assisting plots for linear model analysis of batches
 sequence_batch_assistant_plots <- function(
   data = biocrates,
-  target = PKG_ENV$CONCENTRATION,
-  sample_type = SAMPLE_TYPE_REFERENCE_QC,
+  target = ENV$CONCENTRATION,
+  sample_type = ENV$SAMPLE_TYPE_REFERENCE_QC,
   result_message = TRUE,
   alpha = 0.01
 ){

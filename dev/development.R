@@ -13,7 +13,7 @@ library(tidyr)
 sapply(list.files("R", full.names = TRUE), source)
 
 
-### p400 test ######################################################################################
+### p400 test ##################################################################
 
 # Output folder with date and time stamp
 stamp <- format(Sys.time(), "%Y%m%d_%H%M%S")
@@ -72,9 +72,10 @@ params = list(
   replicate_variables = replicate_variables,
   zero2na = TRUE,
   preproc_keep_status = "Valid",
-  filter_compound_qc_max_mv_ratio = 0.2,
+  filter_compound_qc_max_mv_ratio = 0.3,
   filter_compound_qc_max_rsd = 15,
-  filter_compound_bs_max_mv_ratio = 0.25,
+  filter_compound_bs_max_mv_ratio = 0.3,
+  filter_compound_bs_min_rsd = 15,
   filter_sample_max_mv_ratio = 0.2
 )
 # Now execute child notebooks: nbc_setup > nbc_import > ...
@@ -95,15 +96,16 @@ params = list(
   replicate_variables = replicate_variables,
   zero2na = TRUE,
   preproc_keep_status = "Valid",
-  filter_compound_qc_max_mv_ratio = 0.2,
+  filter_compound_qc_max_mv_ratio = 0.3,
   filter_compound_qc_max_rsd = 15,
-  filter_compound_bs_max_mv_ratio = 0.25,
+  filter_compound_bs_max_mv_ratio = 0.3,
+  filter_compound_bs_min_rsd = 15,
   filter_sample_max_mv_ratio = 0.2
 )
 # Now execute child notebooks: nbc_setup > nbc_import > ...
 
 
-### Quant 500 test #################################################################################
+### Quant 500 test #############################################################
 
 # Output folder with date and time stamp
 stamp <- format(Sys.time(), "%Y%m%d_%H%M%S")
@@ -134,9 +136,10 @@ params = list(
   replicate_variables = replicate_variables,
   zero2na = TRUE,
   preproc_keep_status = "Valid",
-  filter_compound_qc_max_mv_ratio = 0.2,
+  filter_compound_qc_max_mv_ratio = 0.3,
   filter_compound_qc_max_rsd = 15,
-  filter_compound_bs_max_mv_ratio = 0.25,
+  filter_compound_bs_max_mv_ratio = 0.3,
+  filter_compound_bs_min_rsd = 15,
   filter_sample_max_mv_ratio = 0.2
 )
 # Now execute child notebooks: nbc_setup > nbc_import > ...
@@ -157,9 +160,107 @@ params = list(
   replicate_variables = replicate_variables,
   zero2na = TRUE,
   preproc_keep_status = "Valid",
-  filter_compound_qc_max_mv_ratio = 0.2,
+  filter_compound_qc_max_mv_ratio = 0.3,
   filter_compound_qc_max_rsd = 15,
-  filter_compound_bs_max_mv_ratio = 0.25,
+  filter_compound_bs_max_mv_ratio = 0.3,
+  filter_compound_bs_min_rsd = 15,
+  filter_sample_max_mv_ratio = 0.2
+)
+# Now execute child notebooks: nbc_setup > nbc_import > ...
+
+
+### Generic data test ##########################################################
+
+# Output folder with date and time stamp
+stamp <- format(Sys.time(), "%Y%m%d_%H%M%S")
+report_output_dir <- paste0("generic_data_test_01_", stamp)
+
+# Data files
+batches_included <- list(
+  AllBatches = c(
+    "Concentration [ng/ml]" = "inst/extdata/generic_test_01/random_matrix_conc.tsv",
+    "Area" = "inst/extdata/generic_test_01/random_matrix_area.tsv"
+  )
+)
+
+batches_separately <- list(
+  Batch1 = c(
+    Concentration = "inst/extdata/generic_test_02/random_matrix_conc_batch1.tsv",
+    Area = "inst/extdata/generic_test_02/random_matrix_area_batch1.tsv"
+  ),
+  Batch2 = c(
+    Concentration = "inst/extdata/generic_test_02/random_matrix_conc_batch2.tsv",
+    Area = "inst/extdata/generic_test_02/random_matrix_area_batch2.tsv"
+  )
+)
+
+# Study and replicate variables
+profiling_variables <- c('Group')
+study_variables <- list('Group')
+replicate_variables <- c('Group')
+
+# Parameter Generic
+params = list(
+  data_files = lapply(batches_included, function(x){getAbsolutePathWithNames(x)}),
+  kit = "Generic Data",
+  generic_data_types = c(
+    CONCENTRATION = "Concentration [ng/ml]",
+    AREA = "Area"
+  ),
+  generic_index_first_compound = 6,
+  measurement_type = "LC",
+  sample_filter = NULL,
+  profiling_variables = profiling_variables,
+  study_variables = study_variables,
+  replicate_variables = replicate_variables,
+  zero2na = TRUE,
+  preproc_keep_status = "Valid",
+  filter_compound_qc_max_mv_ratio = 0.3,
+  filter_compound_qc_max_rsd = 50,
+  filter_compound_bs_max_mv_ratio = 0.3,
+  filter_compound_bs_min_rsd = 0,
+  filter_sample_max_mv_ratio = 0.2
+)
+# Now execute child notebooks: nbc_setup > nbc_import > ...
+
+
+### Generic data test 03 ##########################################################
+
+# Data files
+batches_included <- list(
+  AllBatches = c(
+    "Concentration [ng/ml]" = "inst/extdata/generic_test_03/Batch1_conc.csv",
+    "Area" = "inst/extdata/generic_test_03/Batch1_area.csv",
+    "Status" = "inst/extdata/generic_test_03/Batch1_status.csv"
+  )
+)
+
+# Study and replicate variables
+profiling_variables <- c('Sex')
+study_variables <- list('Sex')
+replicate_variables <- c('Sex')
+
+# Parameter Generic
+params = list(
+  data_files = lapply(batches_included, function(x){getAbsolutePathWithNames(x)}),
+  kit = "Generic Data",
+  generic_data_types = c(
+    CONCENTRATION = "Concentration [ng/ml]",
+    AREA = "Area",
+    STATUS = "Status"
+  ),
+  generic_index_first_compound = 5,
+  measurement_type = "LC",
+  sample_filter = NULL,
+  profiling_variables = profiling_variables,
+  study_variables = study_variables,
+  replicate_variables = replicate_variables,
+  zero2na = TRUE,
+  preproc_keep_status = "Valid",
+  filter_compound_qc_max_mv_ratio = 0.3,
+  filter_compound_qc_max_rsd = 50,
+  filter_compound_bs_max_mv_ratio = 0.3,
+  filter_compound_bs_min_rsd = 0,
   filter_sample_max_mv_ratio = 0.2
 )
 # Now execute child notebooks: nbc_setup > nbc_import > ...

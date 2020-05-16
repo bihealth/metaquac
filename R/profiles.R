@@ -4,7 +4,7 @@
 # Concentration profiles via bars for all samples separately
 plot_sample_profiles_single <- function(
   bcdata = biocrates,
-  target = PKG_ENV$CONCENTRATION,
+  target = ENV$CONCENTRATION,
   sample_types = c(SAMPLE_TYPE_BIOLOGICAL),
   facet_cols = 2
 ){
@@ -39,7 +39,7 @@ plot_sample_profiles_single <- function(
 # Concentration profiles via points and lines with all samples in one plot
 plot_sample_profiles_points <- function(
   bcdata = biocrates,
-  target = PKG_ENV$CONCENTRATION,
+  target = ENV$CONCENTRATION,
   sample_types = c(SAMPLE_TYPE_BIOLOGICAL)
 ){
   assert_that(all(c(target, "Sample.Type") %in% names(bcdata)))
@@ -72,7 +72,7 @@ plot_sample_profiles_points <- function(
 # Concentration profiles via boxplots over all samples
 plot_sample_profiles_box <- function(
   bcdata = biocrates,
-  target = PKG_ENV$CONCENTRATION,
+  target = ENV$CONCENTRATION,
   sample_types = c(SAMPLE_TYPE_BIOLOGICAL),
   order_and_color = "Class"
 ){

@@ -4,7 +4,7 @@
 
 # Boxplot of compound concentrations per sample
 plot_concentration_box <- function(data,
-                                   target = PKG_ENV$CONCENTRATION,
+                                   target = ENV$CONCENTRATION,
                                    sample_id = "Sample.Name",
                                    log10 = TRUE,
                                    color = "Sample.Type",
@@ -45,7 +45,7 @@ plot_concentration_box <- function(data,
 
 # Violin plots of compound concentrations per sample
 plot_concentration_violin <- function(data,
-                                      target = PKG_ENV$CONCENTRATION,
+                                      target = ENV$CONCENTRATION,
                                       sample_id = "Sample.Name",
                                       log10 = TRUE,
                                       violin_width = 0.9,
@@ -90,9 +90,9 @@ plot_concentration_violin <- function(data,
 # Each box/violin represents all compounds in one sample.
 plot_sample_variability_overlapped <- function(
   data,
-  targets = c(PKG_ENV$CONCENTRATION, AREA, INTENSITY),
+  targets = c(ENV$CONCENTRATION, ENV$AREA, ENV$INTENSITY),
   sample_types = c(SAMPLE_TYPE_BIOLOGICAL,
-                   SAMPLE_TYPE_REFERENCE_QC,
+                   ENV$SAMPLE_TYPE_REFERENCE_QC,
                    SAMPLE_TYPE_POOLED_QC,
                    paste0("Standard L", 1:7)),
   plot_type = c("boxplot", "violin")[1],
@@ -176,7 +176,7 @@ plot_histogram_matrix <- function(data, variables,
 
 # Pairwise sample scatter plot matrix
 plot_sample_scatter_matrix <- function(data,
-                                       target = PKG_ENV$CONCENTRATION,
+                                       target = ENV$CONCENTRATION,
                                        sample_types = NULL,
                                        max_cols = 9,
                                        cat_header = NULL){
@@ -262,9 +262,9 @@ plot_sample_scatter_matrix <- function(data,
 
 # Plot SD vs Mean of target for each compound, within different sample types
 plot_compound_sd_vs_mean <- function(data,
-                                     target = PKG_ENV$CONCENTRATION,
+                                     target = ENV$CONCENTRATION,
                                      sample_types = c(SAMPLE_TYPE_BIOLOGICAL,
-                                                      SAMPLE_TYPE_REFERENCE_QC,
+                                                      ENV$SAMPLE_TYPE_REFERENCE_QC,
                                                       SAMPLE_TYPE_POOLED_QC),
                                      study_class = NULL,
                                      shape = NULL,
@@ -340,9 +340,9 @@ plot_compound_sd_vs_mean <- function(data,
 
 # Plot %RSD vs Mean of target for each compound, within different sample types
 plot_compound_rsd_vs_mean <- function(data,
-                                      target = PKG_ENV$CONCENTRATION,
+                                      target = ENV$CONCENTRATION,
                                       sample_types = c(SAMPLE_TYPE_BIOLOGICAL,
-                                                       SAMPLE_TYPE_REFERENCE_QC,
+                                                       ENV$SAMPLE_TYPE_REFERENCE_QC,
                                                        SAMPLE_TYPE_POOLED_QC),
                                       study_class = NULL,
                                       shape = NULL,
@@ -409,11 +409,11 @@ plot_compound_rsd_vs_mean <- function(data,
 
 # Scatter plots to compare different compound measeruments
 plot_compound_scatter <- function(data,
-                                  x = PKG_ENV$CONCENTRATION,
+                                  x = ENV$CONCENTRATION,
                                   y = "Analyte Intensity [cps]",
                                   y_istd = "Internal Std. Intensity [cps]",
                                   sample_types = c(SAMPLE_TYPE_BIOLOGICAL,
-                                                   SAMPLE_TYPE_REFERENCE_QC,
+                                                   ENV$SAMPLE_TYPE_REFERENCE_QC,
                                                    SAMPLE_TYPE_POOLED_QC,
                                                    paste0("Standard L", 1:7)),
                                   aspect = TRUE,

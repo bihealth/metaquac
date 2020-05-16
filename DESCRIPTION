@@ -1,13 +1,14 @@
 Package: metaquac
 Type: Package
 Title: Metabolomics Targeted Quality Control
-Version: 0.1.6
+Version: 0.1.15
 Author: Mathias Kuhring
 Maintainer: Mathias Kuhring <mathias.kuhring@bihealth.de>
 Description:
-    MeTaQuaC is a package to facilitate efficient quality control (QC) for targeted metabolomics
-    analysis with focus on Biocrates kits. It provides a simple interface to create extensive,
-    reproducable and well documented html QC reports in an automated fashion.
+    MeTaQuaC is a package to facilitate efficient quality control (QC) for
+    targeted metabolomics analysis with focus on Biocrates kits. It provides a
+    simple interface to create extensive, reproducable and well documented html
+    QC reports in an automated fashion.
 Depends: R (>= 3.4.0)
 Imports:
     assertthat (>= 0.2.1),

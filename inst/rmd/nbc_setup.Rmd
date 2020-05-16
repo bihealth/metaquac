@@ -35,12 +35,57 @@ knitr::knit_hooks$set(
 )
 
 
+# Set chunk/code evaluation control variables defaults
+CONTINUE <- TRUE
+MULTIBATCH <- FALSE
+AVAILABLE_BIOLOGICAL <- FALSE
+AVAILABLE_POOLED_QC <- FALSE
+AVAILABLE_REFERENCE_QC <- FALSE
+ENOUGH_BIOLOGICAL <- FALSE
+ENOUGH_POOLED_QC <- FALSE
+ENOUGH_REFERENCE_QC <- FALSE
+NORMALIZED <- FALSE
+IS_BIOCRATES <- FALSE
+
+
 # Parse and validate parameters
+
+# Initiate some dynamic global variables
 init_dynamic_global_variables()
+
+# Kit selection
+if ("kit" %in% names(params)) {
+  assert_that(params$kit %in% KITS)
+  if (params$kit %in% KITS_BIOCRATES){
+    IS_BIOCRATES = TRUE
+  }
+} else {
+  stop(paste0(
+        "No kit selected. Currently supported: '",
+        paste(KITS, collapse = "', '"), "'"))
+}
 
 # Data files
 if ("data_files" %in% names(params)){
-  assert_that(class(params$data_files) == "list")
+  if (IS_BIOCRATES){
+    assert_that(class(params$data_files) == "list")
+  } else { # Generic data
+    # Check if list (separate batches) or vector (one or include batches)
+    assert_that(
+      class(params$data_files) == "list"
+      || class(params$data_files) == "character"
+    )
+  }
+}
+
+if (params$kit == KIT_GENERIC_DATA) {
+  # Generic data types
+  assertthat::assert_that("generic_data_types" %in% names(params))
+  assertthat::assert_that(all(names(params$generic_data_types) %in% MANIFESTATION_VARIABLES))
+  # Compound index for generic data
+  assertthat::assert_that("generic_index_first_compound" %in% names(params))
+  assertthat::assert_that(class(params$generic_index_first_compound) == "numeric")
+  assertthat::assert_that(length(params$generic_index_first_compound) == 1)
 }
 
 # Regex sample filter need to be one string
@@ -100,18 +145,11 @@ if ("additional_normalization" %in% names(params)){
   assert_that(params$additional_normalization %in% c("None", "PQN"))
 }
 
-# Kit selection
-if ("kit" %in% names(params)){
-  assert_that(params$kit %in% KITS)
-} else {
-  stop(paste0(
-    "No kit selected. Currently supported: '",
-    paste(KITS, collapse = "', '"), "'"))
-}
-
 # MetIDQ statuses
 assertthat::assert_that("preproc_keep_status" %in% names(params))
-assertthat::assert_that(all(params$preproc_keep_status %in% METIDQ_STATUSES))
+if (IS_BIOCRATES){
+  assertthat::assert_that(all(params$preproc_keep_status %in% METIDQ_STATUSES))
+}
 
 # Filter thresholds
 if (!is.null(params$filter_compound_qc_max_mv_ratio)) {
@@ -138,19 +176,19 @@ if (!is.null(params$filter_sample_max_mv_ratio)) {
 # Data tables visibility
 if (!is.null(params$data_tables)) {
   assertthat::assert_that(params$data_tables %in% c("all", "stats", "none"))
-  assign("TABLE_DISPLAY", params$data_tables, PKG_ENV)
+  assign("TABLE_DISPLAY", params$data_tables, ENV)
 }
 
 # Optional metadata import and modifications
 ANY_METADATA_MODS <- FALSE
 if (!is.null(params$metadata_import)) {
   assertthat::assert_that(file.exists(params$metadata_import))
+  assertthat::assert_that(length(params$metadata_import_overlap) == 1)
+  assertthat::assert_that(
+    params$metadata_import_overlap %in% c("rename", "replace", "omit")
+  )
   ANY_METADATA_MODS <- TRUE
 }
-assertthat::assert_that(length(params$metadata_import_overlap) == 1)
-assertthat::assert_that(
-  params$metadata_import_overlap %in% c("rename", "replace", "omit")
-)
 if (!is.null(params$metadata_name_mods_org)) {
   assertthat::assert_that(length(params$metadata_name_mods_org) > 0)
   assertthat::assert_that(class(params$metadata_name_mods_org) == "character")
@@ -184,14 +222,16 @@ if (!is.null(params$metadata_value_mods)) {
 # Optional low concentration analysis
 LOWCON <- FALSE
 LOWCON_CONDITIONS <- params$lowcon_conditions
+LOWCON_SD_OUTLIER_REM <- params$lowcon_sd_outlier_removal
 LOWCON_SCATTER_X <- params$lowcon_scatter_x
 LOWCON_SCATTER_COLOR <- params$lowcon_scatter_color
 LOWCON_SCATTER_SUB_GROUPS <- params$lowcon_scatter_sub_groups
+LOWCON_EXPORT_PATH <- params$lowcon_export_path
 if (!is.null(LOWCON_CONDITIONS)){
   assertthat::assert_that(length(LOWCON_CONDITIONS) > 0)
   assertthat::assert_that(class(LOWCON_CONDITIONS) == "character")
   assertthat::assert_that(!any(is.na(LOWCON_CONDITIONS)))
-  
+  assertthat::assert_that(LOWCON_SD_OUTLIER_REM %in% c(TRUE, FALSE))
   if (is.null(LOWCON_SCATTER_X)){
     LOWCON_SCATTER_X <- LOWCON_CONDITIONS[1]
   } else {
@@ -215,6 +255,10 @@ if (!is.null(LOWCON_CONDITIONS)){
     assertthat::assert_that(
       all(names(LOWCON_SCATTER_SUB_GROUPS) %in% LOWCON_CONDITIONS)
     )
+  }
+  if (!is.null(LOWCON_EXPORT_PATH)){
+    assertthat::assert_that(length(LOWCON_EXPORT_PATH) == 1)
+    assertthat::assert_that(class(LOWCON_EXPORT_PATH) == "character")
   }
   LOWCON <- TRUE
 }

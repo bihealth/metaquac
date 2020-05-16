@@ -1,0 +1,104 @@
+## Import
+
+Import of **`r params$kit`** data of measurement type **`r params$measurement_type`**.
+
+Data files to import:
+```{r data_files, results='asis'}
+# Data files
+pander::pander(params$data_files)
+```
+
+```{r import}
+# Measurement Type
+meas_type <- params$measurement_type
+
+# Import data (TODO: import batches)
+generic_data <- import_generic_table_set(
+  filenames = params$data_files[[1]],
+  index_first_compound = params$generic_index_first_compound,
+  zero2na = params$zero2na
+)
+
+CONTINUE <- exists("generic_data")
+```
+
+```{r, results="asis", eval=CONTINUE}
+# Set "Batch" if data set contains multi batches, else NULL
+# Also, make sure it is a factor (so it won't misbehave if just numbers)
+# TODO: move to restructuring section (for Biocrates as well)
+if (!COLUMN_BATCH %in% names(generic_data)) {
+  generic_data[[COLUMN_BATCH]] <- "Batch1"
+}
+if (length(unique(generic_data$Batch)) > 1) {
+  BATCH <- COLUMN_BATCH
+  MULTIBATCH <- TRUE
+  generic_data[[COLUMN_BATCH]] <- factor(generic_data[[COLUMN_BATCH]])
+} else {
+  BATCH <- NULL
+}
+
+# Add batch to sample name
+# TODO: move to restructuring section (for Biocrates as well)
+if (!is.null(BATCH)) {
+  generic_data$Sample.Name <- 
+    paste0(generic_data$Sample.Name, "_", generic_data$Batch)
+}
+
+# Set available data types
+assign("CONCENTRATION", params$generic_data_types["CONCENTRATION"], ENV) # Unit added on import
+assign("INTENSITY", params$generic_data_types["INTENSITY"], ENV)
+assign("AREA", params$generic_data_types["AREA"], ENV)
+assign("ISTD_INTENSITY", params$generic_data_types["ISTD_INTENSITY"], ENV)
+assign("ISTD_AREA", params$generic_data_types["ISTD_AREA"], ENV)
+DATA_TYPES <- params$generic_data_types[params$generic_data_types %in% names(generic_data)]
+
+# Set sample types
+# TODO: create and check parameter for sample types
+assign("SAMPLE_TYPE_REFERENCE_QC", "Reference QC", ENV)
+```
+
+
+```{r, eval=CONTINUE}
+# Check if a proper dataset is available
+REQUIRED_METAQUAC_COLUMNS <- c(make.names(c(
+  "Sample Type",
+  "Sample Identification",
+  # "Well Position",
+  "Compound",
+  "MetIDQ_Status",
+  # "Class",
+  "Sequence Position",
+  "Sample Name"
+  # "Batch"
+)), DATA_TYPES)
+
+CONTINUE <- all(REQUIRED_METAQUAC_COLUMNS %in% names(generic_data)) && !nrow(generic_data) < 1
+```
+
+```{r, eval=!CONTINUE}
+message("Error: Data import failed, further processing canceled!")
+if (exists("generic_data")){
+  print(generic_data)
+}
+```
+
+<!-- ```{r, eval=CONTINUE} -->
+<!-- # TODO: adapt for generic data -->
+<!-- duplicate_samples <- get_sample_duplicates(generic_data) -->
+<!-- ``` -->
+
+<!-- ```{r, eval=CONTINUE&&nrow(duplicate_samples)>0, results="asis"} -->
+<!-- message("Error: Sample duplicates with inconsistent sample information detected!") -->
+<!-- cat("One or more samples with the same identifier (Sample Identification) but different annotations -->
+<!--     in other columns have been detected. This would interfere with data processing and prevent -->
+<!--     reliable analysis. Thus, further processing is canceled. Please use the list of duplicated -->
+<!--     samples provided below for guidance to correct your data.") -->
+<!-- easy_datatable(duplicate_samples, caption = "Sample duplicates.", show_type = "statistics") -->
+<!-- CONTINUE <- FALSE -->
+<!-- ``` -->
+
+
+```{r, eval=CONTINUE}
+# TODO: apply a more generic name to the dataset running through MeTaQuaC
+biocrates <- generic_data
+```

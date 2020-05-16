@@ -104,27 +104,10 @@ import_metidq_tables <- function(filename, samples_expected = 96){
 
   # Catch duplicate column names and rename them (except for compound names)
   # (MetIDQ and study variables might collide, which would result in merge bugs later on)
-  header_dups <- duplicated(header)
-  header_unique <- make.names(header[1:idx_last_non_compound], unique = TRUE)
-  if (any(header_dups)) {
-    warning_text <- paste0(
-      "Warning: Found and renamed duplicated column names in file:  \n*", filename, "*  \n",
-      "Before:\t", paste(header[header_dups], collapse = ",\t"), "  \n",
-      "After:\t", paste(header_unique[header_dups], collapse = ",\t"))
-    message(warning_text)
-    cat("\n")
-  }
-  header[1:idx_last_non_compound] <- header_unique
+  header <- handle_duplicate_headers(header, idx_last_non_compound + 1, filename)
 
   # Check if typcial columns are available
-  unavailable_columns <- REQUIRED_METIDQ_COLUMNS[!REQUIRED_METIDQ_COLUMNS %in% header]
-  if (length(unavailable_columns) > 0) {
-    warning_text <- paste0(
-      "Warning: Required columns missing in file (report progress likely to fail!):  \n  *",
-      filename, "*  \n", "  Missing:\t", paste(unavailable_columns, collapse = ", "))
-    message(warning_text)
-  }
-
+  check_required_columns(header, REQUIRED_METIDQ_COLUMNS, filename)
 
   # Get additional compound info
   # (all lines after the header starting "empty" ("\t"))
@@ -158,16 +141,16 @@ import_metidq_tables <- function(filename, samples_expected = 96){
     filter(!grepl(pattern = STATUS_PATTERN, x = Compound))
 
   # Save compound info header names
-  assign("COMPOUND_INFO_HEADER", colnames(compound_info), PKG_ENV)
+  assign("COMPOUND_INFO_HEADER", colnames(compound_info), ENV)
 
   # Disabled, as LoD is currently not parsed (see above)
   # # Save LOD header name (starts with "LOD")
   # assign("LOD_HEADER",
-  #        colnames(compound_info)[startsWith(colnames(compound_info), "LOD")], PKG_ENV)
+  #        colnames(compound_info)[startsWith(colnames(compound_info), "LOD")], ENV)
   #
   # # Ensure numeric LOD (calc.)
   # x <- tryCatch({
-  #   compound_info[[PKG_ENV$LOD_HEADER]] <- as.numeric(compound_info[[PKG_ENV$LOD_HEADER]])
+  #   compound_info[[ENV$LOD_HEADER]] <- as.numeric(compound_info[[ENV$LOD_HEADER]])
   # }, warning=function(w) {
   #   message(paste0("Warning: Non-numeric LOD values in file ", filename,
   #                  ": ", conditionMessage(w)))
@@ -304,8 +287,13 @@ import_metidq_tables <- function(filename, samples_expected = 96){
 
   # Show missing tables
   if (num_tables < 8){
-    message(paste0("Warning: Missing tables in file ", filename, ":"))
-    print(TABLE_TYPES[!TABLE_TYPES %in% tables_found_regex])
+    message(paste0(
+      "Warning: Typical MetIDQ tables not available in file ", filename, ":"
+    ))
+    print(gsub(
+      pattern = "\\", replacement = "", fixed = TRUE,
+      TABLE_TYPES[!TABLE_TYPES %in% tables_found_regex]
+    ))
   }
 
   return(single_table)
@@ -348,13 +336,15 @@ preprocess_metidq_tables <- function(values, pool_indicator = NULL){
     mutate_at(vars(Well.Position, Sequence.Position), funs(as.integer)) %>%
     mutate_at(vars(Sample.Volume,
                    matches(TABLE_TYPES[1]), # i.e. "Concentration [.*?]"
-                   `Analyte Intensity [cps]`,
-                   `Internal Std. Intensity [cps]`,
-                   `Accuracy [%]`,
-                   `Analyte Peak Area [area]`,
-                   `Internal Std. Peak Area [area]`,
-                   `Analyte Retention Time [min]`,
-                   `Internal Std. Retention Time [min]`),
+                   one_of(
+                     "Analyte Intensity [cps]",
+                     "Internal Std. Intensity [cps]",
+                     "Accuracy [%]",
+                     "Analyte Peak Area [area]",
+                     "Internal Std. Peak Area [area]",
+                     "Analyte Retention Time [min]",
+                     "Internal Std. Retention Time [min]"
+                   )),
               funs(as.numeric))
 
   # Remove technical/method columns to ensure sample related columns are unique.
@@ -390,18 +380,17 @@ zero_to_na <- function(values){
 # Convert zeros to NA to have one common missing value type
 unify_missing_values <- function(data){
   data <- data %>%
-    mutate_at(vars(matches(TABLE_TYPES[1])), # i.e. "Concentration [.*?]"
-              funs(zero_to_na))
-  # data$`Concentration` <-
-  #   zero_to_na(data$`Concentration`)
-  data$`Analyte Intensity [cps]` <-
-    zero_to_na(data$`Analyte Intensity [cps]`)
-  data$`Internal Std. Intensity [cps]` <-
-    zero_to_na(data$`Internal Std. Intensity [cps]`)
-  data$`Analyte Peak Area [area]` <-
-    zero_to_na(data$`Analyte Peak Area [area]`)
-  data$`Internal Std. Peak Area [area]` <-
-    zero_to_na(data$`Internal Std. Peak Area [area]`)
+    mutate_at(
+      vars(
+        matches(TABLE_TYPES[1]),  # i.e. "Concentration [.*?]"
+        one_of(
+          "Analyte Intensity [cps]",
+          "Internal Std. Intensity [cps]",
+          "Analyte Peak Area [area]",
+          "Internal Std. Peak Area [area]"
+        )
+      ),
+      funs(zero_to_na))
   return(data)
 }
 
@@ -498,7 +487,7 @@ complete_missing_compounds <- function(data,
   suppressWarnings(
     data_samples <-
       data %>%
-      select(-one_of(c("Compound", PKG_ENV$COMPOUND_INFO_HEADER, "MetIDQ_Status")),
+      select(-one_of(c("Compound", ENV$COMPOUND_INFO_HEADER, "MetIDQ_Status")),
              -matches(TABLE_TYPES_REGEX_ALL)) %>%
       distinct()
   )
@@ -520,7 +509,7 @@ complete_missing_compounds <- function(data,
   # Separate compound infos
   suppressWarnings(
     data_compounds <- data %>%
-      select(one_of(c("Compound", "Batch", PKG_ENV$COMPOUND_INFO_HEADER))) %>%
+      select(one_of(c("Compound", "Batch", ENV$COMPOUND_INFO_HEADER))) %>%
       distinct()
   )
 

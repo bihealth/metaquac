@@ -6,7 +6,7 @@
 # Keep only columns (variable) of interest from the biocrates dataframe
 selected_columns <- names(df) %in% c(
   "Compound", "Sample.Name", "Sample.Identification", "Sample.Type",
-  "Analyte Peak Area [area]", "Concentration [µM]",
+  "Analyte Peak Area [area]", ENV$CONCENTRATION,
   "Internal Std. Peak Area [area]", "Analyte Intensity [cps]",
   LOWCON_CONDITIONS
 )
@@ -17,7 +17,7 @@ df.filtered <- df[selected_columns]
 df.filtered <- df.filtered %>%
   rename(
     Analyte.Peak.Area = `Analyte Peak Area [area]`,
-    Concentration = `Concentration [µM]`, # TODO: Adapt for different unit!
+    Concentration = !!sym(ENV$CONCENTRATION),
     Analyte.Intensity = `Analyte Intensity [cps]`,
     Internal.Std.Peak.Area = `Internal Std. Peak Area [area]`
   )
@@ -141,7 +141,7 @@ condition_summary %>%
 ```
 
 ## Total peak area per sample
-```{r total_peak_area_per_sample_HOS, echo=FALSE}
+```{r total_peak_area_per_sample_HOS, echo=FALSE, fig.height=7}
 
 # Compute the total peak area per sample using the only the metabolites that remain (that passed all the filtering steps)
 df.tot_area_HOS <- df.filtered %>%
@@ -168,24 +168,28 @@ df.tot_area_HOS$condition <- factor(df.tot_area_HOS$condition)
 ggplot(data=df.tot_area_HOS, aes(x=reorder(Sample.Identification, as.numeric(condition)), y=total_area, fill=condition)) +
   geom_bar(stat="identity")+
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(x = "Sample name", y = " Total peak area")
+  labs(x = "Sample name", y = " Total peak area") +
+  theme(legend.position = "bottom")
 
 ```
 
 ## Total peak area per sample after normalisation to internal standards
-```{r normalised_total_peak_area_per_sample_HOS, echo=FALSE}
+```{r normalised_total_peak_area_per_sample_HOS, echo=FALSE, fig.height=7}
 
 # Simply plot the total peak area per samples (AFTER normalisation to internal standards) and group them by biological condition (color)
 ggplot(data=df.tot_area_HOS, aes(x=reorder(Sample.Identification, as.numeric(condition)), y=total_area_normalised, fill=condition)) +
   geom_bar(stat="identity")+
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(x = "Sample name", y = " Total peak area")
+  labs(x = "Sample name", y = " Total peak area") +
+  theme(legend.position = "bottom")
 
 ```
 
 ## Outlier detection on normalised total peak area using a 1.5 standard deviation cutoff
 
-```{r standard_deviation_outlier_detection_HOS, fig.height=5, out.width = "80%", echo=FALSE}
+Remove SD outliers (i.e. set values to NA): `r LOWCON_SD_OUTLIER_REM` (according
+to parameter lowcon_sd_outlier_removal)
+```{r standard_deviation_outlier_detection_HOS, fig.height=7}
 
 # Calculate 1.5 standard deviation per BIOLOGICAL CONDITION (This can be changed to 2, but usually even 1.5 does not reject any sample)
 df.tot_area_HOS <- df.tot_area_HOS %>%
@@ -200,21 +204,21 @@ df.tot_area_HOS <- df.tot_area_HOS %>%
 ggplot(data=df.tot_area_HOS, aes(x=reorder(Sample.Identification, as.numeric(condition)), y=total_area_normalised, fill=condition)) +
   geom_bar(stat="identity", aes(colour=inside_range))+
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(x = "Sample name", y = " Total peak area")
+  labs(x = "Sample name", y = " Total peak area") +
+  theme(legend.position = "bottom")
 
 ```
 
 ```{r removing_outlier_HOS, echo=FALSE}
 # Remove outlier samples from the data (We just reject every sample that are outside the range)
-
-df.tot_area_HOS$total_area_normalised[ which(df.tot_area_HOS$inside_range == FALSE)] = NA
-
-
+if (LOWCON_SD_OUTLIER_REM){
+  df.tot_area_HOS$total_area_normalised[ which(df.tot_area_HOS$inside_range == FALSE)] = NA
+}
 ```
 
 ## Mean peak area per condition (with standard deviation)
 
-```{r mean_peak_area_per_condition_HOS, fig.height=5, out.width = "80%", echo=FALSE}
+```{r mean_peak_area_per_condition_HOS, fig.height=7}
 
 # Here we group the samples by biological condition and compute the standard deviation for the total peak area (normalised)
 df.summary_HOS <- df.tot_area_HOS %>%
@@ -230,7 +234,8 @@ ggplot(df.summary_HOS, aes(x=condition, y=mean_peak_area, fill=condition)) +
                 width=.2,                    # Width of the error bars
                 position=position_dodge(.9)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(x = "condition", y = "Mean peak area")
+  labs(x = "condition", y = "Mean peak area") +
+  theme(legend.position = "bottom")
 
 ```
 
@@ -262,7 +267,9 @@ A minimum number of 2 values is required for the RSD to be reported in the table
 df.filtered.condition.HOS <- left_join(df.filtered,df.tot_area_HOS[,c("Sample.Name","condition","inside_range")], by="Sample.Name")
 
 # Remove outlier samples found to be outside 1.5 standard deviation
-df.filtered.condition.HOS$Analyte.Peak.Area.Normalised[ which(df.filtered.condition.HOS$inside_range == FALSE)] = NA
+if (LOWCON_SD_OUTLIER_REM){
+  df.filtered.condition.HOS$Analyte.Peak.Area.Normalised[ which(df.filtered.condition.HOS$inside_range == FALSE)] = NA
+}
 
 # Compute the RSD for every single compound per BIOLOGICAL CONDITION
 # A MINIMUM OF 2 REPLICATES IS OBVIOUSLY NECESSARY
@@ -295,13 +302,13 @@ df.metabolite_rsd_HOS %>%
 df.filtered.condition.HOS.jitter.all <- left_join(df.filtered,df.tot_area_HOS[,c("Sample.Name","condition","inside_range")], by="Sample.Name")
 
 if (is.null(LOWCON_SCATTER_SUB_GROUPS)){
-  sub_groups <- "KEEP_ALL"
+  sub_groups <- "All"
 } else {
   sub_groups <- LOWCON_SCATTER_SUB_GROUPS
 }
 
 for (i in seq_along(sub_groups)) {
-  if (sub_groups[i] == "KEEP_ALL") {
+  if (sub_groups[i] == "All") {
     df.filtered.condition.HOS.jitter <- df.filtered.condition.HOS.jitter.all
   } else {
     df.filtered.condition.HOS.jitter <- df.filtered.condition.HOS.jitter.all %>%
@@ -314,7 +321,9 @@ for (i in seq_along(sub_groups)) {
   #   filter(Compound %in% sample(unique(Compound),10))
   
   # Remove outlier samples found to be outside 1.5 standard deviation
-  df.filtered.condition.HOS.jitter$Analyte.Peak.Area.Normalised[ which(df.filtered.condition.HOS.jitter$inside_range == FALSE)] = NA
+  if (LOWCON_SD_OUTLIER_REM){
+    df.filtered.condition.HOS.jitter$Analyte.Peak.Area.Normalised[ which(df.filtered.condition.HOS.jitter$inside_range == FALSE)] = NA
+  }
   
   # We recompute everything (SD, RSD etc... for every metabolites)
   df.filtered.condition.HOS.jitter <- df.filtered.condition.HOS.jitter %>%
@@ -383,6 +392,43 @@ for (i in seq_along(sub_groups)) {
     )
   
   print(g)
+  
+  # Export data per sub group
+  if (!is.null(LOWCON_EXPORT_PATH)){
+    export_path <- LOWCON_EXPORT_PATH
+    dir.create(file.path(export_path), recursive = TRUE, showWarnings = TRUE)
+    
+    df.HOS.output.long <- df.filtered.condition.HOS.jitter %>%
+      select(Compound,Sample.Identification,condition,Analyte.Peak.Area.Normalised,metabolite_mean_peak_area,relative_standard_deviation)
+    
+    # Export long format containing all data together
+    write.csv(df.HOS.output.long, file.path(export_path, paste0("lowcon_", sub_groups[i], "_LC_normalised_data_long.csv")),  row.names = FALSE)
+    
+    # Create a wide format with normalised intensity values
+    df.HOS.output.intensity.wide <- df.HOS.output.long %>%
+      mutate(sample_name = paste(Sample.Identification, condition, sep="_")) %>%
+      select(Compound, sample_name, Analyte.Peak.Area.Normalised) %>%
+      spread(sample_name, Analyte.Peak.Area.Normalised)
+    
+    write.csv(df.HOS.output.intensity.wide, file.path(export_path, paste0("lowcon_", sub_groups[i], "_LC_normalised_intensities_wide.csv")), row.names = FALSE)
+    
+    # Create a wide format with mean and RSD values for each condition
+    df.HOS.output.mean.wide <- df.HOS.output.long %>%
+      # mutate(sample_name = paste(Sample.Identification, Volume, Mass, BR, sep="_")) %>%
+      select(Compound, condition, metabolite_mean_peak_area) %>%
+      distinct(Compound, condition, .keep_all = TRUE) %>%
+      spread(condition, metabolite_mean_peak_area)
+    
+    write.csv(df.HOS.output.mean.wide, file.path(export_path, paste0("lowcon_", sub_groups[i], "_LC_mean_intensity_wide.csv")), row.names = FALSE)
+    # 
+    df.HOS.output.rsd.wide <- df.HOS.output.long %>%
+      # mutate(sample_name = paste(Sample.Identification, Volume, Mass, BR, sep="_")) %>%
+      select(Compound, condition, relative_standard_deviation) %>%
+      distinct(Compound, condition, .keep_all = TRUE) %>%
+      spread(condition, relative_standard_deviation)
+    
+    write.csv(df.HOS.output.rsd.wide, file.path(export_path, paste0("lowcon_", sub_groups[i], "_LC_rsd_wide.csv")), row.names = FALSE)
+  }
 }
 
 ```

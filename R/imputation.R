@@ -7,9 +7,9 @@
 # Only samples of indicated sample types will be imputed, with median calculated
 # and applied for each type separately.
 impute_median <- function(data,
-                                 target = PKG_ENV$CONCENTRATION,
+                                 target = ENV$CONCENTRATION,
                                  sample_types = c(SAMPLE_TYPE_BIOLOGICAL,
-                                                  SAMPLE_TYPE_REFERENCE_QC,
+                                                  ENV$SAMPLE_TYPE_REFERENCE_QC,
                                                   SAMPLE_TYPE_POOLED_QC)){
 
   # Calculate medians for each sample type
@@ -38,11 +38,11 @@ impute_median <- function(data,
 # Imputation of missing values with the half of LOD.
 # Only samples of indicated sample types will be imputed.
 impute_half_lod <- function(data,
-                            target = PKG_ENV$CONCENTRATION,
+                            target = ENV$CONCENTRATION,
                             sample_types = c(SAMPLE_TYPE_BIOLOGICAL,
-                                             SAMPLE_TYPE_REFERENCE_QC,
+                                             ENV$SAMPLE_TYPE_REFERENCE_QC,
                                              SAMPLE_TYPE_POOLED_QC),
-                            lod = PKG_ENV$LOD_HEADER){
+                            lod = ENV$LOD_HEADER){
 
   assert_that(lod %in% names(data))
 
@@ -70,9 +70,9 @@ impute_half_lod <- function(data,
 #
 # Only samples of indicated sample types will be imputed.
 impute_half_min <- function(data,
-                            target = PKG_ENV$CONCENTRATION,
+                            target = ENV$CONCENTRATION,
                             sample_types = c(SAMPLE_TYPE_BIOLOGICAL,
-                                             SAMPLE_TYPE_REFERENCE_QC,
+                                             ENV$SAMPLE_TYPE_REFERENCE_QC,
                                              SAMPLE_TYPE_POOLED_QC)){
   # Calculate half minimum
   data_imputed <- data %>%
@@ -99,9 +99,9 @@ impute_half_min <- function(data,
 # Only samples of indicated sample types will be imputed, with kNN imputation
 # applied for each type separately.
 impute_knn <- function(data,
-                       target = PKG_ENV$CONCENTRATION,
+                       target = ENV$CONCENTRATION,
                        sample_types = c(SAMPLE_TYPE_BIOLOGICAL,
-                                        SAMPLE_TYPE_REFERENCE_QC,
+                                        ENV$SAMPLE_TYPE_REFERENCE_QC,
                                         SAMPLE_TYPE_POOLED_QC),
                        ...){
 

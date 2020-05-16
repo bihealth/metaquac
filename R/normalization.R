@@ -4,13 +4,13 @@
 
 # Normalize by mean/median
 # Reproduce MetIDQ normalization Concentration with:
-# target = PKG_ENV$CONCENTRATION
-# sample_type = SAMPLE_TYPE_REFERENCE_QC
+# target = ENV$CONCENTRATION
+# sample_type = ENV$SAMPLE_TYPE_REFERENCE_QC
 # average = "median"
 # Note: Reproduction incomplete since expected QC concentration are missing!
 normalize_by_average <- function(data,
-                                 target = PKG_ENV$CONCENTRATION,
-                                 sample_type = SAMPLE_TYPE_REFERENCE_QC,
+                                 target = ENV$CONCENTRATION,
+                                 sample_type = ENV$SAMPLE_TYPE_REFERENCE_QC,
                                  average = "median"){
 
   # Calcutare average target value for each compound
@@ -42,8 +42,8 @@ normalize_by_average <- function(data,
 
 # Normalize with a linear fit over batch/sequence position
 normalize_by_linear_fit <- function(data,
-                                    target = PKG_ENV$CONCENTRATION,
-                                    sample_type = SAMPLE_TYPE_REFERENCE_QC){
+                                    target = ENV$CONCENTRATION,
+                                    sample_type = ENV$SAMPLE_TYPE_REFERENCE_QC){
 
   compounds <- unique(as.character(data$Compound))
   data$Compound <- factor(data$Compound, levels = compounds)
@@ -90,7 +90,7 @@ normalize_by_linear_fit <- function(data,
 normalize_pqn <- function(data,
                           target_type = SAMPLE_TYPE_BIOLOGICAL,
                           reference_type = SAMPLE_TYPE_BIOLOGICAL,
-                          target_values = PKG_ENV$CONCENTRATION,
+                          target_values = ENV$CONCENTRATION,
                           pre_integral_norm=NULL){
 
   assert_that(
@@ -163,7 +163,7 @@ normalize_pqn <- function(data,
 sample_qqplot <- function(data,
                           target_type = SAMPLE_TYPE_BIOLOGICAL,
                           reference_type = SAMPLE_TYPE_BIOLOGICAL,
-                          target_values = PKG_ENV$CONCENTRATION,
+                          target_values = ENV$CONCENTRATION,
                           scale_log10 = TRUE){
 
   data_samples <- data %>%

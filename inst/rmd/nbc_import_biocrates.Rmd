@@ -36,11 +36,11 @@ for (i in seq_len(num_batches)){
 # Check concenctration unit concistency over batches
 if (length(unique(conc_col_name)) == 1) {
   # If consistent/unique then replace global concentration name
-  assign("CONCENTRATION", unique(conc_col_name), PKG_ENV)
+  assign("CONCENTRATION", unique(conc_col_name), ENV)
 } else {
   # Otherwise replace concentration column names by global name without units
   for (i in seq_len(num_batches)){
-    names(imports[[i]])[conc_col_name[i]] <- PKG_ENV$CONCENTRATION
+    names(imports[[i]])[conc_col_name[i]] <- ENV$CONCENTRATION
   }
   # And warn user
   cat(paste0("Inconsistent concentration units between batches:\n",
@@ -71,9 +71,19 @@ if (!is.null(BATCH)) {
 
 # Set available data types
 if (meas_type == "LC") {
-  DATA_TYPES <- c(PKG_ENV$CONCENTRATION, AREA, INTENSITY, ITSD_AREA, ITSD_INTENSITY)
+  DATA_TYPES <- c(
+    CONCENTRATION = ENV$CONCENTRATION,
+    AREA = ENV$AREA,
+    INTENSITY = ENV$INTENSITY,
+    ISTD_AREA = ENV$ISTD_AREA,
+    ISTD_INTENSITY = ENV$ISTD_INTENSITY
+  )
 } else { # "FIA"
-  DATA_TYPES <- c(PKG_ENV$CONCENTRATION, INTENSITY, ITSD_INTENSITY)
+  DATA_TYPES <- c(
+    CONCENTRATION = ENV$CONCENTRATION,
+    INTENSITY = ENV$INTENSITY,
+    ISTD_INTENSITY = ENV$ISTD_INTENSITY
+  )
 }
 ```
 

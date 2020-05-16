@@ -4,6 +4,8 @@ ppparams <- list(
   statuses_to_keep = params$preproc_keep_status,
   threshold_2a = params$filter_compound_qc_max_mv_ratio,
   threshold_2b = params$filter_compound_qc_max_rsd,
+  threshold_2c = params$filter_compound_qc_max_mv_ratio,
+  threshold_2d = params$filter_compound_qc_max_rsd,
   threshold_3a = 1,
   threshold_3b = params$filter_compound_bs_max_mv_ratio,
   threshold_3c = params$filter_compound_bs_min_rsd,
@@ -14,10 +16,12 @@ ppparams <- list(
 The following preprocessing procedures are applied on the data in this order:
 
 1. **Status Preprocessing**
-    a. Discard unreliable measurements based on Biocratus status
+    a. Discard unreliable measurements based on status
 2. **Remove unreliable __compounds__** (QC-based filters)
     a. Based on missing values ratio in Reference QCs (**>=`r ppparams$threshold_2a * 100`%**)
     b. Based on %RSD of Reference QCs (**>=`r ppparams$threshold_2b`%**)
+    c. Based on missing values ratio in Pooled QCs (**>=`r ppparams$threshold_2c * 100`%**)
+    d. Based on %RSD of Pooled QCs (**>=`r ppparams$threshold_2d`%**)
 3. **Remove underrepresented or invariable __compounds__** (biological filters)
     a. Based on only missing values in biological samples (**=`r ppparams$threshold_3a * 100`%**)
     b. Based on missing values ratio in biological samples (**>=`r ppparams$threshold_3b * 100`%**)
@@ -54,28 +58,32 @@ rm(biocrates)
 ## Step **1**
 
 1. **Status Preprocessing**
-    a. Discard unreliable measurements based on Biocratus status
+    a. Discard unreliable measurements based on status
 
-The status preprocessing discards measurements based on Biocrates quality statuses.
+The status preprocessing discards measurements based on quality statuses.
 
-By default, only "Valid" measurements are considered as reliable and are kept
+By default, only "Valid" and "Semi Quant." measurements are considered as reliable and are kept
 for further analysis. Hence, all other statuses including "< LLOQ" and "> ULOQ"
 (out of quantification range / extrapolated calibration), "STD/QC < Limit" and
 "STD/QC > Limit" (insufficient accuracy in STDs and QCs), "ISTD Out of Range"
 (internal standard too high or low) and other statuses are usually considered as
 unreliable and measurements are transformed to missing values (set to NA).
 
+```{r eval=!IS_BIOCRATES, results="asis"}
+cat("Note: Status names may differ in custom generic data.\n")
+```
+
 Based on the parameter `preproc_keep_status`, measurements with the following statuses will be
 retained:
 **`r paste0(ppparams$statuses_to_keep, collapse = "**, **")`**
 
-Missing **Concentration** values before Biocrates status preprocessing:
-**`r sum(is.na(datasets$original[[PKG_ENV$CONCENTRATION]]))`** of **`r nrow(datasets$original)`**
-(`r round(sum(is.na(datasets$original[[PKG_ENV$CONCENTRATION]])) / nrow(datasets$original) * 100)`%)
+Missing **Concentration** values before status preprocessing:
+**`r sum(is.na(datasets$original[[ENV$CONCENTRATION]]))`** of **`r nrow(datasets$original)`**
+(`r round(sum(is.na(datasets$original[[ENV$CONCENTRATION]])) / nrow(datasets$original) * 100)`%)
 
-Missing **Concentration** values after Biocrates status preprocessing:
-**`r sum(is.na(datasets$discarded[[PKG_ENV$CONCENTRATION]]))`** of **`r nrow(datasets$discarded)`**
-(`r round(sum(is.na(datasets$discarded[[PKG_ENV$CONCENTRATION]])) / nrow(datasets$discarded) * 100)`%)
+Missing **Concentration** values after status preprocessing:
+**`r sum(is.na(datasets$discarded[[ENV$CONCENTRATION]]))`** of **`r nrow(datasets$discarded)`**
+(`r round(sum(is.na(datasets$discarded[[ENV$CONCENTRATION]])) / nrow(datasets$discarded) * 100)`%)
 
 ```{r}
 easy_datatable(
@@ -106,7 +114,7 @@ Number of compounds left: **`r length(unique(datasets$filter_compounds_by_qc_mv_
 
 ```{r}
 # 2. Remove unreliable compounds
-#   a. Based on missing values ratio in QCs (samples of type SAMPLE_TYPE_REFERENCE_QC)
+#   a. Based on missing values ratio in QCs (samples of type ENV$SAMPLE_TYPE_REFERENCE_QC)
 #      Valid ratio of NAs is max 0.2 by default
 easy_datatable(
   datasets$filter_compounds_by_qc_mv_removed, show_type = "statistics",
@@ -137,12 +145,55 @@ easy_datatable(
 ```
 
 
+## Step **2c**
+
+2. **Remove unreliable __compounds__** (QC-based filters)
+    c. Based on missing values ratio in Pooled QCs (**>=`r ppparams$threshold_2c * 100`%**)
+
+To alter the threshold use  parameter `filter_compound_qc_max_mv_ratio`.
+
+Number of compounds before: **`r length(unique(datasets$filter_compounds_by_qc_rsd_kept$Compound))`**
+Number of compounds left: **`r length(unique(datasets$filter_compounds_by_qc_pool_mv_kept$Compound))`**
+
+```{r}
+# 2. Remove unreliable compounds
+#   a. Based on missing values ratio in QCs (samples of type ENV$SAMPLE_TYPE_REFERENCE_QC)
+#      Valid ratio of NAs is max 0.2 by default
+easy_datatable(
+  datasets$filter_compounds_by_qc_pool_mv_removed, show_type = "statistics",
+  caption = paste0("Removed compounds due to ", ppparams$threshold_2c*100, "% Pooled QC MVs"))
+easy_datatable(
+  datasets$filter_compounds_by_qc_pool_mv_kept,
+  caption = paste0("Full data kept after ", ppparams$threshold_2c*100, "% Pooled QC MVs filtering"))
+```
+
+
+## Step **2d**
+
+2. **Remove unreliable __compounds__** (QC-based filters)
+    d. Based on %RSD of Pooled QCs (**>=`r ppparams$threshold_2d`%**)
+
+To alter the threshold use parameter `filter_compound_qc_max_rsd`.
+
+Number of compounds before: **`r length(unique(datasets$filter_compounds_by_qc_pool_mv_kept$Compound))`**
+Number of compounds left: **`r length(unique(datasets$filter_compounds_by_qc_pool_rsd_kept$Compound))`**
+
+```{r}
+easy_datatable(
+  datasets$filter_compounds_by_qc_pool_rsd_removed, show_type = "statistics",
+  caption = paste0("Removed compounds due to ", ppparams$threshold_2d, " %RSD in Pooled QCs"))
+easy_datatable(
+  datasets$filter_compounds_by_qc_pool_rsd_kept,
+  caption = paste0("Full data kept after ", ppparams$threshold_2d, "%RSD Pooled QC filtering"))
+```
+
+
 ## Step **3a**
 
 3. **Remove underrepresented __compounds__** (biological filters)
     a. Based on only missing values in biological samples (**=`r ppparams$threshold_3a * 100`%**)
 
-Number of compounds before: **`r length(unique(datasets$filter_compounds_by_qc_rsd_kept$Compound))`**
+Number of compounds before: **`r length(unique(datasets$filter_compounds_by_qc_pool_rsd_kept$Compound))`**
 Number of compounds left: **`r length(unique(datasets$filter_compounds_by_sample_all_mv_kept$Compound))`**
 
 ```{r}
