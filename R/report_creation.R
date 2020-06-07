@@ -17,6 +17,7 @@
 #' data, but can be indicated via a "Batch" column within the data.
 #' @param kit The Biocrates Kit used to create the data to import.
 #' Currently supported are
+#' "Biocrates Bile Acids Kit"
 #' "Biocrates AbsoluteIDQ p180 Kit",
 #' "Biocrates AbsoluteIDQ p400 HR Kit",
 #' "Biocrates MxP Quant 500 Kit",
@@ -243,6 +244,7 @@
 create_qc_report <- function(
   data_files,
   kit = c(
+    "Biocrates Bile Acids Kit",
     "Biocrates AbsoluteIDQ p180 Kit",
     "Biocrates AbsoluteIDQ p400 HR Kit",
     "Biocrates AbsoluteIDQ Stero17 Kit",
