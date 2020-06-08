@@ -240,7 +240,7 @@ if (!is.null(LOWCON_CONDITIONS)){
     assertthat::assert_that(LOWCON_SCATTER_X %in% LOWCON_CONDITIONS)
   }
   if (is.null(LOWCON_SCATTER_COLOR)){
-    LOWCON_SCATTER_X <- LOWCON_CONDITIONS[1]
+    LOWCON_SCATTER_COLOR <- LOWCON_CONDITIONS[1]
   } else {
     assertthat::assert_that(length(LOWCON_SCATTER_COLOR) == 1)
     assertthat::assert_that(class(LOWCON_SCATTER_COLOR) == "character")

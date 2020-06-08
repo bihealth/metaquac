@@ -12,6 +12,7 @@ Please refer to our article to learn more about the underlying ideas of MeTaQuaC
 
 MeTaQuaC supports the following Biocrates Kits (for the present):
 
+* Biocrates Bile Acids Kit
 * Biocrates AbsoluteIDQ p180 Kit
 * Biocrates AbsoluteIDQ p400 HR Kit
 * Biocrates AbsoluteIDQ Stero17 Kit
@@ -282,6 +283,7 @@ Listing batches via different files is currently not support for generic
 data, but can be indicated via a "Batch" column within the data.
 * `kit` The Biocrates Kit used to create the data to import.
 Currently supported are
+"Biocrates Bile Acids Kit",
 "Biocrates AbsoluteIDQ p180 Kit",
 "Biocrates AbsoluteIDQ p400 HR Kit",
 "Biocrates MxP Quant 500 Kit",
