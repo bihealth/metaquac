@@ -341,13 +341,20 @@ to NA). For Biocrates, possible statuses to select from include "Valid",
 "Missing Measurement", "ISTD Out of Range", "STD/QC < Limit",
 "STD/QC > Limit", "Invalid", "Incomplete" and "Blank Out of Range".
 For generic data, status values may differ depending on the software used.
-* `filter_compound_qc_max_mv_ratio`
-Set maximum ratio of missing values allowed for compounds in QC samples
-(Biocrates' QC Level 2, Reference QC or Pooled QC)
+* `filter_compound_qc_ref_max_mv_ratio`
+Set maximum ratio of missing values allowed for compounds in reference QC
+samples (Biocrates' QC Level 2, Reference QC in generic data)
 (default = 0.3, exclusive, disable with NULL).
-* `filter_compound_qc_max_rsd`
-Set maximum \%RSD allowed for compounds in QC samples
-(Biocrates' QC Level 2, Reference QC or Pooled QC)
+* `filter_compound_qc_ref_max_rsd`
+Set maximum \%RSD allowed for compounds in reference QC samples
+(Biocrates' QC Level 2, Reference QC in generic data)
+(default = 15\%, exclusive, disable with NULL).
+* `filter_compound_qc_pool_max_mv_ratio`
+Set maximum ratio of missing values allowed for compounds in pooled QC
+samples (Pooled QC)
+(default = 0.3, exclusive, disable with NULL).
+* `filter_compound_qc_pool_max_rsd`
+Set maximum \%RSD allowed for compounds in pooled QC samples (Pooled QC)
 (default = 15\%, exclusive, disable with NULL).
 * `filter_compound_bs_max_mv_ratio`
 Set maximum ratio of missing values allowed for compounds in biological

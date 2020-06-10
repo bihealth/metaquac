@@ -66,7 +66,7 @@ plot_status_profile(data = biocrates, grouping = "Sample.Type", percentage = TRU
 ```{r}
 # Profile figure size
 num_samples <- biocrates %>% pull(Sample.Name) %>% unique() %>% length()
-fig_height_status_samples <- ceiling(num_samples/num_columns) * 1.2 + 1
+fig_height_status_samples <- min(50, ceiling(num_samples/num_columns) * 1.2 + 1)
 # Heatmap figure sizes
 fig_width_heatmap_samples <- 0.15 * num_samples + 1.5
 

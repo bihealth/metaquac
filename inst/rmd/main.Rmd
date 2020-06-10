@@ -20,8 +20,10 @@ params:
   replicate_variables:
   pool_indicator: Sample.Identification
   preproc_keep_status: "Valid"
-  filter_compound_qc_max_mv_ratio: 0.3
-  filter_compound_qc_max_rsd: 15
+  filter_compound_qc_ref_max_mv_ratio: 0.3
+  filter_compound_qc_ref_max_rsd: 15
+  filter_compound_qc_pool_max_mv_ratio: 0.3
+  filter_compound_qc_pool_max_rsd: 15
   filter_compound_bs_max_mv_ratio: 0.3
   filter_compound_bs_min_rsd: 15
   filter_sample_max_mv_ratio: 0.2
