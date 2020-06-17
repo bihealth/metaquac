@@ -2,10 +2,10 @@
 # Preprocessing parameters
 ppparams <- list(
   statuses_to_keep = params$preproc_keep_status,
-  threshold_2a = params$filter_compound_qc_max_mv_ratio,
-  threshold_2b = params$filter_compound_qc_max_rsd,
-  threshold_2c = params$filter_compound_qc_max_mv_ratio,
-  threshold_2d = params$filter_compound_qc_max_rsd,
+  threshold_2a = params$filter_compound_qc_ref_max_mv_ratio,
+  threshold_2b = params$filter_compound_qc_ref_max_rsd,
+  threshold_2c = params$filter_compound_qc_pool_max_mv_ratio,
+  threshold_2d = params$filter_compound_qc_pool_max_rsd,
   threshold_3a = 1,
   threshold_3b = params$filter_compound_bs_max_mv_ratio,
   threshold_3c = params$filter_compound_bs_min_rsd,
@@ -33,8 +33,10 @@ The preprocessing statuses and filter thresholds can be modified with the follow
 the `create_report` function (refer to the readme or function description for details):
 
 * `preproc_keep_status`
-* `filter_compound_qc_max_mv_ratio`
-* `filter_compound_qc_max_rsd`
+* `filter_compound_qc_ref_max_mv_ratio`
+* `filter_compound_qc_ref_max_rsd`
+* `filter_compound_qc_pool_max_mv_ratio`
+* `filter_compound_qc_pool_max_rsd`
 * `filter_compound_bs_max_mv_ratio`
 * `filter_compound_bs_min_rsd`
 * `filter_sample_max_mv_ratio`
@@ -107,7 +109,7 @@ easy_datatable(
 2. **Remove unreliable __compounds__** (QC-based filters)
     a. Based on missing values ratio in Reference QCs (**>=`r ppparams$threshold_2a * 100`%**)
 
-To alter the threshold use  parameter `filter_compound_qc_max_mv_ratio`.
+To alter the threshold use  parameter `filter_compound_qc_ref_max_mv_ratio`.
 
 Number of compounds before: **`r length(unique(datasets$discarded$Compound))`**
 Number of compounds left: **`r length(unique(datasets$filter_compounds_by_qc_mv_kept$Compound))`**
@@ -130,7 +132,7 @@ easy_datatable(
 2. **Remove unreliable __compounds__** (QC-based filters)
     b. Based on %RSD of Reference QCs (**>=`r ppparams$threshold_2b`%**)
 
-To alter the threshold use parameter `filter_compound_qc_max_rsd`.
+To alter the threshold use parameter `filter_compound_qc_ref_max_rsd`.
 
 Number of compounds before: **`r length(unique(datasets$filter_compounds_by_qc_mv_kept$Compound))`**
 Number of compounds left: **`r length(unique(datasets$filter_compounds_by_qc_rsd_kept$Compound))`**
@@ -150,7 +152,7 @@ easy_datatable(
 2. **Remove unreliable __compounds__** (QC-based filters)
     c. Based on missing values ratio in Pooled QCs (**>=`r ppparams$threshold_2c * 100`%**)
 
-To alter the threshold use  parameter `filter_compound_qc_max_mv_ratio`.
+To alter the threshold use  parameter `filter_compound_qc_pool_max_mv_ratio`.
 
 Number of compounds before: **`r length(unique(datasets$filter_compounds_by_qc_rsd_kept$Compound))`**
 Number of compounds left: **`r length(unique(datasets$filter_compounds_by_qc_pool_mv_kept$Compound))`**
@@ -173,7 +175,7 @@ easy_datatable(
 2. **Remove unreliable __compounds__** (QC-based filters)
     d. Based on %RSD of Pooled QCs (**>=`r ppparams$threshold_2d`%**)
 
-To alter the threshold use parameter `filter_compound_qc_max_rsd`.
+To alter the threshold use parameter `filter_compound_qc_pool_max_rsd`.
 
 Number of compounds before: **`r length(unique(datasets$filter_compounds_by_qc_pool_mv_kept$Compound))`**
 Number of compounds left: **`r length(unique(datasets$filter_compounds_by_qc_pool_rsd_kept$Compound))`**

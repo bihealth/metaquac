@@ -75,13 +75,20 @@
 #' "Missing Measurement", "ISTD Out of Range", "STD/QC < Limit",
 #' "STD/QC > Limit", "Invalid", "Incomplete" and "Blank Out of Range".
 #' For generic data, status values may differ depending on the software used.
-#' @param filter_compound_qc_max_mv_ratio
-#' Set maximum ratio of missing values allowed for compounds in QC samples
-#' (Biocrates' QC Level 2, Reference QC or Pooled QC)
+#' @param filter_compound_qc_ref_max_mv_ratio
+#' Set maximum ratio of missing values allowed for compounds in reference QC
+#' samples (Biocrates' QC Level 2, Reference QC in generic data)
 #' (default = 0.3, exclusive, disable with NULL).
-#' @param filter_compound_qc_max_rsd
-#' Set maximum \%RSD allowed for compounds in QC samples
-#' (Biocrates' QC Level 2, Reference QC or Pooled QC)
+#' @param filter_compound_qc_ref_max_rsd
+#' Set maximum \%RSD allowed for compounds in reference QC samples
+#' (Biocrates' QC Level 2, Reference QC in generic data)
+#' (default = 15\%, exclusive, disable with NULL).
+#' @param filter_compound_qc_pool_max_mv_ratio
+#' Set maximum ratio of missing values allowed for compounds in pooled QC
+#' samples (Pooled QC)
+#' (default = 0.3, exclusive, disable with NULL).
+#' @param filter_compound_qc_pool_max_rsd
+#' Set maximum \%RSD allowed for compounds in pooled QC samples (Pooled QC)
 #' (default = 15\%, exclusive, disable with NULL).
 #' @param filter_compound_bs_max_mv_ratio
 #' Set maximum ratio of missing values allowed for compounds in biological
@@ -292,8 +299,10 @@ create_qc_report <- function(
     "Incomplete",
     "Blank Out of Range"
   )[1:2],
-  filter_compound_qc_max_mv_ratio = 0.3,
-  filter_compound_qc_max_rsd = 15,
+  filter_compound_qc_ref_max_mv_ratio = 0.3,
+  filter_compound_qc_ref_max_rsd = 15,
+  filter_compound_qc_pool_max_mv_ratio = 0.3,
+  filter_compound_qc_pool_max_rsd = 15,
   filter_compound_bs_max_mv_ratio = 0.3,
   filter_compound_bs_min_rsd = 15,
   filter_sample_max_mv_ratio = 0.2,
@@ -343,8 +352,10 @@ create_qc_report <- function(
       study_variables = study_variables,
       replicate_variables = replicate_variables,
       preproc_keep_status = preproc_keep_status,
-      filter_compound_qc_max_mv_ratio = filter_compound_qc_max_mv_ratio,
-      filter_compound_qc_max_rsd = filter_compound_qc_max_rsd,
+      filter_compound_qc_ref_max_mv_ratio = filter_compound_qc_ref_max_mv_ratio,
+      filter_compound_qc_ref_max_rsd = filter_compound_qc_ref_max_rsd,
+      filter_compound_qc_pool_max_mv_ratio = filter_compound_qc_pool_max_mv_ratio,
+      filter_compound_qc_pool_max_rsd = filter_compound_qc_pool_max_rsd,
       filter_compound_bs_max_mv_ratio = filter_compound_bs_max_mv_ratio,
       filter_compound_bs_min_rsd = filter_compound_bs_min_rsd,
       filter_sample_max_mv_ratio = filter_sample_max_mv_ratio,

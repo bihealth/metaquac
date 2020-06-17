@@ -7,6 +7,10 @@ samples from the same group within variables indicated with parameter
 
 This analysis is based on the status-preprocessed dataset 1.
 
+Red RSD% threshold lines in bar plots are currently only based on parameter
+`filter_compound_qc_pool_max_rsd`.
+
+
 ```{r}
 # Select dataset
 biocrates <- datasets$discarded
@@ -56,7 +60,14 @@ calc_fig_sizes_rep_rsd <- function(bcdata, rep_variables, sample_types, unit, le
 plot_rsd_versus(
   data = biocrates,
   threshold_bs = params$filter_compound_bs_min_rsd,
-  threshold_qc = params$filter_compound_qc_max_rsd
+  threshold_qc = params$filter_compound_qc_ref_max_rsd,
+  qc_type = ENV$SAMPLE_TYPE_REFERENCE_QC
+)
+plot_rsd_versus(
+  data = biocrates,
+  threshold_bs = params$filter_compound_bs_min_rsd,
+  threshold_qc = params$filter_compound_qc_pool_max_rsd,
+  qc_type = SAMPLE_TYPE_POOLED_QC
 )
 ```
 
@@ -75,7 +86,7 @@ fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
 plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                        sample_types = sample_types,
                        facet_cols = fig_sizes_rep_rsd$c,
-                       rsd_threshold = params$filter_compound_qc_max_rsd)
+                       rsd_threshold = params$filter_compound_qc_pool_max_rsd)
 easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables, sample_types = sample_types
@@ -90,7 +101,7 @@ easy_datatable(
 plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                        sample_types = sample_types,
                        facet_cols = fig_sizes_rep_rsd$c,
-                       rsd_threshold = params$filter_compound_qc_max_rsd,
+                       rsd_threshold = params$filter_compound_qc_pool_max_rsd,
                        target = ENV$AREA)
 easy_datatable(
   data = table_bio_replicate_rsd(
@@ -223,7 +234,15 @@ if (all(c("BR", "TR") %in% names(biocrates))){
 plot_rsd_versus(
   data = biocrates,
   threshold_bs = params$filter_compound_bs_min_rsd,
-  threshold_qc = params$filter_compound_qc_max_rsd,
+  threshold_qc = params$filter_compound_qc_ref_max_rsd,
+  qc_type = ENV$SAMPLE_TYPE_REFERENCE_QC,
+  shape = "Batch"
+)
+plot_rsd_versus(
+  data = biocrates,
+  threshold_bs = params$filter_compound_bs_min_rsd,
+  threshold_qc = params$filter_compound_qc_pool_max_rsd,
+  qc_type = SAMPLE_TYPE_POOLED_QC,
   shape = "Batch"
 )
 ```
@@ -242,7 +261,7 @@ fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
 plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                        sample_types = sample_types,
                        facet_cols = fig_sizes_rep_rsd$c,
-                       rsd_threshold = params$filter_compound_qc_max_rsd)
+                       rsd_threshold = params$filter_compound_qc_pool_max_rsd)
 easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables, sample_types = sample_types
@@ -386,7 +405,7 @@ fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
 plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                        sample_types = sample_types,
                        facet_cols = fig_sizes_rep_rsd$c, summarize = "Class",
-                       rsd_threshold = params$filter_compound_qc_max_rsd)
+                       rsd_threshold = params$filter_compound_qc_pool_max_rsd)
 easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables,
@@ -535,7 +554,7 @@ fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
 plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                        sample_types = sample_types,
                        facet_cols = fig_sizes_rep_rsd$c, summarize = "Class",
-                       rsd_threshold = params$filter_compound_qc_max_rsd)
+                       rsd_threshold = params$filter_compound_qc_pool_max_rsd)
 easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables,
@@ -685,7 +704,7 @@ fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
 plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                        sample_types = sample_types,
                        facet_cols = fig_sizes_rep_rsd$c, summarize = "Sample.Type",
-                       rsd_threshold = params$filter_compound_qc_max_rsd)
+                       rsd_threshold = params$filter_compound_qc_pool_max_rsd)
 easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables,
@@ -701,7 +720,7 @@ easy_datatable(
 plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                        sample_types = sample_types,
                        facet_cols = fig_sizes_rep_rsd$c, summarize = "Sample.Type",
-                       rsd_threshold = params$filter_compound_qc_max_rsd,
+                       rsd_threshold = params$filter_compound_qc_pool_max_rsd,
                        target = ENV$AREA)
 easy_datatable(
   data = table_bio_replicate_rsd(
@@ -728,7 +747,7 @@ fig_sizes_rep_rsd <- calc_fig_sizes_rep_rsd(
 plot_bio_replicate_rsd(bcdata = biocrates, rep_variables = rep_variables,
                        sample_types = sample_types,
                        facet_cols = fig_sizes_rep_rsd$c, summarize = "Sample.Type",
-                       rsd_threshold = params$filter_compound_qc_max_rsd)
+                       rsd_threshold = params$filter_compound_qc_pool_max_rsd)
 easy_datatable(
   data = table_bio_replicate_rsd(
     bcdata = biocrates, rep_variables = rep_variables,

@@ -6,9 +6,9 @@
 \usage{
 create_qc_report(
   data_files,
-  kit = c("Biocrates AbsoluteIDQ p180 Kit", "Biocrates AbsoluteIDQ p400 HR Kit",
-    "Biocrates AbsoluteIDQ Stero17 Kit", "Biocrates MxP Quant 500 Kit",
-    "Generic Data")[1],
+  kit = c("Biocrates Bile Acids Kit", "Biocrates AbsoluteIDQ p180 Kit",
+    "Biocrates AbsoluteIDQ p400 HR Kit", "Biocrates AbsoluteIDQ Stero17 Kit",
+    "Biocrates MxP Quant 500 Kit", "Generic Data")[1],
   measurement_type = c("LC", "FIA")[1],
   generic_data_types = c(CONCENTRATION = "Concentration", AREA = "Area", INTENSITY =
     NULL, ISTD_AREA = NULL, ISTD_INTENSITY = NULL, STATUS = NULL),
@@ -27,8 +27,10 @@ create_qc_report(
     "> ULOQ", "No Intercept", "Missing Measurement", "ISTD Out of Range",
     "STD/QC < Limit", "STD/QC > Limit", "Invalid", "Incomplete",
     "Blank Out of Range")[1:2],
-  filter_compound_qc_max_mv_ratio = 0.3,
-  filter_compound_qc_max_rsd = 15,
+  filter_compound_qc_ref_max_mv_ratio = 0.3,
+  filter_compound_qc_ref_max_rsd = 15,
+  filter_compound_qc_pool_max_mv_ratio = 0.3,
+  filter_compound_qc_pool_max_rsd = 15,
   filter_compound_bs_max_mv_ratio = 0.3,
   filter_compound_bs_min_rsd = 15,
   filter_sample_max_mv_ratio = 0.2,
@@ -61,6 +63,7 @@ data, but can be indicated via a "Batch" column within the data.}
 
 \item{kit}{The Biocrates Kit used to create the data to import.
 Currently supported are
+"Biocrates Bile Acids Kit"
 "Biocrates AbsoluteIDQ p180 Kit",
 "Biocrates AbsoluteIDQ p400 HR Kit",
 "Biocrates MxP Quant 500 Kit",
@@ -94,10 +97,12 @@ transformation and merging will fail.}
 
 \item{report_output_dir}{Custom path of an output directory (default = "reports").}
 
-\item{pool_indicator}{Indicate a column/variable name which should be scanned for pooled QC
-samples. (default = "Sample Identification", set NULL to disable). All samples containing "pool"
-(case insensitive) anywhere in this variable's values are transformed to Sample Type = "Pooled
-QC".}
+\item{pool_indicator}{Indicate a column/variable name which should be scanned for pooled QC samples
+(Biocrates only). (default = "Sample Identification", set NULL to disable).
+All samples containing "pool" (case insensitive) anywhere in this variable's
+values are transformed to Sample Type = "Pooled QC". For generic data, please
+indicate pooled samples within the data using value "Pooled QC" in column
+"Sample Type".}
 
 \item{profiling_variables}{Indicate a vector of study variables of interest which will be
 used for profiling group sizes (i.e. number of samples) within a variable but also the size of
@@ -116,27 +121,38 @@ Samples with the same characteristic in these variables are considered as replic
 for compound and class \%RSD analysis plots. If the data contains "BR" and "TR" columns
 these plots will be extended for technical replicates.}
 
-\item{preproc_keep_status}{Indicate which values are acceptable for processing with
-respect to Biocrates statuses. The default includes only "Valid" measurements, the rest
-is discarded (i.e. transformed to missing values, set to NA). Possible statuses to select from
-include "Valid", "Smaller Zero", "< LOD", "< LLOQ", "> ULOQ", "No Intercept",
-"Missing Measurement", "ISTD Out of Range", "STD/QC < Limit", "STD/QC > Limit",
-"Invalid", "Incomplete" and "Blank Out of Range".}
+\item{preproc_keep_status}{Indicate which values are acceptable for processing with respect to
+(Biocrates) statuses. The default includes only "Valid" and "Semi Quant."
+measurements, the rest is discarded (i.e. transformed to missing values, set
+to NA). For Biocrates, possible statuses to select from include "Valid",
+"Semi Quant.", "Smaller Zero", "< LOD", "< LLOQ", "> ULOQ", "No Intercept",
+"Missing Measurement", "ISTD Out of Range", "STD/QC < Limit",
+"STD/QC > Limit", "Invalid", "Incomplete" and "Blank Out of Range".
+For generic data, status values may differ depending on the software used.}
 
-\item{filter_compound_qc_max_mv_ratio}{Set maximum ratio of missing values allowed for compounds
-in reference QC samples (Biocrates' QC Level 2) (default = 0.3, exclusive, disable with NULL).}
+\item{filter_compound_qc_ref_max_mv_ratio}{Set maximum ratio of missing values allowed for compounds in reference QC
+samples (Biocrates' QC Level 2, Reference QC in generic data)
+(default = 0.3, exclusive, disable with NULL).}
 
-\item{filter_compound_qc_max_rsd}{Set maximum \%RSD allowed for compounds in reference QC
-samples (Biocrates' QC Level 2) (default = 15\%, exclusive, disable with NULL).}
-
-\item{filter_compound_bs_max_mv_ratio}{Set maximum ratio of missing values allowed for compounds
-in biological samples (Biocrates' Sample) (default = 0.3, exclusive, disable with NULL).}
-
-\item{filter_compound_bs_min_rsd}{Set minimum \%RSD allowed for compounds in biological samples
+\item{filter_compound_qc_ref_max_rsd}{Set maximum \%RSD allowed for compounds in reference QC samples
+(Biocrates' QC Level 2, Reference QC in generic data)
 (default = 15\%, exclusive, disable with NULL).}
 
-\item{filter_sample_max_mv_ratio}{Set maximum ratio of missing values allowed per biological
-sample (Biocrates' Sample) (default < 0.2, exclusive, disable with NULL).}
+\item{filter_compound_qc_pool_max_mv_ratio}{Set maximum ratio of missing values allowed for compounds in pooled QC
+samples (Pooled QC)
+(default = 0.3, exclusive, disable with NULL).}
+
+\item{filter_compound_qc_pool_max_rsd}{Set maximum \%RSD allowed for compounds in pooled QC samples (Pooled QC)
+(default = 15\%, exclusive, disable with NULL).}
+
+\item{filter_compound_bs_max_mv_ratio}{Set maximum ratio of missing values allowed for compounds in biological
+samples (Sample) (default = 0.3, exclusive, disable with NULL).}
+
+\item{filter_compound_bs_min_rsd}{Set minimum \%RSD allowed for compounds in biological samples (Sample)
+(default = 15\%, exclusive, disable with NULL).}
+
+\item{filter_sample_max_mv_ratio}{Set maximum ratio of missing values allowed per biological sample (Sample)
+(default < 0.2, exclusive, disable with NULL).}
 
 \item{data_tables}{Control data tables availability in reports. "all" (default) will show all
 implemented data tables (with csv export buttons). "stats" will only show tables of summarized
