@@ -87,12 +87,21 @@ import_metidq_tables <- function(filename, samples_expected = 96){
 
   assert_that(file.exists(filename))
 
+  # Guess encoding, but limited to either ISO-8859-1/latin1 or UTF-8
+  encoding <- readr::guess_encoding(file = filename)[[1,1]]
+  if (startsWith(x = encoding, prefix = "ISO-8859")) {
+    encoding <- "ISO-8859-1"
+  } else if (startsWith(x = encoding, prefix = "UTF")) {
+    encoding <- "UTF-8"
+  } else {
+    encoding <- "UTF-8"
+  }
+  cat(paste0("Guessed encoding ", encoding, ". "))
+
   # Read lines to enable own transformations
-  encoding <- readr::guess_encoding(file = filename)
-  cat(paste0("Guessed encoding ", encoding[[1,1]], ". "))
   lines <- readr::read_lines(
     file = filename,
-    locale = readr::locale(encoding = encoding[[1,1]])
+    locale = readr::locale(encoding = encoding)
   )
 
   # Get header

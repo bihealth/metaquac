@@ -32,8 +32,23 @@ import_generic_table <- function(
   index_first_compound,
   zero2na = TRUE
 ){
+  # Guess encoding, but limited to either ISO-8859-1/latin1 or UTF-8
+  encoding <- readr::guess_encoding(file = filename)[[1,1]]
+  if (startsWith(x = encoding, prefix = "ISO-8859")) {
+    encoding <- "ISO-8859-1"
+  } else if (startsWith(x = encoding, prefix = "UTF")) {
+    encoding <- "UTF-8"
+  } else {
+    encoding <- "UTF-8"
+  }
+  cat(paste0("Guessed encoding ", encoding, ". "))
+
   # Read file
-  generic_data <- readr::read_tsv(filename, col_types = readr::cols())
+  generic_data <- readr::read_tsv(
+    file = filename,
+    col_types = readr::cols(),
+    locale = readr::locale(encoding = encoding)
+  )
 
   # Check headers
   header <- colnames(generic_data)
