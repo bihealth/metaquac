@@ -57,18 +57,26 @@ calc_fig_sizes_rep_rsd <- function(bcdata, rep_variables, sample_types, unit, le
 #### All batches {.tabset}
 
 ```{r}
-plot_rsd_versus(
+if (ENOUGH_REFERENCE_QC) {
+  print(
+    plot_rsd_versus(
   data = biocrates,
   threshold_bs = params$filter_compound_bs_min_rsd,
   threshold_qc = params$filter_compound_qc_ref_max_rsd,
   qc_type = ENV$SAMPLE_TYPE_REFERENCE_QC
-)
-plot_rsd_versus(
-  data = biocrates,
-  threshold_bs = params$filter_compound_bs_min_rsd,
-  threshold_qc = params$filter_compound_qc_pool_max_rsd,
-  qc_type = SAMPLE_TYPE_POOLED_QC
-)
+    )
+  )
+}
+if (ENOUGH_POOLED_QC) {
+  print(
+    plot_rsd_versus(
+      data = biocrates,
+      threshold_bs = params$filter_compound_bs_min_rsd,
+      threshold_qc = params$filter_compound_qc_pool_max_rsd,
+      qc_type = SAMPLE_TYPE_POOLED_QC
+    )
+  )
+}
 ```
 
 
@@ -231,20 +239,28 @@ if (all(c("BR", "TR") %in% names(biocrates))){
 #### Per batch {.tabset}
 
 ```{r}
-plot_rsd_versus(
-  data = biocrates,
-  threshold_bs = params$filter_compound_bs_min_rsd,
-  threshold_qc = params$filter_compound_qc_ref_max_rsd,
-  qc_type = ENV$SAMPLE_TYPE_REFERENCE_QC,
-  shape = "Batch"
-)
-plot_rsd_versus(
-  data = biocrates,
-  threshold_bs = params$filter_compound_bs_min_rsd,
-  threshold_qc = params$filter_compound_qc_pool_max_rsd,
-  qc_type = SAMPLE_TYPE_POOLED_QC,
-  shape = "Batch"
-)
+if (ENOUGH_REFERENCE_QC) {
+  print(
+    plot_rsd_versus(
+      data = biocrates,
+      threshold_bs = params$filter_compound_bs_min_rsd,
+      threshold_qc = params$filter_compound_qc_ref_max_rsd,
+      qc_type = ENV$SAMPLE_TYPE_REFERENCE_QC,
+      shape = "Batch"
+    )
+  )
+}
+if (ENOUGH_POOLED_QC) {
+  print(
+    plot_rsd_versus(
+      data = biocrates,
+      threshold_bs = params$filter_compound_bs_min_rsd,
+      threshold_qc = params$filter_compound_qc_pool_max_rsd,
+      qc_type = SAMPLE_TYPE_POOLED_QC,
+      shape = "Batch"
+    )
+  )
+}
 ```
 
 
