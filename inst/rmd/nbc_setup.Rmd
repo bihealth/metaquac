@@ -151,6 +151,21 @@ if (IS_BIOCRATES){
   assertthat::assert_that(all(params$preproc_keep_status %in% METIDQ_STATUSES))
 }
 
+PREPROC_Q500_URINE_LIMITS <- FALSE
+if (!is.null(params$preproc_q500_urine_limits)) {
+  if (!is.logical(params$preproc_q500_urine_limits)) {
+    stop(paste("preproc_q500_urine_limits needs to be TRUE or FALSE"))
+  }
+  if (params$preproc_q500_urine_limits &&
+      (params$kit != KIT_BIOCRATES_Q500 ||
+       params$measurement_type != "LC")) {
+    stop(paste("Urine quantification limits update only available for",
+               KIT_BIOCRATES_Q500, "- LC data."))
+  }
+  PREPROC_Q500_URINE_LIMITS <- params$preproc_q500_urine_limit
+}
+
+
 # Filter thresholds
 if (!is.null(params$filter_compound_qc_ref_max_mv_ratio)) {
   assertthat::assert_that(

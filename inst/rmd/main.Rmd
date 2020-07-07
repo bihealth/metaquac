@@ -20,6 +20,7 @@ params:
   replicate_variables:
   pool_indicator: Sample.Identification
   preproc_keep_status: "Valid"
+  preproc_q500_urine_limits: FALSE
   filter_compound_qc_ref_max_mv_ratio: 0.3
   filter_compound_qc_ref_max_rsd: 15
   filter_compound_qc_pool_max_mv_ratio: 0.3

@@ -145,9 +145,32 @@ execute_preprocessing <- function(data, ppparams){
   datasets <- list()
   datasets$original <- data
 
+  # Special case: correct cal limits in Q500 urine data
+  datasets$original_urine <- datasets$original
+  if (ppparams$statuses_q500_urine) {
+    if (grepl(pattern = "µM|uM", x = ENV$CONCENTRATION)){
+      # Correct
+      datasets$original_urine <- datasets$original %>%
+        left_join(Q500_URINE_LIMITS, by = "Compound") %>%
+        mutate(MetIDQ_Status = if_else(
+          condition = MetIDQ_Status %in% c("< LLOQ", "> ULOQ") &
+            !!sym(ENV$CONCENTRATION) >= LLOQ_µM &
+            !!sym(ENV$CONCENTRATION) <=  ULOQ_µM,
+          true = "Valid",
+          false = MetIDQ_Status
+        )) %>%
+        select(-LLOQ_µM, -ULOQ_µM)
+    } else {
+      message(paste(
+        "Error: Can't replace Q500 urine cal limits due to non-matching unit",
+        "(needs µM or uM):", ENV$CONCENTRATION
+      ))
+    }
+  }
+
   # 1. Discard unreliable measurements
   datasets$discarded <- discard_unreliable_measurements(
-    data = datasets$original, keep = ppparams$statuses_to_keep)
+    data = datasets$original_urine, keep = ppparams$statuses_to_keep)
 
   # 2. Remove unreliable compounds
   #   a. Based on missing values ratio in QCs (samples of type ENV$SAMPLE_TYPE_REFERENCE_QC)

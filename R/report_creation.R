@@ -75,6 +75,13 @@
 #' "Missing Measurement", "ISTD Out of Range", "STD/QC < Limit",
 #' "STD/QC > Limit", "Invalid", "Incomplete" and "Blank Out of Range".
 #' For generic data, status values may differ depending on the software used.
+#' @param preproc_q500_urine_limits
+#' Only to be used in the special case of using the Biocrates MxP Quant 500 Kit
+#' LC data with urine samples and additional calibration samples (cal 0.25 and
+#' cal 9)! As MetIDQ doesn't consider the additional calibration samples when
+#' calculating limits of detection ("< LLOQ", "> ULOQ"), status values for
+#' calibrated compounds will be corrected based on cal 0.25 and cal 9
+#' concentrations (default = FALSE).
 #' @param filter_compound_qc_ref_max_mv_ratio
 #' Set maximum ratio of missing values allowed for compounds in reference QC
 #' samples (Biocrates' QC Level 2, Reference QC in generic data)
@@ -299,6 +306,7 @@ create_qc_report <- function(
     "Incomplete",
     "Blank Out of Range"
   )[1:2],
+  preproc_q500_urine_limits = FALSE,
   filter_compound_qc_ref_max_mv_ratio = 0.3,
   filter_compound_qc_ref_max_rsd = 15,
   filter_compound_qc_pool_max_mv_ratio = 0.3,
@@ -352,6 +360,7 @@ create_qc_report <- function(
       study_variables = study_variables,
       replicate_variables = replicate_variables,
       preproc_keep_status = preproc_keep_status,
+      preproc_q500_urine_limits = preproc_q500_urine_limits,
       filter_compound_qc_ref_max_mv_ratio = filter_compound_qc_ref_max_mv_ratio,
       filter_compound_qc_ref_max_rsd = filter_compound_qc_ref_max_rsd,
       filter_compound_qc_pool_max_mv_ratio = filter_compound_qc_pool_max_mv_ratio,
