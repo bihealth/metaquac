@@ -57,9 +57,9 @@ import_q500_urine_limits <- function(){
   q500_urin_compounds <- readr::read_csv(
     file = "inst/resources/Q500_urine_limits.csv",
     col_types = "cnn",
-    locale = readr::locale(encoding = "ISO-8859-1")
+    locale = readr::locale(encoding = "UTF-8")
   )
-  assert_that(all(names(q500_urin_compounds) == c("Compound", "LLOQ_µM", "ULOQ_µM")))
+  assert_that(all(names(q500_urin_compounds) == c("Compound", "LLOQ_uM", "ULOQ_uM")))
   assert_that(nrow(q500_urin_compounds) > 0)
   return(q500_urin_compounds)
 }

@@ -154,12 +154,12 @@ execute_preprocessing <- function(data, ppparams){
         left_join(Q500_URINE_LIMITS, by = "Compound") %>%
         mutate(MetIDQ_Status = if_else(
           condition = MetIDQ_Status %in% c("< LLOQ", "> ULOQ") &
-            !!sym(ENV$CONCENTRATION) >= LLOQ_µM &
-            !!sym(ENV$CONCENTRATION) <=  ULOQ_µM,
+            !!sym(ENV$CONCENTRATION) >= LLOQ_uM &
+            !!sym(ENV$CONCENTRATION) <=  ULOQ_uM,
           true = "Valid",
           false = MetIDQ_Status
         )) %>%
-        select(-LLOQ_µM, -ULOQ_µM)
+        select(-LLOQ_uM, -ULOQ_uM)
     } else {
       message(paste(
         "Error: Can't replace Q500 urine cal limits due to non-matching unit",
