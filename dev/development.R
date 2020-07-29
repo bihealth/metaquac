@@ -177,6 +177,83 @@ params = list(
 # Now execute child notebooks: nbc_setup > nbc_import > ...
 
 
+### Quant 500 test with lowcon section #########################################
+
+# Parameter LC
+params = list(
+  data_files = lapply(
+    list(Batch1 = c("inst/extdata/biocrates_q500_test_01/Batch1_LC.txt")),
+    function(x){unname(R.utils::getAbsolutePath(x))}
+  ),
+  export_name = "biocrates_qc_lc_normqc2",
+  export_dir = R.utils::getAbsolutePath(
+    paste0("biocrates_q500_test_02_", format(Sys.time(), "%Y%m%d_%H%M%S"))
+  ),
+  title = "Biocrates QC - Q500 - LC",
+  author = "Mathias Kuhring",
+  kit = "Biocrates MxP Quant 500 Kit",
+  measurement_type = "LC",
+  pool_indicator = "Sex",
+  sample_filter = NULL,
+  profiling_variables =  c('Sex'),
+  study_variables = list('Sex'),
+  replicate_variables =  c('Sex'),
+  zero2na = TRUE,
+  preproc_keep_status = "Valid",
+  filter_compound_qc_ref_max_mv_ratio = 0.3,
+  filter_compound_qc_ref_max_rsd = 15,
+  filter_compound_qc_pool_max_mv_ratio = 0.3,
+  filter_compound_qc_pool_max_rsd = 15,
+  filter_compound_bs_max_mv_ratio = 0.3,
+  filter_compound_bs_min_rsd = 15,
+  filter_sample_max_mv_ratio = 0.2,
+  lowcon_conditions = c("Sex", "Sample.Volume"),
+  lowcon_sd_outlier_removal = FALSE,
+  lowcon_scatter_x = NULL,
+  lowcon_scatter_color = NULL,
+  lowcon_scatter_sub_groups = NULL,
+  lowcon_export_path = "dev/lowcon/"
+)
+# Now execute child notebooks: nbc_setup > nbc_import > ...
+
+# Parameter FIA
+params = list(
+  data_files = lapply(
+    list(Batch1 = c("inst/extdata/biocrates_q500_test_01/Batch1_FIA.txt")),
+    function(x){unname(R.utils::getAbsolutePath(x))}
+  ),
+  export_name = "biocrates_qc_fia_normqc2",
+  export_dir = R.utils::getAbsolutePath(
+    paste0("biocrates_q500_test_02_", format(Sys.time(), "%Y%m%d_%H%M%S"))
+  ),
+  title = "Biocrates QC - Q500 - FIA",
+  author = "Mathias Kuhring",
+  kit = "Biocrates MxP Quant 500 Kit",
+  measurement_type = "FIA",
+  pool_indicator = "Sex",
+  sample_filter = NULL,
+  profiling_variables =  c('Sex'),
+  study_variables = list('Sex'),
+  replicate_variables =  c('Sex'),
+  zero2na = TRUE,
+  preproc_keep_status = "Valid",
+  filter_compound_qc_ref_max_mv_ratio = 0.3,
+  filter_compound_qc_ref_max_rsd = 15,
+  filter_compound_qc_pool_max_mv_ratio = 0.3,
+  filter_compound_qc_pool_max_rsd = 15,
+  filter_compound_bs_max_mv_ratio = 0.3,
+  filter_compound_bs_min_rsd = 15,
+  filter_sample_max_mv_ratio = 0.2,
+  lowcon_conditions = c("Sex", "Sample.Volume"),
+  lowcon_sd_outlier_removal = FALSE,
+  lowcon_scatter_x = NULL,
+  lowcon_scatter_color = NULL,
+  lowcon_scatter_sub_groups = NULL,
+  lowcon_export_path = "dev/lowcon/"
+)
+# Now execute child notebooks: nbc_setup > nbc_import > ...
+
+
 ### Generic data test ##########################################################
 
 # Output folder with date and time stamp

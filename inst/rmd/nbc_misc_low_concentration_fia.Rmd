@@ -25,7 +25,7 @@ df.zero_samples <- df.filtered[ df.filtered$Sample.Type == "Zero Sample", ]
 df.qc_samples <- df.filtered[ df.filtered$Sample.Type == "QC Level 2", ]
 # Filter the dataframe to keep only biological samples
 # As we don't have any annotation file, we get our sample list directly from the dataframe
-df.filtered <- df.filtered[ df.filtered$Sample.Type == "Sample", ]
+df.filtered <- df.filtered[ df.filtered$Sample.Type %in% c("Sample", "Pooled QC"), ]
 
 # Problem in annotation, need to remove some files
 # df.filtered <- df.filtered[ which(!df.filtered$Sample.Identification %in% c('44','45','47','49','50')),]
@@ -227,6 +227,9 @@ if (LOWCON_SD_OUTLIER_REM){
   df.filtered.condition.HOS$Analyte.Intensity.Normalised[ which(df.filtered.condition.HOS$inside_range == FALSE)] = NA
 }
 
+# Keeping data for showing table later
+df.filtered.condition.HOS.table <- df.filtered.condition.HOS
+
 df.filtered.condition.HOS <- df.filtered.condition.HOS %>%
   # filter(Cell.line == "HOS") %>%
   group_by(condition, Compound) %>%
@@ -242,6 +245,66 @@ df.metabolite_rsd_HOS %>%
   easy_datatable()
 
 ```
+
+
+## Full normalized intensity dataset
+```{r lowcon_table_normed_full, results="asis"}
+# Table that shows samples with normalized intensity (long)
+df.filtered %>%
+  select(Compound, Sample.Identification, Sample.Type,
+         all_of(LOWCON_CONDITIONS), Analyte.Intensity.Normalised) %>%
+  easy_datatable(
+    caption = htmltools::tags$caption(
+      style = 'text-align:left;',
+      "Long table of normalized areas"
+    )
+  )
+
+# Table that shows samples with normalized intensity (wide)
+df.filtered %>%
+  select(Compound, Sample.Identification, Sample.Type,
+         all_of(LOWCON_CONDITIONS), Analyte.Intensity.Normalised) %>%
+  tidyr::spread(key = Compound, value = Analyte.Intensity.Normalised) %>%
+  easy_datatable(
+    caption = htmltools::tags$caption(
+      style = 'text-align:left;',
+      "Wide table of normalized areas"
+    )
+  )
+```
+
+
+
+```{r lowcon_table_normed_sd-filtered, results="asis", eval=LOWCON_SD_OUTLIER_REM}
+cat("\n## SD-filtered normalized intensity dataset\n\n")
+
+# Table that shows samples with normalized intensity (long)
+df.filtered.condition.HOS.table %>%
+  ungroup() %>%
+  select(Compound, Sample.Identification, Sample.Type,
+         all_of(LOWCON_CONDITIONS), Analyte.Intensity.Normalised) %>%
+  easy_datatable(
+    caption = htmltools::tags$caption(
+      style = 'text-align:left;',
+      "Long table of normalized areas"
+    )
+  )
+
+# Table that shows samples with normalized intensity (wide)
+df.filtered.condition.HOS.table %>%
+  ungroup() %>%
+  select(Compound, Sample.Identification, Sample.Type,
+         all_of(LOWCON_CONDITIONS), Analyte.Intensity.Normalised) %>%
+  tidyr::spread(key = Compound, value = Analyte.Intensity.Normalised) %>%
+  easy_datatable(
+    caption = htmltools::tags$caption(
+      style = 'text-align:left;',
+      "Wide table of normalized areas"
+    )
+  )
+```
+
+
 
 ## Scatter plot of metabolites per condition (with standard error) {.tabset}
 

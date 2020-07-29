@@ -115,6 +115,63 @@ test_that("report works for Biocrates MxP Quant 500 Kit FIA data", {
 })
 
 
+### Tests data with Biocrates MxP Quant 500 Kit and lowcon section #############
+test_that("lowcon report works for Biocrates MxP Quant 500 Kit LC data", {
+  # Create Q500 LC report
+  create_qc_report(
+    report_output_name = "biocrates_qc_lc",
+    report_output_dir = "biocrates_q500_test_02",
+    data_files = list(
+      Batch1 = test_files(c(
+        "biocrates_q500_test_01/Batch1_LC.txt"
+      ))
+    ),
+    title = "Biocrates QC - Q500 - LC",
+    # author = "Mathias Kuhring",
+    measurement_type = "LC",
+    profiling_variables = c('Sex'),
+    study_variables = list('Sex'),
+    replicate_variables = c('Sex'),
+    pool_indicator = "Sex",
+    kit = "Biocrates MxP Quant 500 Kit",
+    lowcon_conditions = c("Sex", "Sample.Volume"),
+    lowcon_sd_outlier_removal = FALSE,
+    lowcon_scatter_x = NULL,
+    lowcon_scatter_color = NULL,
+    lowcon_scatter_sub_groups = NULL,
+    lowcon_export_path = "biocrates_q500_test_01/lowcon/"
+  )
+})
+
+
+test_that("lowcon report works for Biocrates MxP Quant 500 Kit FIA data", {
+  # Create Q500 FIA report
+  create_qc_report(
+    report_output_name = "biocrates_qc_fia",
+    report_output_dir = "biocrates_q500_test_02",
+    data_files = list(
+      Batch1 = test_files(c(
+        "biocrates_q500_test_01/Batch1_FIA.txt"
+      ))
+    ),
+    title = "Biocrates QC - Q500 - FIA",
+    author = "Mathias Kuhring",
+    measurement_type = "FIA",
+    profiling_variables = c('Sex'),
+    study_variables = list('Sex'),
+    replicate_variables = c('Sex'),
+    pool_indicator = "Sex",
+    kit = "Biocrates MxP Quant 500 Kit",
+    lowcon_conditions = c("Sex", "Sample.Volume"),
+    lowcon_sd_outlier_removal = TRUE,
+    lowcon_scatter_x = NULL,
+    lowcon_scatter_color = NULL,
+    lowcon_scatter_sub_groups = NULL,
+    lowcon_export_path = "biocrates_q500_test_01/lowcon/"
+  )
+})
+
+
 ### Tests data with random generic data ########################################
 test_that("report works for generic data, batches included", {
   # Create generic report

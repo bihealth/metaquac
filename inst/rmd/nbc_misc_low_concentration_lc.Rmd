@@ -33,7 +33,7 @@ df.zero_samples <- df.filtered[ df.filtered$Sample.Type == "Zero Sample", ]
 df.qc_samples <- df.filtered[ df.filtered$Sample.Type == "QC Level 2", ]
 # Filter the dataframe to keep only biological samples
 # Since we don't always have an annotation file, we get our sample list directly from the dataframe
-df.filtered <- df.filtered[ df.filtered$Sample.Type == "Sample", ]
+df.filtered <- df.filtered[ df.filtered$Sample.Type %in% c("Sample", "Pooled QC"), ]
 ```
 
 ## Metabolites RSD in QC samples  
@@ -135,9 +135,6 @@ condition_summary %>%
   group_by_at(vars(one_of(LOWCON_CONDITIONS))) %>%
   summarise(Number_of_metabolite = sum(Keep == TRUE)) %>%
   easy_datatable()
-
-
-
 ```
 
 ## Total peak area per sample
@@ -270,6 +267,8 @@ df.filtered.condition.HOS <- left_join(df.filtered,df.tot_area_HOS[,c("Sample.Na
 if (LOWCON_SD_OUTLIER_REM){
   df.filtered.condition.HOS$Analyte.Peak.Area.Normalised[ which(df.filtered.condition.HOS$inside_range == FALSE)] = NA
 }
+# Keeping data for showing table later
+df.filtered.condition.HOS.table <- df.filtered.condition.HOS
 
 # Compute the RSD for every single compound per BIOLOGICAL CONDITION
 # A MINIMUM OF 2 REPLICATES IS OBVIOUSLY NECESSARY
@@ -288,6 +287,64 @@ df.metabolite_rsd_HOS %>%
   easy_datatable()
 
 ```
+
+
+## Full normalized area dataset
+```{r lowcon_table_normed_full, results="asis"}
+# Table that shows samples with normalized areas (long)
+df.filtered %>%
+  select(Compound, Sample.Identification, Sample.Type,
+         all_of(LOWCON_CONDITIONS), Analyte.Peak.Area.Normalised) %>%
+  easy_datatable(
+    caption = htmltools::tags$caption(
+      style = 'text-align:left;',
+      "Long table of normalized areas"
+    )
+  )
+
+# Table that shows samples with normalized areas (wide)
+df.filtered %>%
+  select(Compound, Sample.Identification, Sample.Type,
+         all_of(LOWCON_CONDITIONS), Analyte.Peak.Area.Normalised) %>%
+  tidyr::spread(key = Compound, value = Analyte.Peak.Area.Normalised) %>%
+  easy_datatable(
+    caption = htmltools::tags$caption(
+      style = 'text-align:left;',
+      "Wide table of normalized areas"
+    )
+  )
+```
+
+
+```{r lowcon_table_normed_sd-filtered, results="asis", , eval=LOWCON_SD_OUTLIER_REM}
+cat("\n## SD-filtered normalized area dataset\n\n")
+
+# Table that shows samples with normalized areas (long)
+df.filtered.condition.HOS.table %>%
+  ungroup() %>%
+  select(Compound, Sample.Identification, Sample.Type,
+         all_of(LOWCON_CONDITIONS), Analyte.Peak.Area.Normalised) %>%
+  easy_datatable(
+    caption = htmltools::tags$caption(
+      style = 'text-align:left;',
+      "Long table of normalized areas"
+    )
+  )
+
+# Table that shows samples with normalized areas (wide)
+df.filtered.condition.HOS.table %>%
+  ungroup() %>%
+  select(Compound, Sample.Identification, Sample.Type,
+         all_of(LOWCON_CONDITIONS), Analyte.Peak.Area.Normalised) %>%
+  tidyr::spread(key = Compound, value = Analyte.Peak.Area.Normalised) %>%
+  easy_datatable(
+    caption = htmltools::tags$caption(
+      style = 'text-align:left;',
+      "Wide table of normalized areas"
+    )
+  )
+```
+
 
 ## Scatter plot of metabolites per condition (with standard error) {.tabset}
 
