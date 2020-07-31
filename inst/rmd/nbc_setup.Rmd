@@ -287,4 +287,13 @@ if (!is.null(LOWCON_CONDITIONS)){
   }
   LOWCON <- TRUE
 }
+
+
+# Collect all supplied study variables
+ALL_VARIABLES <- unique(c(
+  PROFILING_VARIABLES,
+  unlist(STUDY_VARIABLES, recursive = TRUE),
+  REPLICATE_VARIABLES,
+  LOWCON_CONDITIONS
+))
 ```

@@ -253,24 +253,15 @@ df.metabolite_rsd_HOS %>%
 df.filtered %>%
   select(Compound, Sample.Identification, Sample.Type,
          all_of(LOWCON_CONDITIONS), Analyte.Intensity.Normalised) %>%
-  easy_datatable(
-    caption = htmltools::tags$caption(
-      style = 'text-align:left;',
-      "Long table of normalized areas"
-    )
-  )
+  easy_datatable(caption = "Long table of normalized intensities")
 
 # Table that shows samples with normalized intensity (wide)
 df.filtered %>%
-  select(Compound, Sample.Identification, Sample.Type,
-         all_of(LOWCON_CONDITIONS), Analyte.Intensity.Normalised) %>%
-  tidyr::spread(key = Compound, value = Analyte.Intensity.Normalised) %>%
-  easy_datatable(
-    caption = htmltools::tags$caption(
-      style = 'text-align:left;',
-      "Wide table of normalized areas"
-    )
-  )
+  wide_conc_table_compounds_x_samples(value = "Analyte.Intensity.Normalised") %>%
+  easy_datatable(caption = paste(
+      "Wide table of normalized intensities",
+      "(compounds x samples, with some metadata)"
+  ))
 ```
 
 
@@ -284,24 +275,17 @@ df.filtered.condition.HOS.table %>%
   select(Compound, Sample.Identification, Sample.Type,
          all_of(LOWCON_CONDITIONS), Analyte.Intensity.Normalised) %>%
   easy_datatable(
-    caption = htmltools::tags$caption(
-      style = 'text-align:left;',
-      "Long table of normalized areas"
-    )
+    caption = "Long table of normalized intensities"
   )
 
 # Table that shows samples with normalized intensity (wide)
 df.filtered.condition.HOS.table %>%
   ungroup() %>%
-  select(Compound, Sample.Identification, Sample.Type,
-         all_of(LOWCON_CONDITIONS), Analyte.Intensity.Normalised) %>%
-  tidyr::spread(key = Compound, value = Analyte.Intensity.Normalised) %>%
-  easy_datatable(
-    caption = htmltools::tags$caption(
-      style = 'text-align:left;',
-      "Wide table of normalized areas"
-    )
-  )
+  wide_conc_table_compounds_x_samples(value = "Analyte.Intensity.Normalised") %>%
+  easy_datatable(caption = paste(
+    "Wide table of normalized intensities",
+    "(compounds x samples, with some metadata)"
+  ))
 ```
 
 
