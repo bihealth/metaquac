@@ -33,8 +33,7 @@ create_qc_report(data_files, kit = c("Biocrates Bile Acids Kit",
   metadata_name_mods_org = NULL, metadata_name_mods_add = NULL,
   metadata_value_mods = NULL, lowcon_conditions = NULL,
   lowcon_sd_outlier_removal = FALSE, lowcon_scatter_x = NULL,
-  lowcon_scatter_color = NULL, lowcon_scatter_sub_groups = NULL,
-  lowcon_export_path = NULL, ...)
+  lowcon_scatter_color = NULL, lowcon_scatter_sub_groups = NULL, ...)
 }
 \arguments{
 \item{data_files}{Data files to import. List MetIDQ data (txt), as an R list providing the
@@ -209,10 +208,6 @@ If none is given, the first study variable in the conditions}
 corresponding groups in a named vector to be used for separate response
 scatter plots (e.g. if experiments havn't been separated before). By default,
 the scatter plot is not separated.}
-
-\item{lowcon_export_path}{Indicate a path for exporting normalized
-areas (LC) or intensities (FIA) and RSDs of additional low concentration
-analysis (per scatter sub group, if indicated, else completely).}
 
 \item{...}{Masked parameters for development and testing only.}
 }

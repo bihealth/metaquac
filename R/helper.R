@@ -163,7 +163,7 @@ easy_datatable <- function(
 wide_conc_table_compounds_x_samples <- function(
   data,
   value = ENV$CONCENTRATION,
-  metadata = ALL_VARIABLES
+  metadata = ENV$ALL_VARIABLES
 ) {
   data_wide <- data %>%
   select(Compound,  Sample.Name, Sample.Identification, Sample.Type,

@@ -432,42 +432,46 @@ for (i in seq_along(sub_groups)) {
   
   print(g)
   
-  # Export data per sub group
-  if (!is.null(LOWCON_EXPORT_PATH)){
-    export_path <- LOWCON_EXPORT_PATH
-    dir.create(file.path(export_path), recursive = TRUE, showWarnings = TRUE)
-    
-    df.HOS.output.long <- df.filtered.condition.HOS.jitter %>%
-      select(Compound,Sample.Identification,condition,Analyte.Peak.Area.Normalised,metabolite_mean_peak_area,relative_standard_deviation)
-    
-    # Export long format containing all data together
-    write.csv(df.HOS.output.long, file.path(export_path, paste0("lowcon_", sub_groups[i], "_LC_normalised_data_long.csv")),  row.names = FALSE)
-    
-    # Create a wide format with normalised intensity values
-    df.HOS.output.intensity.wide <- df.HOS.output.long %>%
-      mutate(sample_name = paste(Sample.Identification, condition, sep="_")) %>%
-      select(Compound, sample_name, Analyte.Peak.Area.Normalised) %>%
-      spread(sample_name, Analyte.Peak.Area.Normalised)
-    
-    write.csv(df.HOS.output.intensity.wide, file.path(export_path, paste0("lowcon_", sub_groups[i], "_LC_normalised_intensities_wide.csv")), row.names = FALSE)
-    
-    # Create a wide format with mean and RSD values for each condition
-    df.HOS.output.mean.wide <- df.HOS.output.long %>%
-      # mutate(sample_name = paste(Sample.Identification, Volume, Mass, BR, sep="_")) %>%
-      select(Compound, condition, metabolite_mean_peak_area) %>%
-      distinct(Compound, condition, .keep_all = TRUE) %>%
-      spread(condition, metabolite_mean_peak_area)
-    
-    write.csv(df.HOS.output.mean.wide, file.path(export_path, paste0("lowcon_", sub_groups[i], "_LC_mean_intensity_wide.csv")), row.names = FALSE)
-    # 
-    df.HOS.output.rsd.wide <- df.HOS.output.long %>%
-      # mutate(sample_name = paste(Sample.Identification, Volume, Mass, BR, sep="_")) %>%
-      select(Compound, condition, relative_standard_deviation) %>%
-      distinct(Compound, condition, .keep_all = TRUE) %>%
-      spread(condition, relative_standard_deviation)
-    
-    write.csv(df.HOS.output.rsd.wide, file.path(export_path, paste0("lowcon_", sub_groups[i], "_LC_rsd_wide.csv")), row.names = FALSE)
-  }
+  
+  # WIDE EXPORTS WOULD NEED MORE UNIQUE NAMES (e.g. ID+POS+BATCH)
+  # SINCE ID MIGHT NOT BE UNIQUE (e.g. with pools)
+  
+  # # Export data per sub group
+  # if (!is.null(LOWCON_EXPORT_PATH)){
+  #   export_path <- LOWCON_EXPORT_PATH
+  #   dir.create(file.path(export_path), recursive = TRUE, showWarnings = TRUE)
+  #   
+  #   df.HOS.output.long <- df.filtered.condition.HOS.jitter %>%
+  #     select(Compound,Sample.Identification,condition,Analyte.Peak.Area.Normalised,metabolite_mean_peak_area,relative_standard_deviation)
+  #   
+  #   # Export long format containing all data together
+  #   write.csv(df.HOS.output.long, file.path(export_path, paste0("lowcon_", sub_groups[i], "_LC_normalised_data_long.csv")),  row.names = FALSE)
+  #   
+  #   # Create a wide format with normalised intensity values
+  #   df.HOS.output.intensity.wide <- df.HOS.output.long %>%
+  #     mutate(sample_name = paste(Sample.Identification, condition, sep="_")) %>%
+  #     select(Compound, sample_name, Analyte.Peak.Area.Normalised) %>%
+  #     spread(sample_name, Analyte.Peak.Area.Normalised)
+  #   
+  #   write.csv(df.HOS.output.intensity.wide, file.path(export_path, paste0("lowcon_", sub_groups[i], "_LC_normalised_intensities_wide.csv")), row.names = FALSE)
+  #   
+  #   # Create a wide format with mean and RSD values for each condition
+  #   df.HOS.output.mean.wide <- df.HOS.output.long %>%
+  #     # mutate(sample_name = paste(Sample.Identification, Volume, Mass, BR, sep="_")) %>%
+  #     select(Compound, condition, metabolite_mean_peak_area) %>%
+  #     distinct(Compound, condition, .keep_all = TRUE) %>%
+  #     spread(condition, metabolite_mean_peak_area)
+  #   
+  #   write.csv(df.HOS.output.mean.wide, file.path(export_path, paste0("lowcon_", sub_groups[i], "_LC_mean_intensity_wide.csv")), row.names = FALSE)
+  #   # 
+  #   df.HOS.output.rsd.wide <- df.HOS.output.long %>%
+  #     # mutate(sample_name = paste(Sample.Identification, Volume, Mass, BR, sep="_")) %>%
+  #     select(Compound, condition, relative_standard_deviation) %>%
+  #     distinct(Compound, condition, .keep_all = TRUE) %>%
+  #     spread(condition, relative_standard_deviation)
+  #   
+  #   write.csv(df.HOS.output.rsd.wide, file.path(export_path, paste0("lowcon_", sub_groups[i], "_LC_rsd_wide.csv")), row.names = FALSE)
+  # }
 }
 
 ```

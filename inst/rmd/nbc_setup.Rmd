@@ -290,10 +290,15 @@ if (!is.null(LOWCON_CONDITIONS)){
 
 
 # Collect all supplied study variables
-ALL_VARIABLES <- unique(c(
-  PROFILING_VARIABLES,
-  unlist(STUDY_VARIABLES, recursive = TRUE),
-  REPLICATE_VARIABLES,
-  LOWCON_CONDITIONS
-))
+# (add to global ENV for access as default in functions)
+assign(
+  "ALL_VARIABLES",
+  unique(c(
+    PROFILING_VARIABLES,
+    unlist(STUDY_VARIABLES, recursive = TRUE),
+    REPLICATE_VARIABLES,
+    LOWCON_CONDITIONS
+  )),
+  ENV
+)
 ```

@@ -211,8 +211,8 @@ params = list(
   lowcon_sd_outlier_removal = FALSE,
   lowcon_scatter_x = NULL,
   lowcon_scatter_color = NULL,
-  lowcon_scatter_sub_groups = NULL,
-  lowcon_export_path = "dev/lowcon/"
+  lowcon_scatter_sub_groups = NULL
+  # lowcon_export_path = "dev/lowcon/"
 )
 # Now execute child notebooks: nbc_setup > nbc_import > ...
 
@@ -248,8 +248,8 @@ params = list(
   lowcon_sd_outlier_removal = FALSE,
   lowcon_scatter_x = NULL,
   lowcon_scatter_color = NULL,
-  lowcon_scatter_sub_groups = NULL,
-  lowcon_export_path = "dev/lowcon/"
+  lowcon_scatter_sub_groups = NULL
+  # lowcon_export_path = "dev/lowcon/"
 )
 # Now execute child notebooks: nbc_setup > nbc_import > ...
 

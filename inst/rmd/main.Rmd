@@ -39,7 +39,7 @@ params:
   lowcon_scatter_x:
   lowcon_scatter_color:
   lowcon_scatter_sub_groups:
-  lowcon_export_path:
+  # lowcon_export_path:
 
   # [WIP] Optional additional normalization for biological samples (CURRENTLY DISABLED)
   # Currently either PQN or None
