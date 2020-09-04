@@ -146,6 +146,8 @@
 #' SD is higher than 1.5 or not available (e.g. when group consists of only one
 #' sample). This is ment to reject unreliable technical replicates and not
 #' recommended to apply on actual study samples and thus biological variance.
+#' @param lowcon_minimum_intensity Minimal intensity threshold to keep values in
+#' low concentration analysis (default = 20000). Below, values are set to NA.
 #' @param lowcon_scatter_x Indiciate one study variable to be used for the
 #' x-axis in the scatter plot of the additional reproducibility analysis.
 #' This variable must be available in the conditions. If none is given,
@@ -322,6 +324,7 @@ create_qc_report <- function(
   metadata_value_mods = NULL,
   lowcon_conditions = NULL,
   lowcon_sd_outlier_removal = FALSE,
+  lowcon_minimum_intensity = 20000,
   lowcon_scatter_x = NULL,
   lowcon_scatter_color = NULL,
   lowcon_scatter_sub_groups = NULL,
@@ -376,6 +379,7 @@ create_qc_report <- function(
       metadata_value_mods = metadata_value_mods,
       lowcon_conditions = lowcon_conditions,
       lowcon_sd_outlier_removal = lowcon_sd_outlier_removal,
+      lowcon_minimum_intensity = lowcon_minimum_intensity,
       lowcon_scatter_x = lowcon_scatter_x,
       lowcon_scatter_color = lowcon_scatter_color,
       lowcon_scatter_sub_groups = lowcon_scatter_sub_groups,

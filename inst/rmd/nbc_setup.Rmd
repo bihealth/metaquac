@@ -248,6 +248,7 @@ if (!is.null(params$metadata_value_mods)) {
 LOWCON <- FALSE
 LOWCON_CONDITIONS <- params$lowcon_conditions
 LOWCON_SD_OUTLIER_REM <- params$lowcon_sd_outlier_removal
+LOWCON_MINIMUM_INTENSITY <- params$lowcon_minimum_intensity
 LOWCON_SCATTER_X <- params$lowcon_scatter_x
 LOWCON_SCATTER_COLOR <- params$lowcon_scatter_color
 LOWCON_SCATTER_SUB_GROUPS <- params$lowcon_scatter_sub_groups
@@ -257,6 +258,7 @@ if (!is.null(LOWCON_CONDITIONS)){
   assertthat::assert_that(class(LOWCON_CONDITIONS) == "character")
   assertthat::assert_that(!any(is.na(LOWCON_CONDITIONS)))
   assertthat::assert_that(LOWCON_SD_OUTLIER_REM %in% c(TRUE, FALSE))
+  assertthat::assert_that(LOWCON_MINIMUM_INTENSITY >= 0)
   if (is.null(LOWCON_SCATTER_X)){
     LOWCON_SCATTER_X <- LOWCON_CONDITIONS[1]
   } else {

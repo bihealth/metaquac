@@ -36,6 +36,7 @@ params:
   metadata_value_mods:
   lowcon_conditions:
   lowcon_sd_outlier_removal:
+  lowcon_minimum_intensity:
   lowcon_scatter_x:
   lowcon_scatter_color:
   lowcon_scatter_sub_groups:

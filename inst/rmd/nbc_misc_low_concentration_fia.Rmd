@@ -74,7 +74,7 @@ df.filtered <- left_join(df.filtered,df.zero_sample_summary[,c("Compound","mean_
 
 df.filtered <- df.filtered %>%
   # mutate(above_3concentration = ifelse(Concentration....M. >= mean_concentration*3, TRUE, FALSE), above_3peak_area = ifelse(Analyte.Peak.Area..area. >= mean_peak_area*3, TRUE, FALSE))
-  mutate(above_3mean_peak_intensity = ifelse(Analyte.Intensity >= mean_zero_peak_intensity*1, TRUE, FALSE), above_3median_peak_intensity = ifelse(Analyte.Intensity >= median_zero_peak_intensity*1, TRUE, FALSE))
+  mutate(above_3mean_peak_intensity = ifelse(Analyte.Intensity >= mean_zero_peak_intensity*3, TRUE, FALSE), above_3median_peak_intensity = ifelse(Analyte.Intensity >= median_zero_peak_intensity*3, TRUE, FALSE))
 
 ```
 
@@ -92,7 +92,7 @@ df.filtered %>%
 df.filtered$Analyte.Intensity[ which(df.filtered$above_3median_peak_intensity == FALSE)] = NA
 
 df.filtered <- df.filtered %>%
-  mutate(Above.LOD = ifelse(Analyte.Intensity > 1000, TRUE, FALSE))
+  mutate(Above.LOD = ifelse(Analyte.Intensity > LOWCON_MINIMUM_INTENSITY, TRUE, FALSE))
 
 df.filtered$Analyte.Intensity[ which(df.filtered$Above.LOD == FALSE)] = NA
 

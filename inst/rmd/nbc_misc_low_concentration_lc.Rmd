@@ -83,7 +83,7 @@ df.zero_sample_summary <- df.zero_samples %>%
 df.filtered <- left_join(df.filtered,df.zero_sample_summary[,c("Compound","mean_concentration","mean_peak_area", "median_peak_area")], by="Compound")
 ```
 
-## Number of samples above zero samples 3*mean peak area threshold
+## Number of samples above zero samples 3*median peak area threshold
 
 ```{r sample_threshold_calculation, echo=FALSE}
 
@@ -113,7 +113,7 @@ df.filtered$Analyte.Peak.Area[ which(df.filtered$above_3median_peak_area == FALS
 # THIS THE 20000 intensity (not peak area) filter, this should be switch with LOD values that we will calculate for every metabolites
 # Since we don't have this information yet we use this threshold (Ela has generated the data to compute the values)
 df.filtered <- df.filtered %>%
-  mutate(Above.LOD = ifelse(Analyte.Intensity > 20000, TRUE, FALSE))
+  mutate(Above.LOD = ifelse(Analyte.Intensity > LOWCON_MINIMUM_INTENSITY, TRUE, FALSE))
 
 # Set all metabolites under this threshold to NA to discard them from further analysis
 df.filtered$Analyte.Peak.Area[ which(df.filtered$Above.LOD == FALSE)] = NA

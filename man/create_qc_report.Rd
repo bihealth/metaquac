@@ -32,8 +32,9 @@ create_qc_report(data_files, kit = c("Biocrates Bile Acids Kit",
   metadata_import_overlap = c("rename", "replace", "omit")[1],
   metadata_name_mods_org = NULL, metadata_name_mods_add = NULL,
   metadata_value_mods = NULL, lowcon_conditions = NULL,
-  lowcon_sd_outlier_removal = FALSE, lowcon_scatter_x = NULL,
-  lowcon_scatter_color = NULL, lowcon_scatter_sub_groups = NULL, ...)
+  lowcon_sd_outlier_removal = FALSE, lowcon_minimum_intensity = 20000,
+  lowcon_scatter_x = NULL, lowcon_scatter_color = NULL,
+  lowcon_scatter_sub_groups = NULL, ...)
 }
 \arguments{
 \item{data_files}{Data files to import. List MetIDQ data (txt), as an R list providing the
@@ -193,6 +194,9 @@ same conditions (i.e. combination of indicated study variables) is removed if
 SD is higher than 1.5 or not available (e.g. when group consists of only one
 sample). This is ment to reject unreliable technical replicates and not
 recommended to apply on actual study samples and thus biological variance.}
+
+\item{lowcon_minimum_intensity}{Minimal intensity threshold to keep values in
+low concentration analysis (default = 20000). Below, values are set to NA.}
 
 \item{lowcon_scatter_x}{Indiciate one study variable to be used for the
 x-axis in the scatter plot of the additional reproducibility analysis.
