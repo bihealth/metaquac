@@ -13,7 +13,7 @@ import_metadata <- function(
   assertthat::assert_that(length(column_duplicates) == 1)
   assertthat::assert_that(column_duplicates %in% c("rename", "replace", "omit"))
 
-  # Laod additional metadata/annotation
+  # Load additional metadata/annotation
   encoding <- readr::guess_encoding(file = metadata_file)
   cat(paste0("Guessed encoding ", encoding[[1,1]], "."))
   if (get_file_extension(metadata_file) == "csv") {
@@ -23,7 +23,7 @@ import_metadata <- function(
       na = c("", "NA", "\xc2\xa0"), # remove non-breaking spaces
       trim_ws = TRUE
     ))
-  } else if (get_file_extension(metadata_file) == "tsv") {
+  } else if (get_file_extension(metadata_file) %in% c("tsv", "txt")) {
     df_annotation <- suppressMessages(readr::read_tsv(
       file = metadata_file,
       locale = readr::locale(encoding = encoding[[1,1]]),
@@ -31,20 +31,29 @@ import_metadata <- function(
       trim_ws = TRUE
     ))
   } else {
-    message(paste0("Error: Unsupported text file format. Use csv or tsv!"))
+    message(paste0(
+      "Error: Unsupported text file format '",
+      get_file_extension(metadata_file),
+      "'. Use csv (comma-separated) or tsv/txt (tab-separated!"))
   }
 
   # Make sure that the sample identification column is available in the
   # annotation dataframe and that it is of charactere type
+  to_rename <- which("Sample Identification" == names(df_annotation))
+  if (length(to_rename) > 0) { names(df_annotation)[to_rename] <- "Sample.Identification"}
   assertthat::assert_that("Sample.Identification" %in% names(df_annotation))
+  assertthat::assert_that(sum("Sample.Identification" == names(df_annotation)) == 1)
   df_annotation <- df_annotation %>%
-    mutate(Sample.Identification = as.character(Sample.Identification))
+    mutate(Sample.Identification = as.character(Sample.Identification)) %>%
+    # Make sure ID is up front, otherwise potential renaming of duplicate
+    # columns might overwrite wrong columns (as it is index based)
+    select(Sample.Identification,  everything())
 
   # Handle duplicated columns
   data_cols <- names(data)
   meta_cols <- names(df_annotation %>% select(-Sample.Identification))
   col_dups <- intersect(data_cols, meta_cols)
-  if (length(intersect) > 0){
+  if (length(col_dups) > 0){
     if (column_duplicates == "rename") {
       renamed <- make.unique(c(data_cols, meta_cols))
       names(df_annotation)[(2):(length(meta_cols)+1)] <-

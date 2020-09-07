@@ -146,7 +146,11 @@ params = list(
   filter_compound_qc_pool_max_rsd = 15,
   filter_compound_bs_max_mv_ratio = 0.3,
   filter_compound_bs_min_rsd = 15,
-  filter_sample_max_mv_ratio = 0.2
+  filter_sample_max_mv_ratio = 0.2,
+  metadata_import = R.utils::getAbsolutePath(
+    "inst/extdata/biocrates_q500_test_01/extra_annotation.txt"
+  ),
+  metadata_import_overlap = "rename"
 )
 # Now execute child notebooks: nbc_setup > nbc_import > ...
 

@@ -88,7 +88,8 @@ test_that("report works for Biocrates MxP Quant 500 Kit LC data", {
     study_variables = list('Sex'),
     replicate_variables = c('Sex'),
     pool_indicator = "Sex",
-    kit = "Biocrates MxP Quant 500 Kit"
+    kit = "Biocrates MxP Quant 500 Kit",
+    metadata_import = test_files("biocrates_q500_test_01/extra_annotation.txt")
   )
 })
 
