@@ -136,11 +136,7 @@ test_that("lowcon report works for Biocrates MxP Quant 500 Kit LC data", {
     pool_indicator = "Sex",
     kit = "Biocrates MxP Quant 500 Kit",
     lowcon_conditions = c("Sex", "Sample.Volume"),
-    lowcon_sd_outlier_removal = FALSE,
-    lowcon_scatter_x = NULL,
-    lowcon_scatter_color = NULL,
-    lowcon_scatter_sub_groups = NULL
-    # lowcon_export_path = "biocrates_q500_test_01/lowcon/"
+    lowcon_sd_outlier_removal = FALSE
   )
 })
 
@@ -164,11 +160,7 @@ test_that("lowcon report works for Biocrates MxP Quant 500 Kit FIA data", {
     pool_indicator = "Sex",
     kit = "Biocrates MxP Quant 500 Kit",
     lowcon_conditions = c("Sex", "Sample.Volume"),
-    lowcon_sd_outlier_removal = TRUE,
-    lowcon_scatter_x = NULL,
-    lowcon_scatter_color = NULL,
-    lowcon_scatter_sub_groups = NULL
-    # lowcon_export_path = "biocrates_q500_test_01/lowcon/"
+    lowcon_sd_outlier_removal = TRUE
   )
 })
 

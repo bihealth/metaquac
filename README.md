@@ -414,18 +414,6 @@ sample). This is ment to reject unreliable technical replicates and not
 recommended to apply on actual study samples and thus biological variance.
 * `lowcon_minimum_intensity` Minimal intensity threshold to keep values in
 low concentration analysis (default = 20000). Below, values are set to NA.
-* `lowcon_scatter_x` Indiciate one study variable to be used for the
-x-axis in the scatter plot of the additional reproducibility analysis.
-This variable must be available in the conditions. If none is given,
-the first study variable in the conditions
-* `lowcon_scatter_color` Indiciate one study variable to be used for
-coloring samples in the response scatter plot of the additional
-reproducibility analysis. This variable must be available in the conditions.
-If none is given, the first study variable in the conditions
-* `lowcon_scatter_sub_groups` Indicate pairs of study variables and
-corresponding groups in a named vector to be used for separate response
-scatter plots (e.g. if experiments havn't been separated before). By default,
-the scatter plot is not separated.
 
 
 Missing value ratio thresholds according to

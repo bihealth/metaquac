@@ -124,11 +124,13 @@ df.filtered <- df.filtered %>%
   mutate(Analyte.Peak.Area.Normalised = Analyte.Peak.Area/Internal.Std.Peak.Area)
 
 # Compute the number of replicate left for each metabolite PER BIOLOGICAL CONDITION (IMPORTANT)
-# THIS IS ALSO SPECIFIC TO MULLER DATA, WE KEEP A METABOLITE IF IT PRESENT IN AT LEAST ONE SAMPLE BUT IT IS USELESS (THE THRESHOLD SHOULD BE CHANGED)
 condition_summary <- df.filtered %>%
   group_by_at(vars(Compound, one_of(LOWCON_CONDITIONS))) %>%
-  summarise(Number_values = sum(!is.na(Analyte.Peak.Area)), Number_NA = sum(is.na(Analyte.Peak.Area))) %>%
-  mutate(Keep = ifelse(Number_values >=1, TRUE,FALSE))
+  summarise(
+    Number_values = sum(!is.na(Analyte.Peak.Area)),
+    Number_NA = sum(is.na(Analyte.Peak.Area))
+    ) %>%
+  mutate(Keep = ifelse(Number_values >= 1, TRUE, FALSE))
 
 # Create a table that shows how many metabolites are kept PER BIOLOGICAL CONDITION
 condition_summary %>%
@@ -255,7 +257,7 @@ summary_rsd_HOS %>%
 
 ## Metabolite RSD per condition
 
-A minimum number of 2 values is required for the RSD to be reported in the table. Any condition having a metabolite in only one samples is set to NA.  
+A minimum number of 2 values is required for the RSD to be reported in the table.
 
 ```{r metabolite_rsd_peak_area_HOS, echo=FALSE}
 
@@ -274,9 +276,11 @@ df.filtered.condition.HOS.table <- df.filtered.condition.HOS
 # A MINIMUM OF 2 REPLICATES IS OBVIOUSLY NECESSARY
 df.filtered.condition.HOS <- df.filtered.condition.HOS %>%
   group_by(condition, Compound) %>%
-  mutate(relative_standard_deviation = rsd(na.omit(Analyte.Peak.Area.Normalised)), metabolite_mean_peak_area = mean(Analyte.Peak.Area.Normalised, na.rm = T), number_values=sum(!is.na(Analyte.Peak.Area.Normalised), na.rm = T)) %>%
-  distinct(Compound, condition, .keep_all = TRUE) %>%
-  mutate(relative_standard_deviation = ifelse(number_values >= 2, relative_standard_deviation, NA),metabolite_mean_peak_area = ifelse(number_values >= 2, metabolite_mean_peak_area, NA))
+  mutate(
+    relative_standard_deviation = rsd(na.omit(Analyte.Peak.Area.Normalised)),
+    metabolite_mean_peak_area = mean(Analyte.Peak.Area.Normalised, na.rm = T)
+  ) %>%
+  distinct(Compound, condition, .keep_all = TRUE)
 
 # Restructure the dataframe so we can display the RSD per metabolite per condtion in a table
 df.metabolite_rsd_HOS <- df.filtered.condition.HOS %>%
@@ -325,153 +329,4 @@ df.filtered.condition.HOS.table %>%
       "Wide table of normalized areas",
       "(compounds x samples, with some metadata)"
   ))
-```
-
-
-## Scatter plot of metabolites per condition (with standard error) {.tabset}
-
-```{r HOS_scatter_plot, results="asis", echo=FALSE, fig.height=50, out.width = "100%"}
-# THIS IS THE LAST PART WHERE WE SHOW 1 SCATTER PLOTS FOR EVERY METABOLITE PER CONDITON 
-# THE MULLER DATA CONTAINS 3 DIFFERENT EXPERIMENT (FLUID, HUMAN AND MOUSE) SO WE REPEAT THIS STAGE 3 TIMES
-# HOWEVER, ONLY ONE EXPERIMENT AT A TIME SHOULD RUN SO THIS SPLIT SHOULD NOT NORMALY BE NECESSARY
-# i.e. Fluid, human, and mouse samples should splited before running this script and analysed separately (Ela wanted it like because it is easier for her to look at)
-
-# We create a new dataframe from trhe main one (This is due to some legacy code and I don't think that it is actually necessary)
-# Bring condition names and inside range value to the main dataframe
-df.filtered.condition.HOS.jitter.all <- left_join(df.filtered,df.tot_area_HOS[,c("Sample.Name","condition","inside_range")], by="Sample.Name")
-
-if (is.null(LOWCON_SCATTER_SUB_GROUPS)){
-  sub_groups <- "All"
-} else {
-  sub_groups <- LOWCON_SCATTER_SUB_GROUPS
-}
-
-for (i in seq_along(sub_groups)) {
-  if (sub_groups[i] == "All") {
-    df.filtered.condition.HOS.jitter <- df.filtered.condition.HOS.jitter.all
-  } else {
-    df.filtered.condition.HOS.jitter <- df.filtered.condition.HOS.jitter.all %>%
-      filter(!!sym(names(sub_groups[i])) == sub_groups[i])
-    cat(paste("\n###", names(sub_groups[i]), sub_groups[i], "\n"))
-  }
-  
-  # # Subsample for testing
-  # df.filtered.condition.HOS.jitter <- df.filtered.condition.HOS.jitter %>%
-  #   filter(Compound %in% sample(unique(Compound),10))
-  
-  # Remove outlier samples found to be outside 1.5 standard deviation
-  if (LOWCON_SD_OUTLIER_REM){
-    df.filtered.condition.HOS.jitter$Analyte.Peak.Area.Normalised[ which(df.filtered.condition.HOS.jitter$inside_range == FALSE)] = NA
-  }
-  
-  # We recompute everything (SD, RSD etc... for every metabolites)
-  df.filtered.condition.HOS.jitter <- df.filtered.condition.HOS.jitter %>%
-    group_by(condition, Compound) %>%
-    mutate(relative_standard_deviation = rsd(na.omit(Analyte.Peak.Area.Normalised)),standard_deviation = sd(Analyte.Peak.Area.Normalised, na.rm = T), metabolite_mean_peak_area = mean(Analyte.Peak.Area.Normalised, na.rm = T), standard_error= sd(Analyte.Peak.Area.Normalised, na.rm = T)/sqrt(length(na.omit(Analyte.Peak.Area.Normalised))), number_values=sum(!is.na(Analyte.Peak.Area.Normalised), na.rm = T)) %>%
-    mutate(Analyte.Peak.Area.Normalised = ifelse(number_values >= 2, Analyte.Peak.Area.Normalised, NA), standard_error = ifelse(number_values >= 2, standard_error, NA), relative_standard_deviation = ifelse(number_values >= 2, relative_standard_deviation, NA))
-  
-  # Get the total number of values (in samples) we have per compound
-  df.filtered.condition.HOS.jitter <- df.filtered.condition.HOS.jitter %>%
-    group_by(Compound) %>%
-    mutate(total_number_value_available = sum(!is.na(Analyte.Peak.Area.Normalised), na.rm = T))
-  
-  # Remove all compounds with no value at all (Again this filter is specific to MULLER, we keep metabolites even if they appear in 1 sample, threshold needs to be changed)
-  df.filtered.condition.HOS.jitter <- df.filtered.condition.HOS.jitter %>%
-    filter(total_number_value_available > 0)
-  
-  # Factorize variables
-  df.filtered.condition.HOS.jitter[[LOWCON_SCATTER_X]] <-
-    factor(df.filtered.condition.HOS.jitter[[LOWCON_SCATTER_X]])
-  if (!is.null(LOWCON_SCATTER_COLOR)){
-    df.filtered.condition.HOS.jitter[[LOWCON_SCATTER_COLOR]] <-
-      factor(df.filtered.condition.HOS.jitter[[LOWCON_SCATTER_COLOR]])
-  } else {
-    LOWCON_SCATTER_COLOR <- LOWCON_SCATTER_X
-  }
-  
-  # Create the error bars for the plot
-  df.filtered.condition.HOS.jitter.error_bar <- df.filtered.condition.HOS.jitter %>%
-    distinct(Compound, condition, .keep_all = TRUE)
-  
-  # Create the plots
-  # Please note that these plots can get very big if a lot of metabolites are conserved (passed the filter)
-  
-  g <- ggplot(
-    mapping = aes_string(
-      x = paste0("`", LOWCON_SCATTER_X, "`"),
-      y = "Analyte.Peak.Area.Normalised",
-      color = paste0("`", LOWCON_SCATTER_COLOR, "`"),
-      fill = paste0("`", LOWCON_SCATTER_COLOR, "`")
-    )
-  ) +
-    geom_jitter(
-      data = df.filtered.condition.HOS.jitter,
-      position = position_jitterdodge(jitter.width = 0.5, dodge.width = 0.9),
-      cex = 1
-    ) +
-    geom_errorbar(
-      data = df.filtered.condition.HOS.jitter.error_bar,
-      mapping = aes(
-        ymin = metabolite_mean_peak_area-standard_error,
-        ymax = metabolite_mean_peak_area+standard_error
-      ),
-      position = position_dodge(width = 0.8),
-      width = 0.5, size = 0.25, color = "black"
-    ) +
-    facet_wrap(~ Compound, ncol = 4, scale = "free") +
-    ggtitle("Peak area distribution per metabolite/condtion") +
-    ylab("Peak area") +
-    xlab(LOWCON_SCATTER_X) +
-    theme(
-      panel.grid.minor=element_blank(),
-      panel.grid.major=element_blank(),
-      panel.background=element_blank(),
-      axis.line=element_line(),
-      legend.position = "top"
-    )
-  
-  print(g)
-  
-  
-  # WIDE EXPORTS WOULD NEED MORE UNIQUE NAMES (e.g. ID+POS+BATCH)
-  # SINCE ID MIGHT NOT BE UNIQUE (e.g. with pools)
-  
-  # # Export data per sub group
-  # if (!is.null(LOWCON_EXPORT_PATH)){
-  #   export_path <- LOWCON_EXPORT_PATH
-  #   dir.create(file.path(export_path), recursive = TRUE, showWarnings = TRUE)
-  #   
-  #   df.HOS.output.long <- df.filtered.condition.HOS.jitter %>%
-  #     select(Compound,Sample.Identification,condition,Analyte.Peak.Area.Normalised,metabolite_mean_peak_area,relative_standard_deviation)
-  #   
-  #   # Export long format containing all data together
-  #   write.csv(df.HOS.output.long, file.path(export_path, paste0("lowcon_", sub_groups[i], "_LC_normalised_data_long.csv")),  row.names = FALSE)
-  #   
-  #   # Create a wide format with normalised intensity values
-  #   df.HOS.output.intensity.wide <- df.HOS.output.long %>%
-  #     mutate(sample_name = paste(Sample.Identification, condition, sep="_")) %>%
-  #     select(Compound, sample_name, Analyte.Peak.Area.Normalised) %>%
-  #     spread(sample_name, Analyte.Peak.Area.Normalised)
-  #   
-  #   write.csv(df.HOS.output.intensity.wide, file.path(export_path, paste0("lowcon_", sub_groups[i], "_LC_normalised_intensities_wide.csv")), row.names = FALSE)
-  #   
-  #   # Create a wide format with mean and RSD values for each condition
-  #   df.HOS.output.mean.wide <- df.HOS.output.long %>%
-  #     # mutate(sample_name = paste(Sample.Identification, Volume, Mass, BR, sep="_")) %>%
-  #     select(Compound, condition, metabolite_mean_peak_area) %>%
-  #     distinct(Compound, condition, .keep_all = TRUE) %>%
-  #     spread(condition, metabolite_mean_peak_area)
-  #   
-  #   write.csv(df.HOS.output.mean.wide, file.path(export_path, paste0("lowcon_", sub_groups[i], "_LC_mean_intensity_wide.csv")), row.names = FALSE)
-  #   # 
-  #   df.HOS.output.rsd.wide <- df.HOS.output.long %>%
-  #     # mutate(sample_name = paste(Sample.Identification, Volume, Mass, BR, sep="_")) %>%
-  #     select(Compound, condition, relative_standard_deviation) %>%
-  #     distinct(Compound, condition, .keep_all = TRUE) %>%
-  #     spread(condition, relative_standard_deviation)
-  #   
-  #   write.csv(df.HOS.output.rsd.wide, file.path(export_path, paste0("lowcon_", sub_groups[i], "_LC_rsd_wide.csv")), row.names = FALSE)
-  # }
-}
-
 ```

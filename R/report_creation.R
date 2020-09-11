@@ -148,21 +148,6 @@
 #' recommended to apply on actual study samples and thus biological variance.
 #' @param lowcon_minimum_intensity Minimal intensity threshold to keep values in
 #' low concentration analysis (default = 20000). Below, values are set to NA.
-#' @param lowcon_scatter_x Indiciate one study variable to be used for the
-#' x-axis in the scatter plot of the additional reproducibility analysis.
-#' This variable must be available in the conditions. If none is given,
-#' the first study variable in the conditions
-#' @param lowcon_scatter_color Indiciate one study variable to be used for
-#' coloring samples in the response scatter plot of the additional
-#' reproducibility analysis. This variable must be available in the conditions.
-#' If none is given, the first study variable in the conditions
-#' @param lowcon_scatter_sub_groups Indicate pairs of study variables and
-#' corresponding groups in a named vector to be used for separate response
-#' scatter plots (e.g. if experiments havn't been separated before). By default,
-#' the scatter plot is not separated.
-# @param lowcon_export_path Indicate a path for exporting normalized
-# areas (LC) or intensities (FIA) and RSDs of additional low concentration
-# analysis (per scatter sub group, if indicated, else completely).
 #' @param ... Masked parameters for development and testing only.
 #'
 #' @export
@@ -325,10 +310,6 @@ create_qc_report <- function(
   lowcon_conditions = NULL,
   lowcon_sd_outlier_removal = FALSE,
   lowcon_minimum_intensity = 20000,
-  lowcon_scatter_x = NULL,
-  lowcon_scatter_color = NULL,
-  lowcon_scatter_sub_groups = NULL,
-  # lowcon_export_path = NULL, # Disabled for now
   ...
 ){
 
@@ -338,9 +319,6 @@ create_qc_report <- function(
   if (!is.null(metadata_import)){
     metadata_import <- unname(R.utils::getAbsolutePath(metadata_import))
   }
-  # if (!is.null(lowcon_export_path)){
-  #   lowcon_export_path <- unname(R.utils::getAbsolutePath(lowcon_export_path))
-  # }
 
   # Markdown rendering
   rmarkdown::render(
@@ -380,10 +358,6 @@ create_qc_report <- function(
       lowcon_conditions = lowcon_conditions,
       lowcon_sd_outlier_removal = lowcon_sd_outlier_removal,
       lowcon_minimum_intensity = lowcon_minimum_intensity,
-      lowcon_scatter_x = lowcon_scatter_x,
-      lowcon_scatter_color = lowcon_scatter_color,
-      lowcon_scatter_sub_groups = lowcon_scatter_sub_groups,
-      # lowcon_export_path = lowcon_export_path,
       ...
     ),
     clean = TRUE)

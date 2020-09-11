@@ -1,7 +1,7 @@
 Package: metaquac
 Type: Package
 Title: Metabolomics Targeted Quality Control
-Version: 0.1.27
+Version: 0.1.28
 Author: Mathias Kuhring
 Maintainer: Mathias Kuhring <mathias.kuhring@bihealth.de>
 Description:

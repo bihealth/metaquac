@@ -212,11 +212,7 @@ params = list(
   filter_compound_bs_min_rsd = 15,
   filter_sample_max_mv_ratio = 0.2,
   lowcon_conditions = c("Sex", "Sample.Volume"),
-  lowcon_sd_outlier_removal = FALSE,
-  lowcon_scatter_x = NULL,
-  lowcon_scatter_color = NULL,
-  lowcon_scatter_sub_groups = NULL
-  # lowcon_export_path = "dev/lowcon/"
+  lowcon_sd_outlier_removal = FALSE
 )
 # Now execute child notebooks: nbc_setup > nbc_import > ...
 
@@ -249,11 +245,7 @@ params = list(
   filter_compound_bs_min_rsd = 15,
   filter_sample_max_mv_ratio = 0.2,
   lowcon_conditions = c("Sex", "Sample.Volume"),
-  lowcon_sd_outlier_removal = FALSE,
-  lowcon_scatter_x = NULL,
-  lowcon_scatter_color = NULL,
-  lowcon_scatter_sub_groups = NULL
-  # lowcon_export_path = "dev/lowcon/"
+  lowcon_sd_outlier_removal = FALSE
 )
 # Now execute child notebooks: nbc_setup > nbc_import > ...
 

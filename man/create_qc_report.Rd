@@ -33,8 +33,7 @@ create_qc_report(data_files, kit = c("Biocrates Bile Acids Kit",
   metadata_name_mods_org = NULL, metadata_name_mods_add = NULL,
   metadata_value_mods = NULL, lowcon_conditions = NULL,
   lowcon_sd_outlier_removal = FALSE, lowcon_minimum_intensity = 20000,
-  lowcon_scatter_x = NULL, lowcon_scatter_color = NULL,
-  lowcon_scatter_sub_groups = NULL, ...)
+  ...)
 }
 \arguments{
 \item{data_files}{Data files to import. List MetIDQ data (txt), as an R list providing the
@@ -197,21 +196,6 @@ recommended to apply on actual study samples and thus biological variance.}
 
 \item{lowcon_minimum_intensity}{Minimal intensity threshold to keep values in
 low concentration analysis (default = 20000). Below, values are set to NA.}
-
-\item{lowcon_scatter_x}{Indiciate one study variable to be used for the
-x-axis in the scatter plot of the additional reproducibility analysis.
-This variable must be available in the conditions. If none is given,
-the first study variable in the conditions}
-
-\item{lowcon_scatter_color}{Indiciate one study variable to be used for
-coloring samples in the response scatter plot of the additional
-reproducibility analysis. This variable must be available in the conditions.
-If none is given, the first study variable in the conditions}
-
-\item{lowcon_scatter_sub_groups}{Indicate pairs of study variables and
-corresponding groups in a named vector to be used for separate response
-scatter plots (e.g. if experiments havn't been separated before). By default,
-the scatter plot is not separated.}
 
 \item{...}{Masked parameters for development and testing only.}
 }
