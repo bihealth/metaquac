@@ -75,6 +75,13 @@
 #' "Missing Measurement", "ISTD Out of Range", "STD/QC < Limit",
 #' "STD/QC > Limit", "Invalid", "Incomplete" and "Blank Out of Range".
 #' For generic data, status values may differ depending on the software used.
+#' @param preproc_q500_urine_limits
+#' Only to be used in the special case of using the Biocrates MxP Quant 500 Kit
+#' LC data with urine samples and additional calibration samples (cal 0.25 and
+#' cal 9)! As MetIDQ doesn't consider the additional calibration samples when
+#' calculating limits of detection ("< LLOQ", "> ULOQ"), status values for
+#' calibrated compounds will be corrected based on cal 0.25 and cal 9
+#' concentrations (default = FALSE).
 #' @param filter_compound_qc_ref_max_mv_ratio
 #' Set maximum ratio of missing values allowed for compounds in reference QC
 #' samples (Biocrates' QC Level 2, Reference QC in generic data)
@@ -139,21 +146,8 @@
 #' SD is higher than 1.5 or not available (e.g. when group consists of only one
 #' sample). This is ment to reject unreliable technical replicates and not
 #' recommended to apply on actual study samples and thus biological variance.
-#' @param lowcon_scatter_x Indiciate one study variable to be used for the
-#' x-axis in the scatter plot of the additional reproducibility analysis.
-#' This variable must be available in the conditions. If none is given,
-#' the first study variable in the conditions
-#' @param lowcon_scatter_color Indiciate one study variable to be used for
-#' coloring samples in the response scatter plot of the additional
-#' reproducibility analysis. This variable must be available in the conditions.
-#' If none is given, the first study variable in the conditions
-#' @param lowcon_scatter_sub_groups Indicate pairs of study variables and
-#' corresponding groups in a named vector to be used for separate response
-#' scatter plots (e.g. if experiments havn't been separated before). By default,
-#' the scatter plot is not separated.
-#' @param lowcon_export_path Indicate a path for exporting normalized
-#' areas (LC) or intensities (FIA) and RSDs of additional low concentration
-#' analysis (per scatter sub group, if indicated, else completely).
+#' @param lowcon_minimum_intensity Minimal intensity threshold to keep values in
+#' low concentration analysis (default = 20000). Below, values are set to NA.
 #' @param ... Masked parameters for development and testing only.
 #'
 #' @export
@@ -299,6 +293,7 @@ create_qc_report <- function(
     "Incomplete",
     "Blank Out of Range"
   )[1:2],
+  preproc_q500_urine_limits = FALSE,
   filter_compound_qc_ref_max_mv_ratio = 0.3,
   filter_compound_qc_ref_max_rsd = 15,
   filter_compound_qc_pool_max_mv_ratio = 0.3,
@@ -314,10 +309,7 @@ create_qc_report <- function(
   metadata_value_mods = NULL,
   lowcon_conditions = NULL,
   lowcon_sd_outlier_removal = FALSE,
-  lowcon_scatter_x = NULL,
-  lowcon_scatter_color = NULL,
-  lowcon_scatter_sub_groups = NULL,
-  lowcon_export_path = NULL,
+  lowcon_minimum_intensity = 20000,
   ...
 ){
 
@@ -326,9 +318,6 @@ create_qc_report <- function(
   # data_output_dir <- unname(R.utils::getAbsolutePath(data_output_dir))
   if (!is.null(metadata_import)){
     metadata_import <- unname(R.utils::getAbsolutePath(metadata_import))
-  }
-  if (!is.null(lowcon_export_path)){
-    lowcon_export_path <- unname(R.utils::getAbsolutePath(lowcon_export_path))
   }
 
   # Markdown rendering
@@ -352,6 +341,7 @@ create_qc_report <- function(
       study_variables = study_variables,
       replicate_variables = replicate_variables,
       preproc_keep_status = preproc_keep_status,
+      preproc_q500_urine_limits = preproc_q500_urine_limits,
       filter_compound_qc_ref_max_mv_ratio = filter_compound_qc_ref_max_mv_ratio,
       filter_compound_qc_ref_max_rsd = filter_compound_qc_ref_max_rsd,
       filter_compound_qc_pool_max_mv_ratio = filter_compound_qc_pool_max_mv_ratio,
@@ -367,10 +357,7 @@ create_qc_report <- function(
       metadata_value_mods = metadata_value_mods,
       lowcon_conditions = lowcon_conditions,
       lowcon_sd_outlier_removal = lowcon_sd_outlier_removal,
-      lowcon_scatter_x = lowcon_scatter_x,
-      lowcon_scatter_color = lowcon_scatter_color,
-      lowcon_scatter_sub_groups = lowcon_scatter_sub_groups,
-      lowcon_export_path = lowcon_export_path,
+      lowcon_minimum_intensity = lowcon_minimum_intensity,
       ...
     ),
     clean = TRUE)

@@ -112,6 +112,11 @@ easy_datatable <- function(
   assertthat::assert_that(show_type %in% c("measurements", "statistics"))
   assertthat::assert_that(show %in% c("all", "stats", "none"))
 
+  # Align caption left
+  if (!is.null(caption)){
+    caption = htmltools::tags$caption(style = 'text-align:left;', caption)
+  }
+
   # Control display of tables according to allowed types
   if (show == "none" || (show == "stats" && show_type == "measurements")) {
     table_out <- DT::datatable(
@@ -150,6 +155,25 @@ easy_datatable <- function(
   }
 
   return(table_out)
+}
+
+
+# Create a wide concentration table with compounds as rows vs samples as columns
+# (plus some header rows with sample metadata)
+wide_conc_table_compounds_x_samples <- function(
+  data,
+  value = ENV$CONCENTRATION,
+  metadata = ENV$ALL_VARIABLES
+) {
+  data_wide <- data %>%
+  select(Compound,  Sample.Name, Sample.Identification, Sample.Type,
+         any_of(c("Well.Position", "Sequence.Position")),
+         any_of(metadata), all_of(value)) %>%
+    tidyr::spread(key = Compound, value = value) %>%
+    tibble::column_to_rownames("Sample.Name")  %>%
+    t() %>%
+    tibble::as.tibble(rownames = "Sample.Name")
+  return(data_wide)
 }
 
 

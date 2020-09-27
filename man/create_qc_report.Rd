@@ -4,50 +4,36 @@
 \alias{create_qc_report}
 \title{Create a MeTaQuaC QC report based on Biocrates data (as exported by MetIDQ).}
 \usage{
-create_qc_report(
-  data_files,
-  kit = c("Biocrates Bile Acids Kit", "Biocrates AbsoluteIDQ p180 Kit",
-    "Biocrates AbsoluteIDQ p400 HR Kit", "Biocrates AbsoluteIDQ Stero17 Kit",
-    "Biocrates MxP Quant 500 Kit", "Generic Data")[1],
-  measurement_type = c("LC", "FIA")[1],
-  generic_data_types = c(CONCENTRATION = "Concentration", AREA = "Area", INTENSITY =
-    NULL, ISTD_AREA = NULL, ISTD_INTENSITY = NULL, STATUS = NULL),
-  generic_index_first_compound = NULL,
-  title = ifelse(kit \%in\% KITS_BIOCRATES, "Biocrates QC Report",
-    "Generic Data QC Report"),
+create_qc_report(data_files, kit = c("Biocrates Bile Acids Kit",
+  "Biocrates AbsoluteIDQ p180 Kit", "Biocrates AbsoluteIDQ p400 HR Kit",
+  "Biocrates AbsoluteIDQ Stero17 Kit", "Biocrates MxP Quant 500 Kit",
+  "Generic Data")[1], measurement_type = c("LC", "FIA")[1],
+  generic_data_types = c(CONCENTRATION = "Concentration", AREA = "Area",
+  INTENSITY = NULL, ISTD_AREA = NULL, ISTD_INTENSITY = NULL, STATUS =
+  NULL), generic_index_first_compound = NULL, title = ifelse(kit \%in\%
+  KITS_BIOCRATES, "Biocrates QC Report", "Generic Data QC Report"),
   author = unname(Sys.info()["user"]),
-  report_output_name = paste0(format(Sys.time(), "\%Y\%m\%d_\%H\%M\%S"), "_qc_report_",
-    measurement_type),
-  report_output_dir = "reports",
-  pool_indicator = "Sample.Identification",
-  profiling_variables = NULL,
-  study_variables = NULL,
-  replicate_variables = NULL,
-  preproc_keep_status = c("Valid", "Semi Quant.", "Smaller Zero", "< LOD", "< LLOQ",
-    "> ULOQ", "No Intercept", "Missing Measurement", "ISTD Out of Range",
-    "STD/QC < Limit", "STD/QC > Limit", "Invalid", "Incomplete",
-    "Blank Out of Range")[1:2],
+  report_output_name = paste0(format(Sys.time(), "\%Y\%m\%d_\%H\%M\%S"),
+  "_qc_report_", measurement_type), report_output_dir = "reports",
+  pool_indicator = "Sample.Identification", profiling_variables = NULL,
+  study_variables = NULL, replicate_variables = NULL,
+  preproc_keep_status = c("Valid", "Semi Quant.", "Smaller Zero",
+  "< LOD", "< LLOQ", "> ULOQ", "No Intercept", "Missing Measurement",
+  "ISTD Out of Range", "STD/QC < Limit", "STD/QC > Limit", "Invalid",
+  "Incomplete", "Blank Out of Range")[1:2],
+  preproc_q500_urine_limits = FALSE,
   filter_compound_qc_ref_max_mv_ratio = 0.3,
   filter_compound_qc_ref_max_rsd = 15,
   filter_compound_qc_pool_max_mv_ratio = 0.3,
   filter_compound_qc_pool_max_rsd = 15,
   filter_compound_bs_max_mv_ratio = 0.3,
-  filter_compound_bs_min_rsd = 15,
-  filter_sample_max_mv_ratio = 0.2,
-  data_tables = c("all", "stats", "none")[1],
-  metadata_import = NULL,
+  filter_compound_bs_min_rsd = 15, filter_sample_max_mv_ratio = 0.2,
+  data_tables = c("all", "stats", "none")[1], metadata_import = NULL,
   metadata_import_overlap = c("rename", "replace", "omit")[1],
-  metadata_name_mods_org = NULL,
-  metadata_name_mods_add = NULL,
-  metadata_value_mods = NULL,
-  lowcon_conditions = NULL,
-  lowcon_sd_outlier_removal = FALSE,
-  lowcon_scatter_x = NULL,
-  lowcon_scatter_color = NULL,
-  lowcon_scatter_sub_groups = NULL,
-  lowcon_export_path = NULL,
-  ...
-)
+  metadata_name_mods_org = NULL, metadata_name_mods_add = NULL,
+  metadata_value_mods = NULL, lowcon_conditions = NULL,
+  lowcon_sd_outlier_removal = FALSE, lowcon_minimum_intensity = 20000,
+  ...)
 }
 \arguments{
 \item{data_files}{Data files to import. List MetIDQ data (txt), as an R list providing the
@@ -130,6 +116,13 @@ to NA). For Biocrates, possible statuses to select from include "Valid",
 "STD/QC > Limit", "Invalid", "Incomplete" and "Blank Out of Range".
 For generic data, status values may differ depending on the software used.}
 
+\item{preproc_q500_urine_limits}{Only to be used in the special case of using the Biocrates MxP Quant 500 Kit
+LC data with urine samples and additional calibration samples (cal 0.25 and
+cal 9)! As MetIDQ doesn't consider the additional calibration samples when
+calculating limits of detection ("< LLOQ", "> ULOQ"), status values for
+calibrated compounds will be corrected based on cal 0.25 and cal 9
+concentrations (default = FALSE).}
+
 \item{filter_compound_qc_ref_max_mv_ratio}{Set maximum ratio of missing values allowed for compounds in reference QC
 samples (Biocrates' QC Level 2, Reference QC in generic data)
 (default = 0.3, exclusive, disable with NULL).}
@@ -201,24 +194,8 @@ SD is higher than 1.5 or not available (e.g. when group consists of only one
 sample). This is ment to reject unreliable technical replicates and not
 recommended to apply on actual study samples and thus biological variance.}
 
-\item{lowcon_scatter_x}{Indiciate one study variable to be used for the
-x-axis in the scatter plot of the additional reproducibility analysis.
-This variable must be available in the conditions. If none is given,
-the first study variable in the conditions}
-
-\item{lowcon_scatter_color}{Indiciate one study variable to be used for
-coloring samples in the response scatter plot of the additional
-reproducibility analysis. This variable must be available in the conditions.
-If none is given, the first study variable in the conditions}
-
-\item{lowcon_scatter_sub_groups}{Indicate pairs of study variables and
-corresponding groups in a named vector to be used for separate response
-scatter plots (e.g. if experiments havn't been separated before). By default,
-the scatter plot is not separated.}
-
-\item{lowcon_export_path}{Indicate a path for exporting normalized
-areas (LC) or intensities (FIA) and RSDs of additional low concentration
-analysis (per scatter sub group, if indicated, else completely).}
+\item{lowcon_minimum_intensity}{Minimal intensity threshold to keep values in
+low concentration analysis (default = 20000). Below, values are set to NA.}
 
 \item{...}{Masked parameters for development and testing only.}
 }

@@ -341,6 +341,13 @@ to NA). For Biocrates, possible statuses to select from include "Valid",
 "Missing Measurement", "ISTD Out of Range", "STD/QC < Limit",
 "STD/QC > Limit", "Invalid", "Incomplete" and "Blank Out of Range".
 For generic data, status values may differ depending on the software used.
+* `preproc_q500_urine_limits`
+Only to be used in the special case of using the Biocrates MxP Quant 500 Kit
+LC data with urine samples and additional calibration samples (cal 0.25 and
+cal 9)! As MetIDQ doesn't consider the additional calibration samples when
+calculating limits of detection ("< LLOQ", "> ULOQ"), status values for
+calibrated compounds will be corrected based on cal 0.25 and cal 9
+concentrations (default = FALSE).
 * `filter_compound_qc_ref_max_mv_ratio`
 Set maximum ratio of missing values allowed for compounds in reference QC
 samples (Biocrates' QC Level 2, Reference QC in generic data)
@@ -405,21 +412,9 @@ same conditions (i.e. combination of indicated study variables) is removed if
 SD is higher than 1.5 or not available (e.g. when group consists of only one
 sample). This is ment to reject unreliable technical replicates and not
 recommended to apply on actual study samples and thus biological variance.
-* `lowcon_scatter_x` Indiciate one study variable to be used for the
-x-axis in the scatter plot of the additional reproducibility analysis.
-This variable must be available in the conditions. If none is given,
-the first study variable in the conditions
-* `lowcon_scatter_color` Indiciate one study variable to be used for
-coloring samples in the response scatter plot of the additional
-reproducibility analysis. This variable must be available in the conditions.
-If none is given, the first study variable in the conditions
-* `lowcon_scatter_sub_groups` Indicate pairs of study variables and
-corresponding groups in a named vector to be used for separate response
-scatter plots (e.g. if experiments havn't been separated before). By default,
-the scatter plot is not separated.
-* `lowcon_export_path` Indicate a path for exporting normalized
-areas (LC) or intensities (FIA) and RSDs of additional low concentration
-analysis (per scatter sub group, if indicated, else completely).
+* `lowcon_minimum_intensity` Minimal intensity threshold to keep values in
+low concentration analysis (default = 20000). Below, values are set to NA.
+
 
 Missing value ratio thresholds according to
 [Broadhurst *et al.* 2018](https://link.springer.com/article/10.1007%2Fs11306-018-1367-3)  

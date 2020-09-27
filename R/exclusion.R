@@ -35,7 +35,7 @@ table_na <- function(data,
 
   data_na <- data %>%
     filter(UQ(sym(compare_key)) %in% compare_values) %>%
-    group_by(UQ(sym(group)), UQ(sym(compare_key))) %>%
+    group_by(across(c(group, compare_key))) %>%
     summarize(`# Total` = length(UQ(sym(target))),
               `# Missing Values` = na_count(UQ(sym(target))),
               `% Missing Values` = na_percent(UQ(sym(target))))
@@ -118,7 +118,7 @@ plot_compound_na_scatter <- function(data,
     # Calculate NA ratios for compared variables
     data_na_compare <- data %>%
       filter(Sample.Type == SAMPLE_TYPE_BIOLOGICAL) %>%
-      group_by(Compound, UQ(sym(compare))) %>%
+      group_by(across(c("Compound", compare))) %>%
       summarize(NA.Ratio.Class = na_ratio(UQ(sym(target))))
 
     # Spread by compare classes
@@ -143,7 +143,7 @@ plot_compound_na_scatter <- function(data,
     # Calculate NA ratios for compared variables
     data_na_compare <- data %>%
       filter(Sample.Type == sample_type) %>%
-      group_by(Compound, UQ(sym(color)), UQ(sym(compare))) %>%
+      group_by(across(c("Compound", color, compare))) %>%
       summarize(NA.Ratio.Class = na_ratio(UQ(sym(target))))
 
     # Spread by compare classes
@@ -197,7 +197,7 @@ plot_sample_na_intens_scatter <- function(data,
 
   # Grouping
   data_grouped <- data %>%
-    group_by(Sample.Name, Sample.Type, UQ(sym(color)))
+    group_by(across(c("Sample.Name", "Sample.Type", color)))
   if (!is.null(shape)){
     data_grouped <- data_grouped %>% group_by(UQ(sym(shape)), add = TRUE)
   }
@@ -281,7 +281,7 @@ remove_compounds_na_class <- function(data,
     assertthat::assert_that(0 <= max_ratio && max_ratio <= 1)
     to_remove <- data %>%
       filter(Sample.Type == SAMPLE_TYPE_BIOLOGICAL) %>%
-      group_by(Compound, UQ(sym(variable))) %>%
+      group_by(across(c("Compound", variable))) %>%
       summarize(`# Total` = length(UQ(sym(target))),
                 `# Missing Values` = na_count(UQ(sym(target))),
                 `% Missing Values` = na_percent(UQ(sym(target)))) %>%

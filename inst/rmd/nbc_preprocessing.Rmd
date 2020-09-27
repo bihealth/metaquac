@@ -2,6 +2,7 @@
 # Preprocessing parameters
 ppparams <- list(
   statuses_to_keep = params$preproc_keep_status,
+  statuses_q500_urine = PREPROC_Q500_URINE_LIMITS,
   threshold_2a = params$filter_compound_qc_ref_max_mv_ratio,
   threshold_2b = params$filter_compound_qc_ref_max_rsd,
   threshold_2c = params$filter_compound_qc_pool_max_mv_ratio,
@@ -51,7 +52,7 @@ calculations and visualizations are based. Thereby, the preprocessed datasets wi
 referenced as **1**, **2a**, **2b**, **3a**, **3b** and **4**, resp.")
 
 # Execute preprocessing
-datasets <- execute_preprocessing(biocrates, ppparams)
+datasets <- execute_preprocessing(data = biocrates, ppparams = ppparams)
 # Remove "biocrates" dataset to ensure following sections select the preprocessed dataset they need
 rm(biocrates)
 ```
@@ -73,6 +74,12 @@ unreliable and measurements are transformed to missing values (set to NA).
 
 ```{r eval=!IS_BIOCRATES, results="asis"}
 cat("Note: Status names may differ in custom generic data.\n")
+```
+
+```{r eval=PREPROC_Q500_URINE_LIMITS, results="asis"}
+message("Note: Statuses \"< LLOQ\" and \"> ULOQ\" have been updated if data is
+within range of cal 0.25 and cal 9, resp. (i.e. set to \"Valid\", see parameter
+`preproc_q500_urine_limits`).\n")
 ```
 
 Based on the parameter `preproc_keep_status`, measurements with the following statuses will be
@@ -101,6 +108,28 @@ easy_datatable(
 easy_datatable(
   datasets$discarded,
   caption = paste0("Full data after status preprocessing"))
+
+datasets$discarded %>%
+  wide_conc_table_compounds_x_samples() %>%
+  easy_datatable(caption = "Full data after status preprocessing
+                            (wide: compounds x samples, with some metadata)"
+  )
+```
+
+```{r eval=PREPROC_Q500_URINE_LIMITS}
+easy_datatable(
+  datasets$original %>%
+    select(all_of(COLUMN_SAMPLE_NAME), Compound, MetIDQ_Status) %>%
+    rename(Status_before = MetIDQ_Status) %>%
+    left_join(
+      datasets$original_urine %>%
+        select(all_of(COLUMN_SAMPLE_NAME), Compound, MetIDQ_Status) %>%
+        rename(Status_after = MetIDQ_Status),
+      by = c(COLUMN_SAMPLE_NAME, "Compound")
+    ) %>%
+    filter(Status_before != Status_after),
+  show_type = "statistics",
+  caption = "Status values changed according due Q500 urine cal limits")
 ```
 
 
@@ -124,6 +153,13 @@ easy_datatable(
 easy_datatable(
   datasets$filter_compounds_by_qc_mv_kept,
   caption = paste0("Full data kept after ", ppparams$threshold_2a*100, "% QC MVs filtering"))
+
+datasets$filter_compounds_by_qc_mv_kept %>%
+  wide_conc_table_compounds_x_samples() %>%
+  easy_datatable(caption = paste0(
+      "Full data kept after ", ppparams$threshold_2a*100, "% QC MVs filtering",
+      " (wide: compounds x samples, with some metadata)"
+  ))
 ```
 
 
@@ -144,6 +180,15 @@ easy_datatable(
 easy_datatable(
   datasets$filter_compounds_by_qc_rsd_kept,
   caption = paste0("Full data kept after ", ppparams$threshold_2b, "%RSD QC filtering"))
+
+datasets$filter_compounds_by_qc_rsd_kept %>%
+  wide_conc_table_compounds_x_samples() %>%
+  easy_datatable(
+    caption = paste0(
+      "Full data kept after ", ppparams$threshold_2b, "%RSD QC filtering",
+      " (wide: compounds x samples, with some metadata)"
+    )
+  )
 ```
 
 
@@ -167,6 +212,15 @@ easy_datatable(
 easy_datatable(
   datasets$filter_compounds_by_qc_pool_mv_kept,
   caption = paste0("Full data kept after ", ppparams$threshold_2c*100, "% Pooled QC MVs filtering"))
+
+datasets$filter_compounds_by_qc_pool_mv_kept %>%
+  wide_conc_table_compounds_x_samples() %>%
+  easy_datatable(
+    caption = paste0(
+      "Full data kept after ", ppparams$threshold_2c*100, "% Pooled QC MVs filtering",
+      " (wide: compounds x samples, with some metadata)"
+    )
+  )
 ```
 
 
@@ -187,6 +241,15 @@ easy_datatable(
 easy_datatable(
   datasets$filter_compounds_by_qc_pool_rsd_kept,
   caption = paste0("Full data kept after ", ppparams$threshold_2d, "%RSD Pooled QC filtering"))
+
+datasets$filter_compounds_by_qc_pool_rsd_kept %>%
+  wide_conc_table_compounds_x_samples() %>%
+  easy_datatable(
+    caption = paste0(
+      "Full data kept after ", ppparams$threshold_2d, "%RSD Pooled QC filtering",
+      " (wide: compounds x samples, with some metadata)"
+    )
+  )
 ```
 
 
@@ -205,6 +268,15 @@ easy_datatable(
 easy_datatable(
   datasets$filter_compounds_by_sample_all_mv_kept,
   caption = paste0("Full data kept after ", ppparams$threshold_3a*100, "% Sample MVs filtering"))
+
+datasets$filter_compounds_by_sample_all_mv_kept %>%
+  wide_conc_table_compounds_x_samples() %>%
+  easy_datatable(
+    caption = paste0(
+      "Full data kept after ", ppparams$threshold_3a*100, "% Sample MVs filtering",
+      " (wide: compounds x samples, with some metadata)"
+    )
+  )
 ```
 
 
@@ -225,6 +297,15 @@ easy_datatable(
 easy_datatable(
   datasets$filter_compounds_by_sample_mv_kept,
   caption = paste0("Full data kept after ", ppparams$threshold_3b*100, "% Sample MVs filtering"))
+
+datasets$filter_compounds_by_sample_mv_kept %>%
+  wide_conc_table_compounds_x_samples() %>%
+  easy_datatable(
+    caption = paste0(
+      "Full data kept after ", ppparams$threshold_3b*100, "% Sample MVs filtering",
+      " (wide: compounds x samples, with some metadata)"
+    )
+  )
 ```
 
 
@@ -248,6 +329,15 @@ easy_datatable(
   datasets$filter_compounds_by_sample_rsd_kept,
   caption = paste0(
     "Full data kept after ", ppparams$threshold_3c, " %RSD filtering in biological samples")
+  )
+
+datasets$filter_compounds_by_sample_rsd_kept %>%
+  wide_conc_table_compounds_x_samples() %>%
+  easy_datatable(
+    caption = paste0(
+      "Full data kept after ", ppparams$threshold_3c, " %RSD filtering in biological samples",
+      " (wide: compounds x samples, with some metadata)"
+    )
   )
 ```
 
@@ -274,6 +364,15 @@ easy_datatable(
 easy_datatable(
   datasets$filter_samples_by_compound_mv_kept,
   caption = paste0("Full data kept after ", ppparams$threshold_4*100, "% Compound MVs filtering"))
+
+datasets$filter_samples_by_compound_mv_kept %>%
+  wide_conc_table_compounds_x_samples() %>%
+  easy_datatable(
+    caption = paste0(
+      "Full data kept after ", ppparams$threshold_4*100, "% Compound MVs filtering",
+      " (wide: compounds x samples, with some metadata)"
+    )
+  )
 ```
 
 
@@ -301,4 +400,13 @@ easy_datatable(
 easy_datatable(
   datasets$original,
   caption = paste0("Full data before preprocessing"))
+
+datasets$original %>%
+  wide_conc_table_compounds_x_samples() %>%
+  easy_datatable(
+    caption = paste0(
+      "Full data before preprocessing",
+      " (wide: compounds x samples, with some metadata)"
+    )
+  )
 ```

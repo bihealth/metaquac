@@ -26,7 +26,7 @@ calc_compound_na_variable <- function(
 
   data_na <- data_na %>%
     # Calculate NA count and percentages for compared groups
-    group_by(Compound, Sample.Type, UQ(sym(compare))) %>%
+    group_by_at(.vars = vars(all_of(c("Compound", "Sample.Type",compare)))) %>%
     summarize(`Group Size` = n(),
               `# Missing Values` = na_count(UQ(sym(target))),
               `% Missing Values` = na_percent(UQ(sym(target)))) %>%

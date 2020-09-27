@@ -1,0 +1,10 @@
+Control	Sample Identification	Sex	Condition
+TRUE	5	Male	X
+TRUE	3	Female	X
+	0	Pool	
+FALSE	4	Male	X
+FALSE	1	Female	X
+TRUE	6	Male	Y
+FALSE	7	Male	Y
+TRUE	2	Female	Y
+FALSE	8	Female	Y

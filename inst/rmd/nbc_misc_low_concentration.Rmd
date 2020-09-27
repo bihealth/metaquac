@@ -10,14 +10,6 @@ df = datasets$original
 ```{r message=FALSE, include=FALSE}
 # Parameters
 assertthat::assert_that(all(LOWCON_CONDITIONS %in% names(df)))
-assertthat::assert_that(LOWCON_SCATTER_X %in% LOWCON_CONDITIONS)
-assertthat::assert_that(LOWCON_SCATTER_COLOR %in% LOWCON_CONDITIONS)
-assertthat::assert_that(all(names(LOWCON_SCATTER_SUB_GROUPS) %in% LOWCON_CONDITIONS))
-for (i in seq_along(LOWCON_SCATTER_SUB_GROUPS)){
-  assertthat::assert_that(
-    LOWCON_SCATTER_SUB_GROUPS[i] %in% df[[names(LOWCON_SCATTER_SUB_GROUPS)[i]]]
-  )
-}
 ```
 
 <!-- TODO: merge LC and FIA in one script -->

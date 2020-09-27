@@ -41,7 +41,8 @@ METIDQ_STATUSES <- c(
   "Blank Out of Range"
 )
 
-# Import list of known compounds (Biocrates Kit p400 only)
+
+# Import list of known compounds (for Biocrates Kit p400 only)
 import_known_compounds <- function(filename){
   compounds <- readr::read_csv(file = filename, col_types = "cccc")
   assert_that(all(names(compounds) == c("Compound", "Name", "Class", "Method")))
@@ -49,6 +50,21 @@ import_known_compounds <- function(filename){
   return(compounds)
 }
 KNOWN_COMPOUNDS <- import_known_compounds(filename = "inst/resources/P400_table.csv")
+
+
+# Import list of Q500 urine calibration limits (for Biocrates Kit Q500 only)
+import_q500_urine_limits <- function(){
+  q500_urin_compounds <- readr::read_csv(
+    file = "inst/resources/Q500_urine_limits.csv",
+    col_types = "cnn",
+    locale = readr::locale(encoding = "UTF-8")
+  )
+  assert_that(all(names(q500_urin_compounds) == c("Compound", "LLOQ_uM", "ULOQ_uM")))
+  assert_that(nrow(q500_urin_compounds) > 0)
+  return(q500_urin_compounds)
+}
+Q500_URINE_LIMITS <- import_q500_urine_limits()
+
 
 # Color setup for significance
 SIGNIFICANT_ADJUSTED <- "ADJUSTED"
