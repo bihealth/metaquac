@@ -61,8 +61,8 @@ if ("kit" %in% names(params)) {
   }
 } else {
   stop(paste0(
-        "No kit selected. Currently supported: '",
-        paste(KITS, collapse = "', '"), "'"))
+    "No kit selected. Currently supported: '",
+    paste(KITS, collapse = "', '"), "'"))
 }
 
 # Data files
@@ -97,11 +97,20 @@ if ("filter_regex" %in% names(params)){
 # Study_variables needs to be a list, including only lists and strings
 if ("study_variables" %in% names(params)){
   STUDY_VARIABLES <- params$study_variables
+  
   is_lists_and_strings <- function(l){
     all(lapply(l, function(x){if(is.list(x)){ is_lists_and_strings(x) } else if (is.character(x)) { TRUE  } else { FALSE }}))
   }
+  
+  make.names.recursive <- function(l){
+    l <- lapply(l, function(x){if(is.list(x)){ make.names.recursive(x) } else { make.names(x) }})
+    names(l) <- make.names(names(l))
+    return(l)
+  }
+  
   if (length(STUDY_VARIABLES) > 0){
     assert_that(class(STUDY_VARIABLES) == "list")
+    STUDY_VARIABLES <- make.names.recursive(STUDY_VARIABLES)
     if(!is_lists_and_strings(STUDY_VARIABLES)){
       stop(paste(
         "Invalid data in study variables (use strings or named lists of strings):\n",
@@ -115,6 +124,7 @@ if ("profiling_variables" %in% names(params)){
   PROFILING_VARIABLES <- params$profiling_variables
   if (length(PROFILING_VARIABLES) > 0){
     assert_that(class(PROFILING_VARIABLES) == "character")
+    PROFILING_VARIABLES <- make.names(PROFILING_VARIABLES)
   }
 }
 
@@ -123,6 +133,7 @@ if ("replicate_variables" %in% names(params)){
   REPLICATE_VARIABLES <- params$replicate_variables
   if (length(REPLICATE_VARIABLES) > 0){
     assert_that(class(REPLICATE_VARIABLES) == "character")
+    REPLICATE_VARIABLES <- make.names(REPLICATE_VARIABLES)
   }
 }
 
@@ -139,6 +150,7 @@ if ("pool_indicator" %in% names(params)){
 } else {
   POOL_INDICATOR <- "Sample.Identification"
 }
+POOL_INDICATOR <- make.names(POOL_INDICATOR)
 
 # Additional normalization supported: None, PQN
 if ("additional_normalization" %in% names(params)){
@@ -253,6 +265,7 @@ if (!is.null(LOWCON_CONDITIONS)){
   assertthat::assert_that(length(LOWCON_CONDITIONS) > 0)
   assertthat::assert_that(class(LOWCON_CONDITIONS) == "character")
   assertthat::assert_that(!any(is.na(LOWCON_CONDITIONS)))
+  LOWCON_CONDITIONS <- make.names(LOWCON_CONDITIONS)
   assertthat::assert_that(LOWCON_SD_OUTLIER_REM %in% c(TRUE, FALSE))
   assertthat::assert_that(LOWCON_MINIMUM_INTENSITY >= 0)
   LOWCON <- TRUE
