@@ -4,15 +4,17 @@ cat("## Metadata modifications\n")
 
 # Original metadata name modifications (i.e. renaming colums)
 if (!is.null(params$metadata_name_mods_org)) {
+  metadata_name_mods_org <- make.names(params$metadata_name_mods_org)
+  names(metadata_name_mods_org) <- make.names(names(params$metadata_name_mods_org))
   cat("Changed column names as defined by `metadata_name_mods_org`:\n\n")
   cat(paste(
-    paste("*", names(params$metadata_name_mods_org)),
-    params$metadata_name_mods_org,
+    paste("*", names(metadata_name_mods_org)),
+    metadata_name_mods_org,
     sep = " > ", collapse = "\n")
   )
   biocrates <- modify_metadata_names(
     data = biocrates,
-    mapping = params$metadata_name_mods_org
+    mapping = metadata_name_mods_org
   )
   cat("\n\n")
 }
@@ -34,23 +36,27 @@ if (!is.null(params$metadata_import)){
 
 # Additional metadata name modifications (i.e. renaming colums)
 if (!is.null(params$metadata_name_mods_add)) {
+  metadata_name_mods_add <- make.names(params$metadata_name_mods_add)
+  names(metadata_name_mods_add) <- make.names(names(params$metadata_name_mods_add))
   cat("Changed column names as defined by `metadata_name_mods_add`:\n\n")
   cat(paste(
-    paste("*", names(params$metadata_name_mods_add)),
-    params$metadata_name_mods_add,
+    paste("*", names(metadata_name_mods_add)),
+    metadata_name_mods_add,
     sep = " > ", collapse = "\n")
   )
   biocrates <- modify_metadata_names(
     data = biocrates,
-    mapping = params$metadata_name_mods_add
+    mapping = metadata_name_mods_add
   )
   cat("\n\n")
 }
 
 # Metadata value modifications (e.g. renaming samples, groups, ...)
 if (!is.null(params$metadata_value_mods)) {
+  metadata_value_mods <- params$metadata_value_mods
+  names(metadata_value_mods) <- make.names(names(params$metadata_value_mods))
   cat("Changed values as defined by `metadata_value_mods`:\n\n")
-  mods <- params$metadata_value_mods
+  mods <- metadata_value_mods
   for (col in names(mods)){
     cat(paste0("* ", col, ": "))
     cat(paste(names(mods[[col]]), mods[[col]], sep = " > ", collapse = ", "))
@@ -58,7 +64,7 @@ if (!is.null(params$metadata_value_mods)) {
   }
   biocrates <- modify_metadata_values(
     data = biocrates,
-    mapping = params$metadata_value_mods
+    mapping = metadata_value_mods
   )
   cat("\n\n")
 }
