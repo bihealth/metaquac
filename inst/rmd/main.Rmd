@@ -7,6 +7,10 @@ output:
       collapsed: true
     number_sections: true  
     df_print: paged
+    pandoc_args: [
+      "+RTS", "-K2048m",
+      "-RTS"
+    ]
 params:
   data_files:
   kit: Biocrates AbsoluteIDQ p400 HR Kit
