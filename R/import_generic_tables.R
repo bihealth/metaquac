@@ -161,7 +161,7 @@ import_generic_table_set <- function(
 
   # Update column types of relevant columns
   single_table <- single_table %>%
-    mutate_at(vars(Well.Position, Sequence.Position), funs(as.integer)) %>%
+    mutate_at(vars(one_of(c(COLUMN_WELL_POSITION, COLUMN_SEQUENCE_POSITION))), funs(as.integer)) %>%
     mutate_at(
       vars(one_of(names(filenames)[!filenames=="Status"])),
       funs(as.numeric)
