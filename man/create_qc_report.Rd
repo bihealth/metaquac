@@ -4,36 +4,48 @@
 \alias{create_qc_report}
 \title{Create a MeTaQuaC QC report based on Biocrates data (as exported by MetIDQ).}
 \usage{
-create_qc_report(data_files, kit = c("Biocrates Bile Acids Kit",
-  "Biocrates AbsoluteIDQ p180 Kit", "Biocrates AbsoluteIDQ p400 HR Kit",
-  "Biocrates AbsoluteIDQ Stero17 Kit", "Biocrates MxP Quant 500 Kit",
-  "Generic Data")[1], measurement_type = c("LC", "FIA")[1],
-  generic_data_types = c(CONCENTRATION = "Concentration", AREA = "Area",
-  INTENSITY = NULL, ISTD_AREA = NULL, ISTD_INTENSITY = NULL, STATUS =
-  NULL), generic_index_first_compound = NULL, title = ifelse(kit \%in\%
-  KITS_BIOCRATES, "Biocrates QC Report", "Generic Data QC Report"),
+create_qc_report(
+  data_files,
+  kit = c("Biocrates Bile Acids Kit", "Biocrates AbsoluteIDQ p180 Kit",
+    "Biocrates AbsoluteIDQ p400 HR Kit", "Biocrates AbsoluteIDQ Stero17 Kit",
+    "Biocrates MxP Quant 500 Kit", "Generic Data")[1],
+  measurement_type = c("LC", "FIA")[1],
+  generic_data_types = c(CONCENTRATION = "Concentration", AREA = "Area", INTENSITY =
+    NULL, ISTD_AREA = NULL, ISTD_INTENSITY = NULL, STATUS = NULL),
+  generic_index_first_compound = NULL,
+  title = ifelse(kit \%in\% KITS_BIOCRATES, "Biocrates QC Report",
+    "Generic Data QC Report"),
   author = unname(Sys.info()["user"]),
-  report_output_name = paste0(format(Sys.time(), "\%Y\%m\%d_\%H\%M\%S"),
-  "_qc_report_", measurement_type), report_output_dir = "reports",
-  pool_indicator = "Sample.Identification", profiling_variables = NULL,
-  study_variables = NULL, replicate_variables = NULL,
-  preproc_keep_status = c("Valid", "Semi Quant.", "Smaller Zero",
-  "< LOD", "< LLOQ", "> ULOQ", "No Intercept", "Missing Measurement",
-  "ISTD Out of Range", "STD/QC < Limit", "STD/QC > Limit", "Invalid",
-  "Incomplete", "Blank Out of Range")[1:2],
+  report_output_name = paste0(format(Sys.time(), "\%Y\%m\%d_\%H\%M\%S"), "_qc_report_",
+    measurement_type),
+  report_output_dir = "reports",
+  pool_indicator = "Sample.Identification",
+  profiling_variables = NULL,
+  study_variables = NULL,
+  replicate_variables = NULL,
+  preproc_keep_status = c("Valid", "Semi Quant.", "Smaller Zero", "< LOD", "< LLOQ",
+    "> ULOQ", "No Intercept", "Missing Measurement", "ISTD Out of Range",
+    "STD/QC < Limit", "STD/QC > Limit", "Invalid", "Incomplete",
+    "Blank Out of Range")[1:2],
   preproc_q500_urine_limits = FALSE,
   filter_compound_qc_ref_max_mv_ratio = 0.3,
   filter_compound_qc_ref_max_rsd = 15,
   filter_compound_qc_pool_max_mv_ratio = 0.3,
   filter_compound_qc_pool_max_rsd = 15,
   filter_compound_bs_max_mv_ratio = 0.3,
-  filter_compound_bs_min_rsd = 15, filter_sample_max_mv_ratio = 0.2,
-  data_tables = c("all", "stats", "none")[1], metadata_import = NULL,
+  filter_compound_bs_min_rsd = 15,
+  filter_sample_max_mv_ratio = 0.2,
+  data_tables = c("all", "stats", "none")[1],
+  metadata_import = NULL,
   metadata_import_overlap = c("rename", "replace", "omit")[1],
-  metadata_name_mods_org = NULL, metadata_name_mods_add = NULL,
-  metadata_value_mods = NULL, lowcon_conditions = NULL,
-  lowcon_sd_outlier_removal = FALSE, lowcon_minimum_intensity = 20000,
-  ...)
+  metadata_name_mods_org = NULL,
+  metadata_name_mods_add = NULL,
+  metadata_value_mods = NULL,
+  lowcon_conditions = NULL,
+  lowcon_sd_outlier_removal = FALSE,
+  lowcon_minimum_intensity = 20000,
+  ...
+)
 }
 \arguments{
 \item{data_files}{Data files to import. List MetIDQ data (txt), as an R list providing the
