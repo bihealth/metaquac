@@ -51,6 +51,7 @@ assign("AREA", params$generic_data_types["AREA"], ENV)
 assign("ISTD_INTENSITY", params$generic_data_types["ISTD_INTENSITY"], ENV)
 assign("ISTD_AREA", params$generic_data_types["ISTD_AREA"], ENV)
 DATA_TYPES <- params$generic_data_types[params$generic_data_types %in% names(generic_data)]
+assign("DATA_TYPES", DATA_TYPES, ENV)
 
 # Set sample types
 # TODO: create and check parameter for sample types

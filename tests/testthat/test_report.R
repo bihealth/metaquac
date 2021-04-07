@@ -1,14 +1,18 @@
 context("Report creation")
 
 
-# Get paths of files included in the package
-test_files <- function(files){
-  return(system.file("extdata", files, package = "metaquac"))
-}
+# Some parameters for development and debugging
+
+# Allow to skip report tests
+SKIP_REPORTS_TESTS <- FALSE
+testthat::skip_if(SKIP_REPORTS_TESTS)
+
+# Delete reports after test creation?
+DELETE_REPORTS <- TRUE
 
 
 ### Tests run with Biocrates AbsoluteIDQ p400 HR Kit ###########################
-test_that("report works for Biocrates AbsoluteIDQ p400 HR Kit LC data", {
+testthat::test_that("report works for Biocrates AbsoluteIDQ p400 HR Kit LC data", {
   # Create p400 LC report
   create_qc_report(
     report_output_name = "biocrates_qc_lc",
@@ -35,10 +39,14 @@ test_that("report works for Biocrates AbsoluteIDQ p400 HR Kit LC data", {
     replicate_variables = c("Group", "Condition"),
     pool_indicator = "Sample.Identification"
   )
+
+  if (DELETE_REPORTS){
+    unlink("biocrates_p400_test_01", recursive = TRUE)
+  }
 })
 
 
-test_that("report works for Biocrates AbsoluteIDQ p400 HR Kit FIA data", {
+testthat::test_that("report works for Biocrates AbsoluteIDQ p400 HR Kit FIA data", {
   # Create p400 FIA report
   create_qc_report(
     report_output_name = "biocrates_qc_fia",
@@ -67,11 +75,15 @@ test_that("report works for Biocrates AbsoluteIDQ p400 HR Kit FIA data", {
     replicate_variables = c("Group", "Condition"),
     pool_indicator = "Sample.Identification"
   )
+
+  if (DELETE_REPORTS){
+    unlink("biocrates_p400_test_01", recursive = TRUE)
+  }
 })
 
 
 ### Tests data with Biocrates MxP Quant 500 Kit ################################
-test_that("report works for Biocrates MxP Quant 500 Kit LC data", {
+testthat::test_that("report works for Biocrates MxP Quant 500 Kit LC data", {
   # Create Q500 LC report
   create_qc_report(
     report_output_name = "biocrates_qc_lc",
@@ -91,10 +103,14 @@ test_that("report works for Biocrates MxP Quant 500 Kit LC data", {
     kit = "Biocrates MxP Quant 500 Kit",
     metadata_import = test_files("biocrates_q500_test_01/extra_annotation.txt")
   )
+
+  if (DELETE_REPORTS){
+    unlink("biocrates_p400_test_01", recursive = TRUE)
+  }
 })
 
 
-test_that("report works for Biocrates MxP Quant 500 Kit FIA data", {
+testthat::test_that("report works for Biocrates MxP Quant 500 Kit FIA data", {
   # Create Q500 FIA report
   create_qc_report(
     report_output_name = "biocrates_qc_fia",
@@ -113,11 +129,15 @@ test_that("report works for Biocrates MxP Quant 500 Kit FIA data", {
     pool_indicator = "Sex",
     kit = "Biocrates MxP Quant 500 Kit"
   )
+
+  if (DELETE_REPORTS){
+    unlink("biocrates_p400_test_01", recursive = TRUE)
+  }
 })
 
 
 ### Tests data with Biocrates MxP Quant 500 Kit and lowcon section #############
-test_that("lowcon report works for Biocrates MxP Quant 500 Kit LC data", {
+testthat::test_that("lowcon report works for Biocrates MxP Quant 500 Kit LC data", {
   # Create Q500 LC report
   metaquac::create_qc_report(
     report_output_name = "biocrates_qc_lc",
@@ -138,10 +158,14 @@ test_that("lowcon report works for Biocrates MxP Quant 500 Kit LC data", {
     lowcon_conditions = c("Sex", "Sample.Volume"),
     lowcon_sd_outlier_removal = FALSE
   )
+
+  if (DELETE_REPORTS){
+    unlink("biocrates_p400_test_01", recursive = TRUE)
+  }
 })
 
 
-test_that("lowcon report works for Biocrates MxP Quant 500 Kit FIA data", {
+testthat::test_that("lowcon report works for Biocrates MxP Quant 500 Kit FIA data", {
   # Create Q500 FIA report
   metaquac::create_qc_report(
     report_output_name = "biocrates_qc_fia",
@@ -162,11 +186,15 @@ test_that("lowcon report works for Biocrates MxP Quant 500 Kit FIA data", {
     lowcon_conditions = c("Sex", "Sample.Volume"),
     lowcon_sd_outlier_removal = TRUE
   )
+
+  if (DELETE_REPORTS){
+    unlink("biocrates_p400_test_01", recursive = TRUE)
+  }
 })
 
 
 ### Tests data with random generic data ########################################
-test_that("report works for generic data, batches included", {
+testthat::test_that("report works for generic data, batches included", {
   # Create generic report
   metaquac::create_qc_report(
     report_output_name = "generic_qc_lc",
@@ -190,10 +218,14 @@ test_that("report works for generic data, batches included", {
     study_variables = list('Group'),
     replicate_variables = c('Group')
   )
+
+  if (DELETE_REPORTS){
+    unlink("biocrates_p400_test_01", recursive = TRUE)
+  }
 })
 
 
-test_that("report works for generic data, batches included", {
+testthat::test_that("report works for generic data, batches included", {
   # Create generic report
   metaquac::create_qc_report(
     report_output_name = "generic_qc_lc",
@@ -219,11 +251,15 @@ test_that("report works for generic data, batches included", {
     study_variables = list('Sex'),
     replicate_variables = c('Sex')
   )
+
+  if (DELETE_REPORTS){
+    unlink("biocrates_p400_test_01", recursive = TRUE)
+  }
 })
 
 
 # # Separated batches not yet supported for generic data
-# test_that("report works for generic data, batches separately", {
+# testthat::test_that("report works for generic data, batches separately", {
 #   # Create generic report
 #   metaquac::create_qc_report(
 #     report_output_name = "generic_qc_lc",
@@ -253,4 +289,8 @@ test_that("report works for generic data, batches included", {
 #     study_variables = list('Group'),
 #     replicate_variables = c('Group')
 #   )
+#
+#   if (DELETE_REPORTS){
+#     unlink("biocrates_p400_test_01", recursive = TRUE)
+#   }
 # })

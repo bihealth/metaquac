@@ -165,6 +165,7 @@ wide_conc_table_compounds_x_samples <- function(
   value = ENV$CONCENTRATION,
   metadata = ENV$ALL_VARIABLES
 ) {
+  names(value) <- NULL
   data_wide <- data %>%
   select(Compound,  Sample.Name, Sample.Identification, Sample.Type,
          any_of(c("Well.Position", "Sequence.Position")),

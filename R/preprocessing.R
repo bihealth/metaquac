@@ -25,26 +25,31 @@
 # Currently, there is no differentiation between stati and thus missing values.
 discard_unreliable_measurements <- function(data,
                                             keep = c("Valid"),
+                                            targets = ENV$DATA_TYPES,
                                             sample_types = NULL){
 
-  # Identify and discard (i.e. set NA) every measurement but the onces to keep
-  if (is.null(sample_types)){
-    data <- data %>%
-      mutate(Discard = !(MetIDQ_Status %in% keep)) %>%
-      mutate_at(.vars = vars(matches(TABLE_TYPES_REGEX_ALL)),
-                .funs = funs(ifelse(Discard, NA, .)))
-  } else {
-    data <- data %>%
-      mutate(Discard =
-               Sample.Type %in% sample_types &
-               !(MetIDQ_Status %in% keep)) %>%
-      mutate_at(.vars = vars(matches(TABLE_TYPES_REGEX_ALL)),
-                .funs = funs(ifelse(Discard, NA, .)))
-  }
-  data <- data %>%
-    select(-Discard)
+  # Remove names from target vector (otherwise dplyr::across fails)
+  names(targets) <- NULL
+  assertthat::assert_that(all(targets %in% names(data)))
 
-  return(data)
+  # If not stated otherwise, discard from all samples types
+  if (is.null(sample_types)){
+    sample_types <- unique(data$Sample.Type)
+  }
+  assertthat::assert_that(all(sample_types %in% data$Sample.Type))
+
+  # Identify and discard (i.e. set NA) every measurement but the once to keep
+  data_out <- data %>%
+    dplyr::mutate(
+      Discard = Sample.Type %in% sample_types & !(MetIDQ_Status %in% keep),
+      dplyr::across(
+        .cols = dplyr::all_of(targets),
+        .fns = ~ifelse(Discard, NA, .)
+      )
+    ) %>%
+    dplyr::select(-Discard)
+
+  return(data_out)
 }
 
 # Summary stats on missing values per compound
@@ -170,7 +175,10 @@ execute_preprocessing <- function(data, ppparams){
 
   # 1. Discard unreliable measurements
   datasets$discarded <- discard_unreliable_measurements(
-    data = datasets$original_urine, keep = ppparams$statuses_to_keep)
+    data = datasets$original_urine,
+    keep = ppparams$statuses_to_keep,
+    targets = ENV$DATA_TYPES
+  )
 
   # 2. Remove unreliable compounds
   #   a. Based on missing values ratio in QCs (samples of type ENV$SAMPLE_TYPE_REFERENCE_QC)
