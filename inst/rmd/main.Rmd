@@ -65,6 +65,11 @@ params:
   # (not visibly passed via create_report function, switch for debugging only)
   ignore_errors: true
   
+  # Enable debug mode:
+  # * Export intermediary data for easy import during package development
+  # (not visibly passed via create_report function, switch for debugging only)
+  debug_mode: false
+  
 title: "`r params$title`"
 author: "`r params$author`"
 date: "`r format(Sys.time(), '%B %d, %Y')`"

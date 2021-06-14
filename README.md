@@ -311,6 +311,8 @@ transformation and merging will fail.
 * `report_output_name` Custom name of report file (default =
 "YYYYMMDD_HHMMSS_qc_report_{LC|FIA}").
 * `report_output_dir` Custom path of an output directory (default = "reports").
+* `report_output_clean` Indicate if intermediate report files (the final
+markdown document and figures) should be removed (default) or should remain.
 * `pool_indicator`
 Indicate a column/variable name which should be scanned for pooled QC samples
 (Biocrates only). (default = "Sample Identification", set NULL to disable).

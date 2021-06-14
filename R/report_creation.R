@@ -45,6 +45,8 @@
 #' @param report_output_name Custom name of report file (default =
 #' "YYYYMMDD_HHMMSS_qc_report_\{LC|FIA\}").
 #' @param report_output_dir Custom path of an output directory (default = "reports").
+#' @param report_output_clean Indicate if intermediate report files (the final
+#' markdown document and figures) should be removed (default) or should remain.
 #' @param pool_indicator
 #' Indicate a column/variable name which should be scanned for pooled QC samples
 #' (Biocrates only). (default = "Sample Identification", set NULL to disable).
@@ -149,6 +151,12 @@
 #' @param lowcon_minimum_intensity Minimal intensity threshold to keep values in
 #' low concentration analysis (default = 20000). Below, values are set to NA.
 #' @param ... Masked parameters for development and testing only.
+#'
+#' @return Returns TRUE to indicate if a report was successfully created.
+#' Note, however, errors may still occur withing the report,
+#' sometimes more disruptive (e.g. failed imports),
+#' sometimes less disruptive (e.g. a single plot failing).
+#'
 #'
 #' @export
 #'
@@ -270,6 +278,7 @@ create_qc_report <- function(
                               "_qc_report_",
                               measurement_type),
   report_output_dir = "reports",
+  report_output_clean = TRUE,
   pool_indicator = "Sample.Identification",
   # data_output_name = report_output_name,
   # data_output_dir = report_output_dir,
@@ -312,6 +321,21 @@ create_qc_report <- function(
   lowcon_minimum_intensity = 20000,
   ...
 ){
+
+  # Check cleanup and debugging parameters
+  assertthat::assert_that(is.logical(report_output_clean))
+
+  if (exists("debug_mode")){
+    assertthat::assert_that(is.logical(debug_mode))
+    report_output_clean <- FALSE
+  } else {
+    debug_mode <- FALSE
+  }
+
+  # Path for intermediate (r)markdown files
+  intermediates_dir = paste0(
+    report_output_dir, "/", report_output_name, "_files"
+  )
 
   # Creates full absolute paths
   data_files <- lapply(data_files, function(x){getAbsolutePathWithNames(x)})
@@ -360,7 +384,18 @@ create_qc_report <- function(
       lowcon_minimum_intensity = lowcon_minimum_intensity,
       ...
     ),
-    clean = TRUE)
+    clean = report_output_clean,
+    run_pandoc = TRUE,
+    intermediates_dir = intermediates_dir
+  )
+
+  # If intermediates are not cleaned by rmarkdown
+  if (!report_output_clean){
+    # Remove rmarkdown chunks, so only the final full markdown file remains
+    file.remove(list.files(path = intermediates_dir, pattern = ".+\\.Rmd", full.names = TRUE))
+  }
+
+  return(TRUE)
 }
 
 

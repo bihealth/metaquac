@@ -19,6 +19,7 @@ create_qc_report(
   report_output_name = paste0(format(Sys.time(), "\%Y\%m\%d_\%H\%M\%S"), "_qc_report_",
     measurement_type),
   report_output_dir = "reports",
+  report_output_clean = TRUE,
   pool_indicator = "Sample.Identification",
   profiling_variables = NULL,
   study_variables = NULL,
@@ -94,6 +95,9 @@ transformation and merging will fail.}
 "YYYYMMDD_HHMMSS_qc_report_\{LC|FIA\}").}
 
 \item{report_output_dir}{Custom path of an output directory (default = "reports").}
+
+\item{report_output_clean}{Indicate if intermediate report files (the final
+markdown document and figures) should be removed (default) or should remain.}
 
 \item{pool_indicator}{Indicate a column/variable name which should be scanned for pooled QC samples
 (Biocrates only). (default = "Sample Identification", set NULL to disable).
@@ -210,6 +214,12 @@ recommended to apply on actual study samples and thus biological variance.}
 low concentration analysis (default = 20000). Below, values are set to NA.}
 
 \item{...}{Masked parameters for development and testing only.}
+}
+\value{
+Returns TRUE to indicate if a report was successfully created.
+Note, however, errors may still occur withing the report,
+sometimes more disruptive (e.g. failed imports),
+sometimes less disruptive (e.g. a single plot failing).
 }
 \description{
 Create a MeTaQuaC QC report based on Biocrates data (as exported by MetIDQ).
