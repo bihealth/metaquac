@@ -37,6 +37,9 @@ create_qc_report(
   filter_compound_bs_min_rsd = 15,
   filter_sample_max_mv_ratio = 0.2,
   data_tables = c("all", "stats", "none")[1],
+  data_export_long = FALSE,
+  data_export_wide = FALSE,
+  data_export_prefix = file.path(report_output_dir, report_output_name),
   metadata_import = NULL,
   metadata_import_overlap = c("rename", "replace", "omit")[1],
   metadata_name_mods_org = NULL,
@@ -168,6 +171,14 @@ implemented data tables (with csv export buttons). "stats" will only show tables
 data (such as countings, %RSDs, etc.), but not the actual measurements (neither original nor
 pre-processed). "none" will show no data tables at all, i.e. the report is mainly limited to
 visualizations.}
+
+\item{data_export_long, data_export_wide}{Enable export of measurement data sets (default = FALSE).
+Use in combination with data_tables = "stats", to keep big data sets
+exclusively outside of the report (e.g. to prevent memory issues either
+during pandoc conversion or when viewing the report in a browser).}
+
+\item{data_export_prefix}{File path prefix to apply for data exports.
+(default = report_output_dir + report_output_name).}
 
 \item{metadata_import}{Indicate a text file (csv or tsv) with additional
 metadata/annotations to import and merge (by column "Sample Identification").}

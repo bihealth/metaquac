@@ -29,6 +29,9 @@ params:
   filter_compound_bs_min_rsd: 15
   filter_sample_max_mv_ratio: 0.2
   data_tables: all
+  data_export_long:
+  data_export_wide:
+  data_export_prefix:
   metadata_import:
   metadata_import_overlap:
   metadata_name_mods_org:
@@ -84,6 +87,7 @@ knitr::opts_chunk$set(
   fig.height = 5,
   fig.align = "center"
   # out.width = "100%"
+  # dev=c('png', 'pdf')
 )
 knitr::opts_knit$set(
   eval.after = 'fig.cap'
@@ -125,7 +129,8 @@ Please refer to Biocrates' manuals and documents provided with the kit used.\n
 ## Table
 ```{r, eval=CONTINUE}
 easy_datatable(
-  data = biocrates, caption = paste0("Full data before preprocessing")
+  data = biocrates,
+  caption = paste0("Full data before preprocessing")
 )
 ```
 

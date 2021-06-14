@@ -5,10 +5,24 @@ targeted metabolomics analysis with focus on
 [Biocrates Kits](https://www.biocrates.com/). It provides a simple interface
 to create extensive, reproducible and well documented HTML QC reports in an automated fashion.
 
-Please refer to our article to learn more about the underlying ideas of MeTaQuaC:
+Please refer to our article to learn more about the underlying ideas:  
+[Kuhring M. et al., 2020, Concepts and Software Package
+for Efficient Quality Control in Targeted Metabolomics Studies:
+MeTaQuaC](https://pubs.acs.org/doi/10.1021/acs.analchem.0c00136)
 
-    Kuhring M. et al., Concepts and Software Package for efficient Quality Control in targeted
-    Metabolomics Studies - MeTaQuaC (in preparation)
+**Recent changes**:
+* [v0.1.32] Add parameter to automatically export main data sets
+* [v0.1.32] Add parameter to retain report intermediates (markdown and figures)
+
+**Critical Notes**:
+* MeTaQuaC reports sometimes struggle with **memory issues**,
+either during pandoc conversion to HTML or when opening the HTLM in a browser.
+This is a result of providing integrated data sets rendered
+as feature-rich JavaScript tables and in redundant occurrence.
+As a first workaround, use the parameter `data_tables`
+("stats" or "none", so the main data tables in the report get disabled)
+in combination with the parameter `data_export_{long|wide}`
+(TRUE, so all the main data tables get automatically exported as csv).
 
 MeTaQuaC supports the following Biocrates Kits (for the present):
 
@@ -379,6 +393,14 @@ implemented data tables (with csv export buttons). "stats" will only show tables
 data (such as countings, %RSDs, etc.), but not the actual measurements (neither original nor
 pre-processed). "none" will show no data tables at all, i.e. the report is mainly limited to
 visualizations.
+* `data_export_long`/`data_export_wide`
+Enable export of measurement data sets (default = FALSE).
+Use in combination with data_tables = "stats", to keep big data sets
+exclusively outside of the report (e.g. to prevent memory issues either
+during pandoc conversion or when viewing the report in a browser).
+* `data_export_prefix`
+File path prefix to apply for data exports.
+(default = report_output_dir + report_output_name).
 * `metadata_import` Indicate a tab-separated text file with additional
 metadata/annotations to import and merge (by column "Sample Identification").
 * `metadata_import_overlap` Specify the handling of overlaping columns.
