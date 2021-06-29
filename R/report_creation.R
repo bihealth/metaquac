@@ -168,6 +168,11 @@
 #' @export
 #'
 #' @examples
+#' # Note: These examples make use of data sets included in the package,
+#' # hence the use of the system.file function.
+#' # Normally, please provide file paths strings directly instead,
+#' # e.g. data_files = list(Batch1 = c("filepath")).
+#'
 #' # Biocrates MxP Quant 500 Kit - LC injection
 #' metaquac::create_qc_report(
 #' data_files = list(
@@ -266,7 +271,7 @@ create_qc_report <- function(
     "Biocrates AbsoluteIDQ Stero17 Kit",
     "Biocrates MxP Quant 500 Kit",
     "Generic Data"
-  )[1],
+  )[5],
   measurement_type = c("LC", "FIA")[1],
   generic_data_types = c( # TODO: first one has priority
     CONCENTRATION = "Concentration",
