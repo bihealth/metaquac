@@ -45,6 +45,8 @@
 #' @param report_output_name Custom name of report file (default =
 #' "YYYYMMDD_HHMMSS_qc_report_\{LC|FIA\}").
 #' @param report_output_dir Custom path of an output directory (default = "reports").
+#' @param report_output_clean Indicate if intermediate report files (the final
+#' markdown document and figures) should be removed (default) or should remain.
 #' @param pool_indicator
 #' Indicate a column/variable name which should be scanned for pooled QC samples
 #' (Biocrates only). (default = "Sample Identification", set NULL to disable).
@@ -111,6 +113,13 @@
 #' data (such as countings, %RSDs, etc.), but not the actual measurements (neither original nor
 #' pre-processed). "none" will show no data tables at all, i.e. the report is mainly limited to
 #' visualizations.
+#' @param data_export_long,data_export_wide
+#' Enable export of measurement data sets (default = FALSE).
+#' Use in combination with data_tables = "stats", to keep big data sets
+#' exclusively outside of the report (e.g. to prevent memory issues either
+#' during pandoc conversion or when viewing the report in a browser).
+#' @param data_export_prefix File path prefix to apply for data exports.
+#' (default = report_output_dir + report_output_name).
 #' @param metadata_import Indicate a text file (csv or tsv) with additional
 #' metadata/annotations to import and merge (by column "Sample Identification").
 #' @param metadata_import_overlap Specify the handling of overlaping columns.
@@ -150,9 +159,20 @@
 #' low concentration analysis (default = 20000). Below, values are set to NA.
 #' @param ... Masked parameters for development and testing only.
 #'
+#' @return Returns TRUE to indicate if a report was successfully created.
+#' Note, however, errors may still occur withing the report,
+#' sometimes more disruptive (e.g. failed imports),
+#' sometimes less disruptive (e.g. a single plot failing).
+#'
+#'
 #' @export
 #'
 #' @examples
+#' # Note: These examples make use of data sets included in the package,
+#' # hence the use of the system.file function.
+#' # Normally, please provide file paths strings directly instead,
+#' # e.g. data_files = list(Batch1 = c("filepath")).
+#'
 #' # Biocrates MxP Quant 500 Kit - LC injection
 #' metaquac::create_qc_report(
 #' data_files = list(
@@ -251,7 +271,7 @@ create_qc_report <- function(
     "Biocrates AbsoluteIDQ Stero17 Kit",
     "Biocrates MxP Quant 500 Kit",
     "Generic Data"
-  )[1],
+  )[5],
   measurement_type = c("LC", "FIA")[1],
   generic_data_types = c( # TODO: first one has priority
     CONCENTRATION = "Concentration",
@@ -270,6 +290,7 @@ create_qc_report <- function(
                               "_qc_report_",
                               measurement_type),
   report_output_dir = "reports",
+  report_output_clean = TRUE,
   pool_indicator = "Sample.Identification",
   # data_output_name = report_output_name,
   # data_output_dir = report_output_dir,
@@ -302,6 +323,9 @@ create_qc_report <- function(
   filter_compound_bs_min_rsd = 15,
   filter_sample_max_mv_ratio = 0.2,
   data_tables = c("all", "stats", "none")[1],
+  data_export_long = FALSE,
+  data_export_wide = FALSE,
+  data_export_prefix = file.path(report_output_dir, report_output_name),
   metadata_import = NULL,
   metadata_import_overlap = c("rename", "replace", "omit")[1],
   metadata_name_mods_org = NULL,
@@ -313,12 +337,28 @@ create_qc_report <- function(
   ...
 ){
 
+  # Check cleanup and debugging parameters
+  assertthat::assert_that(is.logical(report_output_clean))
+
+  if (exists("debug_mode")){
+    assertthat::assert_that(is.logical(debug_mode))
+    report_output_clean <- FALSE
+  } else {
+    debug_mode <- FALSE
+  }
+
   # Creates full absolute paths
   data_files <- lapply(data_files, function(x){getAbsolutePathWithNames(x)})
-  # data_output_dir <- unname(R.utils::getAbsolutePath(data_output_dir))
+  report_output_dir <- unname(R.utils::getAbsolutePath(report_output_dir))
+  data_export_prefix <- unname(R.utils::getAbsolutePath(data_export_prefix))
   if (!is.null(metadata_import)){
     metadata_import <- unname(R.utils::getAbsolutePath(metadata_import))
   }
+
+  # Path for intermediate (r)markdown files
+  intermediates_dir = paste0(
+    report_output_dir, "/", report_output_name, "_files"
+  )
 
   # Markdown rendering
   rmarkdown::render(
@@ -350,6 +390,9 @@ create_qc_report <- function(
       filter_compound_bs_min_rsd = filter_compound_bs_min_rsd,
       filter_sample_max_mv_ratio = filter_sample_max_mv_ratio,
       data_tables = data_tables,
+      data_export_long = data_export_long,
+      data_export_wide = data_export_wide,
+      data_export_prefix = data_export_prefix,
       metadata_import = metadata_import,
       metadata_import_overlap = metadata_import_overlap,
       metadata_name_mods_org = metadata_name_mods_org,
@@ -360,7 +403,18 @@ create_qc_report <- function(
       lowcon_minimum_intensity = lowcon_minimum_intensity,
       ...
     ),
-    clean = TRUE)
+    clean = report_output_clean,
+    run_pandoc = TRUE,
+    intermediates_dir = intermediates_dir
+  )
+
+  # If intermediates are not cleaned by rmarkdown
+  if (!report_output_clean){
+    # Remove rmarkdown chunks, so only the final full markdown file remains
+    file.remove(list.files(path = intermediates_dir, pattern = ".+\\.Rmd", full.names = TRUE))
+  }
+
+  return(TRUE)
 }
 
 

@@ -17,18 +17,18 @@ ppparams <- list(
 The following preprocessing procedures are applied on the data in this order:
 
 1. **Status Preprocessing**
-    a. Discard unreliable measurements based on status
+a. Discard unreliable measurements based on status
 2. **Remove unreliable __compounds__** (QC-based filters)
-    a. Based on missing values ratio in Reference QCs (**>=`r ppparams$threshold_2a * 100`%**)
-    b. Based on %RSD of Reference QCs (**>=`r ppparams$threshold_2b`%**)
-    c. Based on missing values ratio in Pooled QCs (**>=`r ppparams$threshold_2c * 100`%**)
-    d. Based on %RSD of Pooled QCs (**>=`r ppparams$threshold_2d`%**)
+a. Based on missing values ratio in Reference QCs (**>=`r ppparams$threshold_2a * 100`%**)
+b. Based on %RSD of Reference QCs (**>=`r ppparams$threshold_2b`%**)
+c. Based on missing values ratio in Pooled QCs (**>=`r ppparams$threshold_2c * 100`%**)
+d. Based on %RSD of Pooled QCs (**>=`r ppparams$threshold_2d`%**)
 3. **Remove underrepresented or invariable __compounds__** (biological filters)
-    a. Based on only missing values in biological samples (**=`r ppparams$threshold_3a * 100`%**)
-    b. Based on missing values ratio in biological samples (**>=`r ppparams$threshold_3b * 100`%**)
-    c. Based on %RSD in biological samples (**<`r ppparams$threshold_3c`%**)
+a. Based on only missing values in biological samples (**=`r ppparams$threshold_3a * 100`%**)
+b. Based on missing values ratio in biological samples (**>=`r ppparams$threshold_3b * 100`%**)
+c. Based on %RSD in biological samples (**<`r ppparams$threshold_3c`%**)
 4. **Remove underrepresented __biological samples__** (biological filters)
-    a. Based on missing values ratio of compounds (**>=`r ppparams$threshold_4 * 100`%**)
+a. Based on missing values ratio of compounds (**>=`r ppparams$threshold_4 * 100`%**)
 
 The preprocessing statuses and filter thresholds can be modified with the following parameters of
 the `create_report` function (refer to the readme or function description for details):
@@ -61,7 +61,7 @@ rm(biocrates)
 ## Step **1**
 
 1. **Status Preprocessing**
-    a. Discard unreliable measurements based on status
+a. Discard unreliable measurements based on status
 
 The status preprocessing discards measurements based on quality statuses.
 
@@ -107,12 +107,17 @@ easy_datatable(
 
 easy_datatable(
   datasets$discarded,
-  caption = paste0("Full data after status preprocessing"))
+  caption = paste0("Full data after status preprocessing"),
+  export_csv = params$data_export_long,
+  export_path =  paste0(params$data_export_prefix, "_filter1_long.csv")
+)
 
 datasets$discarded %>%
   wide_conc_table_compounds_x_samples() %>%
-  easy_datatable(caption = "Full data after status preprocessing
-                            (wide: compounds x samples, with some metadata)"
+  easy_datatable(
+    caption = "Full data after status preprocessing (wide: compounds x samples, with some metadata)",
+    export_csv = params$data_export_wide,
+    export_path =  paste0(params$data_export_prefix, "_filter1_wide.csv")
   )
 ```
 
@@ -136,7 +141,7 @@ easy_datatable(
 ## Step **2a**
 
 2. **Remove unreliable __compounds__** (QC-based filters)
-    a. Based on missing values ratio in Reference QCs (**>=`r ppparams$threshold_2a * 100`%**)
+a. Based on missing values ratio in Reference QCs (**>=`r ppparams$threshold_2a * 100`%**)
 
 To alter the threshold use  parameter `filter_compound_qc_ref_max_mv_ratio`.
 
@@ -150,23 +155,31 @@ Number of compounds left: **`r length(unique(datasets$filter_compounds_by_qc_mv_
 easy_datatable(
   datasets$filter_compounds_by_qc_mv_removed, show_type = "statistics",
   caption = paste0("Removed compounds due to ", ppparams$threshold_2a*100, "% QC MVs"))
+
 easy_datatable(
   datasets$filter_compounds_by_qc_mv_kept,
-  caption = paste0("Full data kept after ", ppparams$threshold_2a*100, "% QC MVs filtering"))
+  caption = paste0("Full data kept after ", ppparams$threshold_2a*100, "% QC MVs filtering"),
+  export_csv = params$data_export_long,
+  export_path =  paste0(params$data_export_prefix, "_filter2a_long.csv")
+)
 
 datasets$filter_compounds_by_qc_mv_kept %>%
   wide_conc_table_compounds_x_samples() %>%
-  easy_datatable(caption = paste0(
+  easy_datatable(
+    caption = paste0(
       "Full data kept after ", ppparams$threshold_2a*100, "% QC MVs filtering",
       " (wide: compounds x samples, with some metadata)"
-  ))
+    ),
+    export_csv = params$data_export_wide,
+    export_path =  paste0(params$data_export_prefix, "_filter2a_wide.csv")
+  )
 ```
 
 
 ## Step **2b**
 
 2. **Remove unreliable __compounds__** (QC-based filters)
-    b. Based on %RSD of Reference QCs (**>=`r ppparams$threshold_2b`%**)
+b. Based on %RSD of Reference QCs (**>=`r ppparams$threshold_2b`%**)
 
 To alter the threshold use parameter `filter_compound_qc_ref_max_rsd`.
 
@@ -177,9 +190,13 @@ Number of compounds left: **`r length(unique(datasets$filter_compounds_by_qc_rsd
 easy_datatable(
   datasets$filter_compounds_by_qc_rsd_removed, show_type = "statistics",
   caption = paste0("Removed compounds due to ", ppparams$threshold_2b, " %RSD in QCs"))
+
 easy_datatable(
   datasets$filter_compounds_by_qc_rsd_kept,
-  caption = paste0("Full data kept after ", ppparams$threshold_2b, "%RSD QC filtering"))
+  caption = paste0("Full data kept after ", ppparams$threshold_2b, "%RSD QC filtering"),
+  export_csv = params$data_export_long,
+  export_path =  paste0(params$data_export_prefix, "_filter2b_long.csv")
+)
 
 datasets$filter_compounds_by_qc_rsd_kept %>%
   wide_conc_table_compounds_x_samples() %>%
@@ -187,7 +204,9 @@ datasets$filter_compounds_by_qc_rsd_kept %>%
     caption = paste0(
       "Full data kept after ", ppparams$threshold_2b, "%RSD QC filtering",
       " (wide: compounds x samples, with some metadata)"
-    )
+    ),
+    export_csv = params$data_export_wide,
+    export_path =  paste0(params$data_export_prefix, "_filter2b_wide.csv")
   )
 ```
 
@@ -195,7 +214,7 @@ datasets$filter_compounds_by_qc_rsd_kept %>%
 ## Step **2c**
 
 2. **Remove unreliable __compounds__** (QC-based filters)
-    c. Based on missing values ratio in Pooled QCs (**>=`r ppparams$threshold_2c * 100`%**)
+c. Based on missing values ratio in Pooled QCs (**>=`r ppparams$threshold_2c * 100`%**)
 
 To alter the threshold use  parameter `filter_compound_qc_pool_max_mv_ratio`.
 
@@ -209,9 +228,13 @@ Number of compounds left: **`r length(unique(datasets$filter_compounds_by_qc_poo
 easy_datatable(
   datasets$filter_compounds_by_qc_pool_mv_removed, show_type = "statistics",
   caption = paste0("Removed compounds due to ", ppparams$threshold_2c*100, "% Pooled QC MVs"))
+
 easy_datatable(
   datasets$filter_compounds_by_qc_pool_mv_kept,
-  caption = paste0("Full data kept after ", ppparams$threshold_2c*100, "% Pooled QC MVs filtering"))
+  caption = paste0("Full data kept after ", ppparams$threshold_2c*100, "% Pooled QC MVs filtering"),
+  export_csv = params$data_export_long,
+  export_path =  paste0(params$data_export_prefix, "_filter2c_long.csv")
+)
 
 datasets$filter_compounds_by_qc_pool_mv_kept %>%
   wide_conc_table_compounds_x_samples() %>%
@@ -219,7 +242,9 @@ datasets$filter_compounds_by_qc_pool_mv_kept %>%
     caption = paste0(
       "Full data kept after ", ppparams$threshold_2c*100, "% Pooled QC MVs filtering",
       " (wide: compounds x samples, with some metadata)"
-    )
+    ),
+    export_csv = params$data_export_wide,
+    export_path =  paste0(params$data_export_prefix, "_filter2c_wide.csv")
   )
 ```
 
@@ -227,7 +252,7 @@ datasets$filter_compounds_by_qc_pool_mv_kept %>%
 ## Step **2d**
 
 2. **Remove unreliable __compounds__** (QC-based filters)
-    d. Based on %RSD of Pooled QCs (**>=`r ppparams$threshold_2d`%**)
+d. Based on %RSD of Pooled QCs (**>=`r ppparams$threshold_2d`%**)
 
 To alter the threshold use parameter `filter_compound_qc_pool_max_rsd`.
 
@@ -238,9 +263,13 @@ Number of compounds left: **`r length(unique(datasets$filter_compounds_by_qc_poo
 easy_datatable(
   datasets$filter_compounds_by_qc_pool_rsd_removed, show_type = "statistics",
   caption = paste0("Removed compounds due to ", ppparams$threshold_2d, " %RSD in Pooled QCs"))
+
 easy_datatable(
   datasets$filter_compounds_by_qc_pool_rsd_kept,
-  caption = paste0("Full data kept after ", ppparams$threshold_2d, "%RSD Pooled QC filtering"))
+  caption = paste0("Full data kept after ", ppparams$threshold_2d, "%RSD Pooled QC filtering"),
+  export_csv = params$data_export_long,
+  export_path =  paste0(params$data_export_prefix, "_filter2d_long.csv")
+)
 
 datasets$filter_compounds_by_qc_pool_rsd_kept %>%
   wide_conc_table_compounds_x_samples() %>%
@@ -248,7 +277,9 @@ datasets$filter_compounds_by_qc_pool_rsd_kept %>%
     caption = paste0(
       "Full data kept after ", ppparams$threshold_2d, "%RSD Pooled QC filtering",
       " (wide: compounds x samples, with some metadata)"
-    )
+    ),
+    export_csv = params$data_export_wide,
+    export_path =  paste0(params$data_export_prefix, "_filter2d_wide.csv")
   )
 ```
 
@@ -256,7 +287,7 @@ datasets$filter_compounds_by_qc_pool_rsd_kept %>%
 ## Step **3a**
 
 3. **Remove underrepresented __compounds__** (biological filters)
-    a. Based on only missing values in biological samples (**=`r ppparams$threshold_3a * 100`%**)
+a. Based on only missing values in biological samples (**=`r ppparams$threshold_3a * 100`%**)
 
 Number of compounds before: **`r length(unique(datasets$filter_compounds_by_qc_pool_rsd_kept$Compound))`**
 Number of compounds left: **`r length(unique(datasets$filter_compounds_by_sample_all_mv_kept$Compound))`**
@@ -265,9 +296,13 @@ Number of compounds left: **`r length(unique(datasets$filter_compounds_by_sample
 easy_datatable(
   datasets$filter_compounds_by_sample_all_mv_removed, show_type = "statistics",
   caption = paste0("Removed compounds due to ", ppparams$threshold_3a*100, "% Sample MVs"))
+
 easy_datatable(
   datasets$filter_compounds_by_sample_all_mv_kept,
-  caption = paste0("Full data kept after ", ppparams$threshold_3a*100, "% Sample MVs filtering"))
+  caption = paste0("Full data kept after ", ppparams$threshold_3a*100, "% Sample MVs filtering"),
+  export_csv = params$data_export_long,
+  export_path =  paste0(params$data_export_prefix, "_filter3a_long.csv")
+)
 
 datasets$filter_compounds_by_sample_all_mv_kept %>%
   wide_conc_table_compounds_x_samples() %>%
@@ -275,7 +310,9 @@ datasets$filter_compounds_by_sample_all_mv_kept %>%
     caption = paste0(
       "Full data kept after ", ppparams$threshold_3a*100, "% Sample MVs filtering",
       " (wide: compounds x samples, with some metadata)"
-    )
+    ),
+    export_csv = params$data_export_wide,
+    export_path =  paste0(params$data_export_prefix, "_filter3a_wide.csv")
   )
 ```
 
@@ -283,7 +320,7 @@ datasets$filter_compounds_by_sample_all_mv_kept %>%
 ## Step **3b**
 
 3. **Remove underrepresented __compounds__** (biological filters)
-    b. Based on missing values ratio in biological samples (**>=`r ppparams$threshold_3b * 100`%**)
+b. Based on missing values ratio in biological samples (**>=`r ppparams$threshold_3b * 100`%**)
 
 To alter the threshold use  parameter `filter_compound_bs_max_mv_ratio`.
 
@@ -294,9 +331,13 @@ Number of compounds left: **`r length(unique(datasets$filter_compounds_by_sample
 easy_datatable(
   datasets$filter_compounds_by_sample_mv_removed, show_type = "statistics",
   caption = paste0("Removed compounds due to ", ppparams$threshold_3b*100, "% Sample MVs"))
+
 easy_datatable(
   datasets$filter_compounds_by_sample_mv_kept,
-  caption = paste0("Full data kept after ", ppparams$threshold_3b*100, "% Sample MVs filtering"))
+  caption = paste0("Full data kept after ", ppparams$threshold_3b*100, "% Sample MVs filtering"),
+  export_csv = params$data_export_long,
+  export_path =  paste0(params$data_export_prefix, "_filter3b_long.csv")
+)
 
 datasets$filter_compounds_by_sample_mv_kept %>%
   wide_conc_table_compounds_x_samples() %>%
@@ -304,7 +345,9 @@ datasets$filter_compounds_by_sample_mv_kept %>%
     caption = paste0(
       "Full data kept after ", ppparams$threshold_3b*100, "% Sample MVs filtering",
       " (wide: compounds x samples, with some metadata)"
-    )
+    ),
+    export_csv = params$data_export_wide,
+    export_path =  paste0(params$data_export_prefix, "_filter3b_wide.csv")
   )
 ```
 
@@ -312,7 +355,7 @@ datasets$filter_compounds_by_sample_mv_kept %>%
 ## Step **3c**
 
 3. **Remove underrepresented __compounds__** (biological filters)
-    c. Based on %RSD in biological samples (**<`r ppparams$threshold_3c`%**)
+c. Based on %RSD in biological samples (**<`r ppparams$threshold_3c`%**)
 
 To alter the threshold use  parameter `filter_compound_bs_min_rsd`.
 
@@ -324,12 +367,15 @@ easy_datatable(
   datasets$filter_compounds_by_sample_rsd_removed, show_type = "statistics",
   caption = paste0(
     "Removed compounds due to ", ppparams$threshold_3c, " %RSD in biological samples")
-  )
+)
+
 easy_datatable(
   datasets$filter_compounds_by_sample_rsd_kept,
   caption = paste0(
-    "Full data kept after ", ppparams$threshold_3c, " %RSD filtering in biological samples")
-  )
+    "Full data kept after ", ppparams$threshold_3c, " %RSD filtering in biological samples"),
+  export_csv = params$data_export_long,
+  export_path =  paste0(params$data_export_prefix, "_filter3c_long.csv")
+)
 
 datasets$filter_compounds_by_sample_rsd_kept %>%
   wide_conc_table_compounds_x_samples() %>%
@@ -337,7 +383,9 @@ datasets$filter_compounds_by_sample_rsd_kept %>%
     caption = paste0(
       "Full data kept after ", ppparams$threshold_3c, " %RSD filtering in biological samples",
       " (wide: compounds x samples, with some metadata)"
-    )
+    ),
+    export_csv = params$data_export_wide,
+    export_path =  paste0(params$data_export_prefix, "_filter3c_wide.csv")
   )
 ```
 
@@ -345,7 +393,7 @@ datasets$filter_compounds_by_sample_rsd_kept %>%
 ## Step **4**
 
 4. **Remove underrepresented __biological samples__** (biological filters)
-    a. Based on missing values ratio of compounds (**>=`r ppparams$threshold_4 * 100`%**)
+a. Based on missing values ratio of compounds (**>=`r ppparams$threshold_4 * 100`%**)
 
 To alter the threshold use parameter `filter_sample_max_mv_ratio`.
 
@@ -361,9 +409,13 @@ Number of biological samples left:
 easy_datatable(
   datasets$filter_samples_by_compound_mv_removed, show_type = "statistics",
   caption = paste0("Removed samples due to ", ppparams$threshold_4*100, "% Compound MVs"))
+
 easy_datatable(
   datasets$filter_samples_by_compound_mv_kept,
-  caption = paste0("Full data kept after ", ppparams$threshold_4*100, "% Compound MVs filtering"))
+  caption = paste0("Full data kept after ", ppparams$threshold_4*100, "% Compound MVs filtering"),
+  export_csv = params$data_export_long,
+  export_path =  paste0(params$data_export_prefix, "_filter4_long.csv")
+)
 
 datasets$filter_samples_by_compound_mv_kept %>%
   wide_conc_table_compounds_x_samples() %>%
@@ -371,7 +423,9 @@ datasets$filter_samples_by_compound_mv_kept %>%
     caption = paste0(
       "Full data kept after ", ppparams$threshold_4*100, "% Compound MVs filtering",
       " (wide: compounds x samples, with some metadata)"
-    )
+    ),
+    export_csv = params$data_export_wide,
+    export_path =  paste0(params$data_export_prefix, "_filter4_wide.csv")
   )
 ```
 
@@ -399,7 +453,10 @@ easy_datatable(
 
 easy_datatable(
   datasets$original,
-  caption = paste0("Full data before preprocessing"))
+  caption = paste0("Full data before preprocessing"),
+  export_csv = params$data_export_long,
+  export_path =  paste0(params$data_export_prefix, "_original_long.csv")
+)
 
 datasets$original %>%
   wide_conc_table_compounds_x_samples() %>%
@@ -407,6 +464,8 @@ datasets$original %>%
     caption = paste0(
       "Full data before preprocessing",
       " (wide: compounds x samples, with some metadata)"
-    )
+    ),
+    export_csv = params$data_export_wide,
+    export_path =  paste0(params$data_export_prefix, "_original_wide.csv")
   )
 ```

@@ -73,7 +73,10 @@ testthat::test_that("report works for Biocrates AbsoluteIDQ p400 HR Kit FIA data
       "Group", "Condition", "Group" = list("Condition")
     ),
     replicate_variables = c("Group", "Condition"),
-    pool_indicator = "Sample.Identification"
+    pool_indicator = "Sample.Identification",
+    data_tables = "stats",
+    data_export_long = TRUE,
+    data_export_wide = TRUE
   )
 
   if (DELETE_REPORTS){
@@ -156,7 +159,9 @@ testthat::test_that("lowcon report works for Biocrates MxP Quant 500 Kit LC data
     pool_indicator = "Sex",
     kit = "Biocrates MxP Quant 500 Kit",
     lowcon_conditions = c("Sex", "Sample.Volume"),
-    lowcon_sd_outlier_removal = FALSE
+    lowcon_sd_outlier_removal = FALSE,
+    data_export_long = TRUE,
+    data_export_wide = TRUE
   )
 
   if (DELETE_REPORTS){
@@ -184,7 +189,9 @@ testthat::test_that("lowcon report works for Biocrates MxP Quant 500 Kit FIA dat
     pool_indicator = "Sex",
     kit = "Biocrates MxP Quant 500 Kit",
     lowcon_conditions = c("Sex", "Sample.Volume"),
-    lowcon_sd_outlier_removal = TRUE
+    lowcon_sd_outlier_removal = TRUE,
+    data_export_long = TRUE,
+    data_export_wide = TRUE
   )
 
   if (DELETE_REPORTS){

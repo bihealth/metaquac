@@ -8,7 +8,7 @@ create_qc_report(
   data_files,
   kit = c("Biocrates Bile Acids Kit", "Biocrates AbsoluteIDQ p180 Kit",
     "Biocrates AbsoluteIDQ p400 HR Kit", "Biocrates AbsoluteIDQ Stero17 Kit",
-    "Biocrates MxP Quant 500 Kit", "Generic Data")[1],
+    "Biocrates MxP Quant 500 Kit", "Generic Data")[5],
   measurement_type = c("LC", "FIA")[1],
   generic_data_types = c(CONCENTRATION = "Concentration", AREA = "Area", INTENSITY =
     NULL, ISTD_AREA = NULL, ISTD_INTENSITY = NULL, STATUS = NULL),
@@ -19,6 +19,7 @@ create_qc_report(
   report_output_name = paste0(format(Sys.time(), "\%Y\%m\%d_\%H\%M\%S"), "_qc_report_",
     measurement_type),
   report_output_dir = "reports",
+  report_output_clean = TRUE,
   pool_indicator = "Sample.Identification",
   profiling_variables = NULL,
   study_variables = NULL,
@@ -36,6 +37,9 @@ create_qc_report(
   filter_compound_bs_min_rsd = 15,
   filter_sample_max_mv_ratio = 0.2,
   data_tables = c("all", "stats", "none")[1],
+  data_export_long = FALSE,
+  data_export_wide = FALSE,
+  data_export_prefix = file.path(report_output_dir, report_output_name),
   metadata_import = NULL,
   metadata_import_overlap = c("rename", "replace", "omit")[1],
   metadata_name_mods_org = NULL,
@@ -94,6 +98,9 @@ transformation and merging will fail.}
 "YYYYMMDD_HHMMSS_qc_report_\{LC|FIA\}").}
 
 \item{report_output_dir}{Custom path of an output directory (default = "reports").}
+
+\item{report_output_clean}{Indicate if intermediate report files (the final
+markdown document and figures) should be removed (default) or should remain.}
 
 \item{pool_indicator}{Indicate a column/variable name which should be scanned for pooled QC samples
 (Biocrates only). (default = "Sample Identification", set NULL to disable).
@@ -165,6 +172,14 @@ data (such as countings, %RSDs, etc.), but not the actual measurements (neither 
 pre-processed). "none" will show no data tables at all, i.e. the report is mainly limited to
 visualizations.}
 
+\item{data_export_long, data_export_wide}{Enable export of measurement data sets (default = FALSE).
+Use in combination with data_tables = "stats", to keep big data sets
+exclusively outside of the report (e.g. to prevent memory issues either
+during pandoc conversion or when viewing the report in a browser).}
+
+\item{data_export_prefix}{File path prefix to apply for data exports.
+(default = report_output_dir + report_output_name).}
+
 \item{metadata_import}{Indicate a text file (csv or tsv) with additional
 metadata/annotations to import and merge (by column "Sample Identification").}
 
@@ -211,10 +226,21 @@ low concentration analysis (default = 20000). Below, values are set to NA.}
 
 \item{...}{Masked parameters for development and testing only.}
 }
+\value{
+Returns TRUE to indicate if a report was successfully created.
+Note, however, errors may still occur withing the report,
+sometimes more disruptive (e.g. failed imports),
+sometimes less disruptive (e.g. a single plot failing).
+}
 \description{
 Create a MeTaQuaC QC report based on Biocrates data (as exported by MetIDQ).
 }
 \examples{
+# Note: These examples make use of data sets included in the package,
+# hence the use of the system.file function.
+# Normally, please provide file paths strings directly instead,
+# e.g. data_files = list(Batch1 = c("filepath")).
+
 # Biocrates MxP Quant 500 Kit - LC injection
 metaquac::create_qc_report(
 data_files = list(

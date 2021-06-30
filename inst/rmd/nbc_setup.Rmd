@@ -216,6 +216,17 @@ if (!is.null(params$data_tables)) {
   assign("TABLE_DISPLAY", params$data_tables, ENV)
 }
 
+# Data tables export
+if (!is.null(params$data_export_long)) {
+  assertthat::assert_that(is.logical(params$data_export_long))
+}
+if (!is.null(params$data_export_wide)) {
+  assertthat::assert_that(is.logical(params$data_export_wide))
+}
+if (!is.null(params$data_export_prefix)) {
+  assertthat::assert_that(is.character(params$data_export_prefix))
+}
+
 # Optional metadata import and modifications
 ANY_METADATA_MODS <- FALSE
 if (!is.null(params$metadata_import)) {

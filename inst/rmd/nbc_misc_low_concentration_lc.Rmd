@@ -299,15 +299,23 @@ df.metabolite_rsd_HOS %>%
 df.filtered %>%
   select(Compound, Sample.Identification, Sample.Type,
          all_of(LOWCON_CONDITIONS), Analyte.Peak.Area.Normalised) %>%
-  easy_datatable(caption = "Long table of normalized areas")
+  easy_datatable(
+    caption = "Long table of normalized areas",
+    export_csv = params$data_export_long,
+    export_path =  paste0(params$data_export_prefix, "_lowcon_lc_long.csv")
+  )
 
 # Table that shows samples with normalized areas (wide)
 df.filtered %>%
   wide_conc_table_compounds_x_samples(value = "Analyte.Peak.Area.Normalised") %>%
-  easy_datatable(caption = paste(
+  easy_datatable(
+    caption = paste(
       "Wide table of normalized areas",
       "(compounds x samples, with some metadata)"
-  ))
+    ),
+    export_csv = params$data_export_wide,
+    export_path =  paste0(params$data_export_prefix, "_lowcon_lc_wide.csv")
+  )
 ```
 
 

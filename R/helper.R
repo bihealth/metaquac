@@ -106,32 +106,34 @@ easy_datatable <- function(
   # TODO: make stats default, so meas. has to be configured consciously
   show_type = c("measurements", "statistics")[1],
   show = ENV$TABLE_DISPLAY,
+  export_csv = FALSE,
+  export_path = ".",
   ...
 ){
 
   assertthat::assert_that(show_type %in% c("measurements", "statistics"))
   assertthat::assert_that(show %in% c("all", "stats", "none"))
 
+  # Export data to file
+  if (export_csv){
+    readr::write_csv(x = data, path = export_path)
+  }
+
   # Align caption left
   if (!is.null(caption)){
     caption = htmltools::tags$caption(style = 'text-align:left;', caption)
   }
 
+  # Check if data should be shown
+  show_data <- (show != "none") && !(show == "stats" && show_type == "measurements")
+
   # Control display of tables according to allowed types
-  if (show == "none" || (show == "stats" && show_type == "measurements")) {
-    table_out <- DT::datatable(
-      data.frame("TABLE CONTENT DISABLED!"),
-      rownames = FALSE,
-      colnames = c(),
-      caption = caption,
-      options = list(pageLength = 1)
-    )
-  }
-  else {
+  if (show_data){
     # Round columns
     data <- table_mod_round(
       data, round_colums = round_colums, round_digits = round_digits
     )
+
     # Modify p-values
     data <- table_mod_pvalue(
       data, pvalues_columns = pvalues_columns,
@@ -152,6 +154,16 @@ easy_datatable <- function(
                                extensions = extensions,
                                options = options,
                                ...)
+  }
+  else {
+    # Create empty table
+    table_out <- DT::datatable(
+      data.frame("TABLE CONTENT DISABLED!"),
+      rownames = FALSE,
+      colnames = c(),
+      caption = caption,
+      options = list(pageLength = 1)
+    )
   }
 
   return(table_out)

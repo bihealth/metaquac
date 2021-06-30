@@ -282,8 +282,24 @@ filter_res <- remove_samples_na(
 biocrates_imputed <- filter_res$data
 easy_datatable(filter_res$removed, show_type = "statistics",
                caption = "Removed samples with MVs after imputation")
-easy_datatable(biocrates_imputed,
-               caption = "Remaining median imputed dataset 4")
+
+easy_datatable(
+  biocrates_imputed,
+  caption = "Remaining median imputed dataset 4",
+  export_csv = params$data_export_long,
+  export_path =  paste0(params$data_export_prefix, "_imputed_long.csv")
+)
+
+biocrates_imputed %>%
+  wide_conc_table_compounds_x_samples() %>%
+  easy_datatable(
+    caption = paste0(
+      "Remaining median imputed dataset 4",
+      " (wide: compounds x samples, with some metadata)"
+    ),
+    export_csv = params$data_export_wide,
+    export_path =  paste0(params$data_export_prefix, "_imputed_wide.csv")
+  )
 ```
 
 
