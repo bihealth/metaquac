@@ -1,7 +1,7 @@
 Package: metaquac
 Type: Package
 Title: Metabolomics Targeted Quality Control
-Version: 0.1.32.9001
+Version: 0.1.33
 Author: Mathias Kuhring
 Maintainer: Mathias Kuhring <mathias.kuhring@bihealth.de>
 Description:
@@ -17,7 +17,7 @@ Imports:
     DT (>= 0.4),
     ggfortify (>= 0.4.5),
     ggplot2 (>= 3.1.0),
-    ggpmisc (>= 0.3.0),
+    ggpp (>= 0.4.0),
     ggrepel (>= 0.8.0),
     gplots (>= 3.0.1),
     knitr (>= 1.20),
@@ -36,4 +36,4 @@ Encoding: UTF-8
 LazyData: true
 Suggests:
     testthat (>= 2.0.1)
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
