@@ -172,7 +172,7 @@ plot_compound_na_scatter <- function(data,
   # Add label in low density areas
   if (label){
     g <- g +
-      ggpmisc::stat_dens2d_filter(
+      ggpp::stat_dens2d_filter(
         mapping = aes(label = Compound),
         geom = ggrepel::geom_text_repel()$geom, keep.number = label_number)
   }
@@ -233,7 +233,7 @@ plot_sample_na_intens_scatter <- function(data,
   # Add label in low density areas
   if (!is.null(label)){
     g <- g +
-      ggpmisc::stat_dens2d_filter(
+      ggpp::stat_dens2d_filter(
         mapping = aes_string(label = paste0("`", label, "`")),
         geom = ggrepel::geom_text_repel()$geom, keep.number = label_number)
   }

@@ -108,7 +108,7 @@ testthat::test_that("report works for Biocrates MxP Quant 500 Kit LC data", {
   )
 
   if (DELETE_REPORTS){
-    unlink("biocrates_p400_test_01", recursive = TRUE)
+    unlink("biocrates_q500_test_01", recursive = TRUE)
   }
 })
 
@@ -134,7 +134,7 @@ testthat::test_that("report works for Biocrates MxP Quant 500 Kit FIA data", {
   )
 
   if (DELETE_REPORTS){
-    unlink("biocrates_p400_test_01", recursive = TRUE)
+    unlink("biocrates_q500_test_01", recursive = TRUE)
   }
 })
 
@@ -165,7 +165,7 @@ testthat::test_that("lowcon report works for Biocrates MxP Quant 500 Kit LC data
   )
 
   if (DELETE_REPORTS){
-    unlink("biocrates_p400_test_01", recursive = TRUE)
+    unlink("biocrates_q500_test_02", recursive = TRUE)
   }
 })
 
@@ -195,7 +195,7 @@ testthat::test_that("lowcon report works for Biocrates MxP Quant 500 Kit FIA dat
   )
 
   if (DELETE_REPORTS){
-    unlink("biocrates_p400_test_01", recursive = TRUE)
+    unlink("biocrates_q500_test_02", recursive = TRUE)
   }
 })
 
@@ -227,7 +227,7 @@ testthat::test_that("report works for generic data, batches included", {
   )
 
   if (DELETE_REPORTS){
-    unlink("biocrates_p400_test_01", recursive = TRUE)
+    unlink("generic_test_01", recursive = TRUE)
   }
 })
 
@@ -260,7 +260,7 @@ testthat::test_that("report works for generic data, batches included", {
   )
 
   if (DELETE_REPORTS){
-    unlink("biocrates_p400_test_01", recursive = TRUE)
+    unlink("generic_test_03", recursive = TRUE)
   }
 })
 
@@ -298,6 +298,6 @@ testthat::test_that("report works for generic data, batches included", {
 #   )
 #
 #   if (DELETE_REPORTS){
-#     unlink("biocrates_p400_test_01", recursive = TRUE)
+#     unlink("generic_test_02", recursive = TRUE)
 #   }
 # })
